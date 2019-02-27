@@ -1,0 +1,63 @@
+// Parameter file for rigid registration - Serena Bonaretti
+
+// *********************** Images ***********************
+(FixedInternalImagePixelType "float")
+(MovingInternalImagePixelType "float")
+(UseDirectionCosines "true")
+
+
+// ******************** Registration ********************
+(Registration "MultiResolutionRegistration")
+(NumberOfResolutions 3)
+(FixedImagePyramid "FixedSmoothingImagePyramid")
+(MovingImagePyramid "MovingSmoothingImagePyramid")
+
+
+// *********************** Metric ***********************
+(Metric "AdvancedMattesMutualInformation")
+(NumberOfHistogramBins 32)
+
+
+// *********************** Sampler **********************
+(ImageSampler "RandomCoordinate")
+(NumberOfSpatialSamples 3000)
+(NewSamplesEveryIteration "true")
+
+
+// ******************** Interpolator ********************
+(Interpolator "BSplineInterpolator")
+(BSplineInterpolationOrder 1)
+
+
+// ******************* Transformation *******************
+(Transform "EulerTransform")
+(AutomaticTransformInitialization "true")
+(AutomaticScalesEstimation "true")
+(HowToCombineTransforms "Compose")
+
+
+// ********************* Optimizer **********************
+(Optimizer "AdaptiveStochasticGradientDescent")
+(MaximumNumberOfIterations 250)
+
+
+// *********************** Masks ************************
+(ErodeMask "false")
+
+
+// ********************** Resampler *********************
+(Resampler "DefaultResampler")
+(DefaultPixelValue 0)
+
+
+// **************** ResampleInterpolator ****************
+(ResampleInterpolator "FinalBSplineInterpolator")
+(FinalBSplineInterpolationOrder 3)
+
+
+// ******************* Writing image ********************
+(WriteResultImage "true")
+(ResultImagePixelType "float")
+(ResultImageFormat "mha")
+
+

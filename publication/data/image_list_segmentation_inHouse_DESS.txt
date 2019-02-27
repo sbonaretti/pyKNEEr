@@ -1,0 +1,7 @@
+./inHouse/reference/newsubject
+./inHouse/preprocessed
+r reference.mha
+m 01_DESS_1_prep.mha
+m 02_DESS_1_prep.mha
+m 03_DESS_1_prep.mha
+m 04_DESS_1_prep.mha

@@ -1,0 +1,42 @@
+./OAI1/segmented
+./OAI1/segmented_QM
+s YR04_01_DESS_prep_fc.mha
+g YR04_01_DESS_QM_fc.mha
+s YR04_02_DESS_prep_fc.mha
+g YR04_02_DESS_QM_fc.mha
+s YR04_03_DESS_prep_fc.mha
+g YR04_03_DESS_QM_fc.mha
+s YR04_04_DESS_prep_fc.mha
+g YR04_04_DESS_QM_fc.mha
+s YR04_05_DESS_prep_fc.mha
+g YR04_05_DESS_QM_fc.mha
+s YR04_06_DESS_prep_fc.mha
+g YR04_06_DESS_QM_fc.mha
+s YR04_07_DESS_prep_fc.mha
+g YR04_07_DESS_QM_fc.mha
+s YR04_08_DESS_prep_fc.mha
+g YR04_08_DESS_QM_fc.mha
+s YR04_09_DESS_prep_fc.mha
+g YR04_09_DESS_QM_fc.mha
+s YR04_10_DESS_prep_fc.mha
+g YR04_10_DESS_QM_fc.mha
+s YR04_11_DESS_prep_fc.mha
+g YR04_11_DESS_QM_fc.mha
+s YR04_12_DESS_prep_fc.mha
+g YR04_12_DESS_QM_fc.mha
+s YR04_13_DESS_prep_fc.mha
+g YR04_13_DESS_QM_fc.mha
+s YR04_14_DESS_prep_fc.mha
+g YR04_14_DESS_QM_fc.mha
+s YR04_15_DESS_prep_fc.mha
+g YR04_15_DESS_QM_fc.mha
+s YR04_16_DESS_prep_fc.mha
+g YR04_16_DESS_QM_fc.mha
+s YR04_17_DESS_prep_fc.mha
+g YR04_17_DESS_QM_fc.mha
+s YR04_18_DESS_prep_fc.mha
+g YR04_18_DESS_QM_fc.mha
+s YR04_19_DESS_prep_fc.mha
+g YR04_19_DESS_QM_fc.mha
+
+

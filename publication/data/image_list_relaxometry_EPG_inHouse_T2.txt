@@ -1,0 +1,14 @@
+./inHouse/preprocessed
+./inHouse/segmented
+i1 01_DESS_1_orig.mha
+i2 01_DESS_2_orig.mha
+cm 01_DESS_1_prep_fc.mha
+i1 02_DESS_1_orig.mha
+i2 02_DESS_2_orig.mha
+cm 02_DESS_1_prep_fc.mha
+i1 03_DESS_1_orig.mha
+i2 03_DESS_2_orig.mha
+cm 03_DESS_1_prep_fc.mha
+i1 04_DESS_1_orig.mha
+i2 04_DESS_2_orig.mha
+cm 04_DESS_1_prep_fc.mha

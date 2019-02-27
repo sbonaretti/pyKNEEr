@@ -1,0 +1,23 @@
+./OAI1/reference/newsubject
+./OAI1/preprocessed
+r reference.mha
+m YR04_01_DESS_prep.mha
+m YR04_02_DESS_prep.mha
+m YR04_03_DESS_prep.mha
+m YR04_04_DESS_prep.mha
+m YR04_05_DESS_prep.mha
+m YR04_06_DESS_prep.mha
+m YR04_07_DESS_prep.mha
+m YR04_08_DESS_prep.mha
+m YR04_09_DESS_prep.mha
+m YR04_10_DESS_prep.mha
+m YR04_11_DESS_prep.mha
+m YR04_12_DESS_prep.mha
+m YR04_13_DESS_prep.mha
+m YR04_14_DESS_prep.mha
+m YR04_15_DESS_prep.mha
+m YR04_16_DESS_prep.mha
+m YR04_17_DESS_prep.mha
+m YR04_18_DESS_prep.mha
+m YR04_19_DESS_prep.mha
+

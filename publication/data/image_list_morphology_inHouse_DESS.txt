@@ -1,0 +1,5 @@
+./inHouse/segmented/
+01_DESS_1_prep_fc.mha
+02_DESS_1_prep_fc.mha
+03_DESS_1_prep_fc.mha
+04_DESS_1_prep_fc.mha

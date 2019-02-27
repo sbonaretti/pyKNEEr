@@ -1,0 +1,17 @@
+./inHouse/original/
+01/DESS/1
+right
+02/DESS/1
+left
+03/DESS/1
+left
+04/DESS/1
+right
+01/cubeQuant/1
+right
+02/cubeQuant/1
+left
+03/cubeQuant/1
+left
+04/cubeQuant/1
+right

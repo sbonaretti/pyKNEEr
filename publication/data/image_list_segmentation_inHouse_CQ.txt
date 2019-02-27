@@ -1,0 +1,10 @@
+./inHouse/reference/multimodal
+./inHouse/preprocessed
+r 01_DESS_1_prep.mha
+m 01_cubeQuant_1_prep.mha
+r 02_DESS_1_prep.mha
+m 02_cubeQuant_1_prep.mha
+r 03_DESS_1_prep.mha
+m 03_cubeQuant_1_prep.mha
+r 04_DESS_1_prep.mha
+m 04_cubeQuant_1_prep.mha

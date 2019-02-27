@@ -1,0 +1,17 @@
+name: pykneer
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7.1
+  - numpy=1.15.1
+  - pandas=0.23.4
+  - scipy=1.1.0
+  - simplegeneric # for rpy2
+  - watermark # for dependences
+  # R packages
+  - rpy2
+  - r-base=3.4.1
+  - r-ggplot2
+  - r-ggrepel
+  - r-maps
+  - r-ggmap

@@ -1,0 +1,5 @@
+./inHouse/segmented/
+01_cubeQuant_1_prep_fc.mha
+02_cubeQuant_1_prep_fc.mha
+03_cubeQuant_1_prep_fc.mha
+04_cubeQuant_1_prep_fc.mha
