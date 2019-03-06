@@ -180,7 +180,7 @@ html_theme_options = {
     "project_nav_name": "pyKNEEr",
 
     # Set you GA account ID to enable tracking
-    "google_analytics_account": "my_ga_account",
+    "google_analytics_account": "UA-135735296-1",
 
 }
 
