@@ -1,0 +1,5 @@
+./preprocessed
+./segmented
+i1 01_DESS_01_orig.mha
+i2 01_DESS_02_orig.mha
+cm 01_DESS_01_prep_fc.mha

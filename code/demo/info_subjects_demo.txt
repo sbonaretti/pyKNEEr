@@ -1,0 +1,19 @@
+In this demo we use 2 sets of images:
+- Reference: It is the subject 9526875, folder 20090817 of OAI dataset. The original dicom folder can be requested at the OAI website
+- Subject 1: It is a subject from an in-house dataset (laterality: right)
+
+The reference image is in the folder "reference/newsubject". The folder contains: 
+- reference.mha: Intensity image in RAI orientation with origin in (0,0,0)
+- reference_f.mha: Mask of femur
+- reference_fc.mha: Mask of femoral cartilage
+
+The images of subject 1 are in the folder "original/01", which contains DESS and CubeQuant acquisitions in dicom
+ 
+Steps of the workflow involving subjects 1: 
+Subject			01	
+Preprocessing		x	
+New subject segm	x	
+Longitudinal segm	x	
+Multimodal segm		-	
+Morphology		x	
+Relaxometry		x	

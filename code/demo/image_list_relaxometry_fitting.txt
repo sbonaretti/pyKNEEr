@@ -1,0 +1,9 @@
+./preprocessed
+./segmented
+4
+i1 01_cubeQuant_01_orig.mha
+i2 01_cubeQuant_02_orig.mha
+i3 01_cubeQuant_03_orig.mha
+i4 01_cubeQuant_04_orig.mha
+bm 01_cubeQuant_01_prep_f.mha
+cm 01_cubeQuant_01_prep_fc.mha
