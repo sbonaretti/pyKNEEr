@@ -3,7 +3,7 @@
 ### An image analysis workflow for **open** and **reproducible** research on **femoral knee cartilage**
 
 
-Try *pyKNEEr* on Binder!   
+Try *pyKNEEr* on Binder   
 - Example #1: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example%2Fpykneer_example.ipynb)
 - Example #2: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example_2%2Fpykneer_example_2.ipynb)
 
