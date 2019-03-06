@@ -11,4 +11,4 @@ Try *pyKNEEr* on Binder!
 Documentation on [website](https://sbonaretti.github.io/pyKNEEr/)  
 Peprint paper on [bioRxiv](https://www.biorxiv.org/content/10.1101/556423v1.article-info)
 
-[![DOI](https://zenodo.org/badge/155445441.svg)](https://zenodo.org/badge/latestdoi/155445441)
+Release 0.0.1 on Zenodo: [![DOI](https://zenodo.org/badge/155445441.svg)](https://zenodo.org/badge/latestdoi/155445441)
