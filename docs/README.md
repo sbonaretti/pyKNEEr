@@ -14,7 +14,7 @@ HTML files:
 Folders:  
 - `_images`, images in the website
 - `_static`, layout of the website 
-- `_source`, source code of the website
+- `source`, source code of the website
 
 File:  
 - `.nojekyll`, tells GitHub not to use jekyll to create the website
