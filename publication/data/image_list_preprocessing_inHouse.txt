@@ -1,4 +1,4 @@
-./inHouse/original/
+./original/
 01/DESS/1
 right
 02/DESS/1
