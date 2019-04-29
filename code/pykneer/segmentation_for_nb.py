@@ -162,6 +162,7 @@ def warp_bone_mask_s(imageData):
     outputFileName = imageData["segmentedFolder"]      + imageData[anatomy + "mask"]
     mask = sitk.ReadImage(inputFileName)
     mask = sitkf.levelset2binary(mask)
+    mask = sitk.Cast(mask,sitk.sitkInt16) # cast to int16 to reduce file size
     sitk.WriteImage(mask, outputFileName)
 
 def warp_bone_mask(allImageData, nOfProcesses):
@@ -268,6 +269,7 @@ def warp_cartilage_mask_s(imageData):
     outputFileName = imageData["segmentedFolder"]      + imageData[anatomy + "mask"]
     mask = sitk.ReadImage(inputFileName)
     mask = sitkf.levelset2binary(mask)
+    mask = sitk.Cast(mask,sitk.sitkInt16) # cast to int16 to reduce file size
     sitk.WriteImage(mask, outputFileName)
 
 def warp_cartilage_mask(allImageData, nOfProcesses):
