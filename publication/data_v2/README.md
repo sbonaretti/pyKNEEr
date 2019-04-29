@@ -1,4 +1,4 @@
-Data for second version of the paper.
+Data for second version of the paper on bioRxiv[add link] and sumbitted to PLOS One [add link].
 
 Changed data:  
 - Literature review [TBA]
