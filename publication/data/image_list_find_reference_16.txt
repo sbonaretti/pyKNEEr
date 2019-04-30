@@ -1,4 +1,4 @@
-./OAI1/findReference
+./OAI1/findingReference
 r YR04_16_DESS_prep.mha
 m YR04_01_DESS_prep.mha
 m YR04_02_DESS_prep.mha
