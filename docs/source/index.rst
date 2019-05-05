@@ -32,15 +32,14 @@ Example #2:
  :target: https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example_2%2Fpykneer_example_2.ipynb
 
 
-
-
 |
 
 .. raw:: html
 
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-   <a href="https://github.com/sbonaretti/pyKNEEr" target="_blank"><i class="fa fa-github" style="font-size:28px;"></i></a>
-   <a href="https://www.biorxiv.org/content/10.1101/556423v1" target="_blank"><i class="fa fa-book" style="font-size:28px;"></i></a>
+   Code: <a href="https://github.com/sbonaretti/pyKNEEr" target="_blank"><i class="fa fa-github" style="font-size:28px;"></i></a>
+   <br>
+   Preprint: <a href="https://doi.org/10.1101/556423" target="_blank"><i class="fa fa-book" style="font-size:28px;"></i></a>
 
    <br>
    <br>

@@ -186,7 +186,7 @@ FAQ
 
      Paper: <br>
      Bonaretti S., Gold G., Beaupre G. <i>pyKNEEr: An image analysis workflow for open and reproducible research on femoral knee cartilage</i>.
-     <a href="https://www.biorxiv.org/content/10.1101/556423v1" target="_blank">bioRxiv 10.1101/556423 2019</a> <br />
+     <a href="https://doi.org/10.1101/556423" target="_blank">bioRxiv 10.1101/556423 2019</a> <br />
 
      <br>
 
@@ -196,7 +196,7 @@ FAQ
      <a href="https://zenodo.org/badge/latestdoi/155445441"><img src="https://zenodo.org/badge/155445441.svg" alt="DOI"></a> <br>
 
      <br>
-     
+
      Data: <br>
      Dataset in (Bonaretti S. et al. 2019). Zenodo. 10.5281/zenodo.2530609
      <a href="https://doi.org/10.5281/zenodo.2530609"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.2530609.svg" alt="DOI"></a>
