@@ -28,12 +28,12 @@
     <title>FAQ &#8212; pyKNEEr 1.0.0 documentation</title>
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Relaxometry" href="relaxometry.html" />
@@ -62,8 +62,22 @@
         <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
       </div>
   <div id="left-column">
-    <div class="sphinxsidebar"><a href="
+    <div class="sphinxsidebar"><!--
+The following code is the original from the template
+It writes a text at the top of the side bar that links to the home page
+
+<a href="
     index.html" class="text-logo">pyKNEEr</a>
+-->
+
+
+<!--
+This line add a figure at the top of the left side bar that links to the home page
+The figure has to be in the folder "build" (not in the subfolder "html")
+(I could not make the relative path to the folders "_figure" in "source" and "_images" in "build" work)
+-->
+
+<a href="index.html"><img src="pykneer_logo_for_website.png" style="width:253px;height:78px;"></a>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
     <!--<h2>Table Of Contents</h2> --> <!-- Modified by S.Bonaretti -->
