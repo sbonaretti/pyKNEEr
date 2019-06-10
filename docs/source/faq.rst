@@ -192,7 +192,7 @@ FAQ
 
      Code:
      <br>
-     Bonaretti S. "pyKNEER" (v0.0.1). Zenodo. 2019. 10.5281/zenodo.2574172
+     Bonaretti S. "pyKNEEr" (v0.0.1). Zenodo. 2019. 10.5281/zenodo.2574172
      <a href="https://zenodo.org/badge/latestdoi/155445441"><img src="https://zenodo.org/badge/155445441.svg" alt="DOI"></a> <br>
 
      <br>
