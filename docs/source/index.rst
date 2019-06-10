@@ -21,12 +21,12 @@ Try *pyKNEEr* on Binder:
 
 .. raw:: html
 
-   Example #1: <a href="https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example%2Fpykneer_example.ipynb" target="_blank">
+   Example 1: <a href="https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example%2Fpykneer_example.ipynb" target="_blank">
    <img src="https://mybinder.org/badge_logo.svg"></a>
 
    <br>
 
-   Example #2: <a href="https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example_2%2Fpykneer_example_2.ipynb" target="_blank">
+   Example 2: <a href="https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example_2%2Fpykneer_example_2.ipynb" target="_blank">
    <img src="https://mybinder.org/badge_logo.svg"></a>
 
    <br>
