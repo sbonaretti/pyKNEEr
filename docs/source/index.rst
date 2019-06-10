@@ -1,8 +1,6 @@
 pyKNEEr
 ================================================================================
 
-|
-
 .. figure:: _figures/index.png
    :align: center
    :scale: 60%
@@ -21,25 +19,29 @@ pyKNEEr
 
 Try *pyKNEEr* on Binder:
 
-Example #1:
-
-.. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example%2Fpykneer_example.ipynb
-
-Example #2:
-
-.. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example_2%2Fpykneer_example_2.ipynb
-
-
-|
-
 .. raw:: html
+
+   Example #1: <a href="https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example%2Fpykneer_example.ipynb" target="_blank">
+   <img src="https://mybinder.org/badge_logo.svg"></a>
+
+   <br>
+
+   Example #2: <a href="https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example_2%2Fpykneer_example_2.ipynb" target="_blank">
+   <img src="https://mybinder.org/badge_logo.svg"></a>
+
+   <br>
+   <br>
 
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
    Code: <a href="https://github.com/sbonaretti/pyKNEEr" target="_blank"><i class="fa fa-github" style="font-size:28px;"></i></a>
-   <br>
+
+   &nbsp; &nbsp; &nbsp;
+
    Preprint: <a href="https://doi.org/10.1101/556423" target="_blank"><i class="fa fa-book" style="font-size:28px;"></i></a>
+
+   &nbsp; &nbsp; &nbsp;
+
+   Developer: <a href="https://sbonaretti.github.io" target="_blank">Serena Bonaretti</a>
 
    <br>
    <br>
