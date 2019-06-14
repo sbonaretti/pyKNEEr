@@ -43,10 +43,9 @@ Try *pyKNEEr* on Binder:
 
    Developer: <a href="https://sbonaretti.github.io" target="_blank">Serena Bonaretti</a>
 
-   <br>
-   <br>
+   &nbsp; &nbsp; &nbsp;
 
-   <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br /></a>
+   License: <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br /></a>
 
 
 |
