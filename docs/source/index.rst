@@ -31,6 +31,7 @@ Try *pyKNEEr* on Binder:
 
    <br>
    <br>
+   <br>
 
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
    Code: <a href="https://github.com/sbonaretti/pyKNEEr" target="_blank"><i class="fa fa-github" style="font-size:28px;"></i></a>
