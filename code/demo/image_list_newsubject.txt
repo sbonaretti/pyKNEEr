@@ -1,4 +1,0 @@
-./reference/newsubject
-./preprocessed
-r reference.mha
-m 01_DESS_01_prep.mha

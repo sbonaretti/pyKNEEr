@@ -1,2 +1,0 @@
-./segmented
-01_DESS_01_prep_fc.mha
