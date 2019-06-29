@@ -8,10 +8,6 @@ import multiprocessing
 import SimpleITK      as sitk
 from . import sitk_functions  as sitkf
 
-# print("--- process " + str(os.getpid()) + " working on " + imageData["imageFolderFileName"] )
-# print("--- process " + str(os.getpid()) + " done")
-# start_time = time.time()
-# print ("-> The total time in readDicomStack_s was %d seconds (about %d min)" % ((time.time() - start_time), (time.time() - start_time)/60))
 
 # Functions are in pairs for parallelization. Example:
 # readDicomStack launches readDicomStack_s as many times as the length of allImageData (subtituting a for loop).
@@ -63,7 +59,11 @@ def print_dicom_header(allImageData, nOfProcesses):
 
 
 def orientation_to_rai_s(imageData):
-
+    '''
+    This function will be used when SimpleIKT includes the filter OrientImageFilter in the release
+    For now we use the ITK filter
+    '''
+    
     # read the image
     img = sitk.ReadImage(imageData["tempFileName"])
 
@@ -215,7 +215,7 @@ def show_preprocessed_images(allImageData,intensity_standardization):
     fig     = plt.figure() # cannot call figures inside the for loop because python has a max of 20 figures (nOfImages can be larger)
     fig, ax = plt.subplots(nrows=nOfImages, ncols=2)
     fig.tight_layout() # avoids subplots overlap
-
+    
     for i in range(0, nOfImages):
 
         # plot spatially standardized image
@@ -236,7 +236,10 @@ def show_preprocessed_images(allImageData,intensity_standardization):
         slice_orig = img_orig_py[:,:,sliceID]
 
         # plot slice of original image in left axis
-        ax1 = ax[i,0]
+        if nOfImages == 1:
+            ax1 = ax[0]
+        else:
+            ax1 = ax[i,0]
         ax1.set_title(imageData["imageNameRoot"] + "_orig.mha")
         ax1.imshow(slice_orig, cmap=plt.cm.gray, origin='lower',interpolation=None)
         ax1.axis('off')
@@ -259,12 +262,18 @@ def show_preprocessed_images(allImageData,intensity_standardization):
             slice_prep = img_prep_py[:,:,sliceID]
 
             # plot slice of preprocessed image in right axis
-            ax2 = ax[i,1]
+            if nOfImages == 1:
+                ax2 = ax[1]
+            else:
+                ax2 = ax[i,1]
             ax2.set_title(imageData["imageNameRoot"] + "_prep.mha")
             ax2.imshow(slice_prep, cmap=plt.cm.gray, origin='lower',interpolation=None)
             ax2.axis('off')
 
         else:
             # turn off the second axis showing the intensity-standardized image
-            ax2 = ax[i,1]
+            if nOfImages == 1:
+                ax2 = ax[1]
+            else:
+                ax2 = ax[i,1]
             ax2.axis('off')

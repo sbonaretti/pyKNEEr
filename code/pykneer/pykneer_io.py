@@ -42,6 +42,10 @@ def load_image_data_preprocessing(inputFileName):
     for line in open(inputFileName):
         fileContent.append(line.rstrip("\n"))
 
+    # clear empty spaces at the end of strings (if human enters spaces by mistake)
+    for i in range(0,len(fileContent)):
+        fileContent[i] = fileContent[i].rstrip()
+
     # ----------------------------------------------------------------------------------------------------------------------
     # folders
 
@@ -156,6 +160,10 @@ def load_image_data_find_reference(inputFileName):
     fileContent=[]
     for line in open(inputFileName):
         fileContent.append(line.rstrip("\n"))
+
+    # clear empty spaces at the end of strings (if human enters spaces by mistake)
+    for i in range(0,len(fileContent)):
+        fileContent[i] = fileContent[i].rstrip()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get folders
@@ -294,6 +302,11 @@ def load_image_data_segmentation(registrationType, inputFileName):
     fileContent=[]
     for line in open(inputFileName):
         fileContent.append(line.rstrip("\n"))
+        
+    # clear empty spaces at the end of strings (if human enters spaces by mistake)
+    for i in range(0,len(fileContent)):
+        fileContent[i] = fileContent[i].rstrip()
+
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get folders
@@ -556,6 +569,11 @@ def load_image_data_segmentation_quality(inputFileName):
     fileContent=[]
     for line in open(inputFileName):
         fileContent.append(line.rstrip("\n"))
+    
+    # clear empty spaces at the end of strings (if human enters spaces by mistake)
+    for i in range(0,len(fileContent)):
+        fileContent[i] = fileContent[i].rstrip()
+
 
     # line 0 is folder of the registered images
     segmentedFolder = fileContent[0]
@@ -653,6 +671,11 @@ def load_image_data_morphology(inputFileName):
     for line in open(inputFileName):
         fileContent.append(line.rstrip("\n"))
 
+    # clear empty spaces at the end of strings (if human enters spaces by mistake)
+    for i in range(0,len(fileContent)):
+        fileContent[i] = fileContent[i].rstrip()
+
+
     # ----------------------------------------------------------------------------------------------------------------------
     # get folder - line 1 is the input folder
     inputFolder = fileContent[0]
@@ -739,9 +762,12 @@ def load_image_data_EPG(inputFileName):
     # ----------------------------------------------------------------------------------------------------------------------
     # get inputFileName content
     fileContent=[]
-    #i=0;
     for line in open(inputFileName):
         fileContent.append(line.rstrip("\n"))
+
+    # clear empty spaces at the end of strings (if human enters spaces by mistake)
+    for i in range(0,len(fileContent)):
+        fileContent[i] = fileContent[i].rstrip()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # look for needed folders
@@ -885,9 +911,12 @@ def load_image_data_fitting(inputFileName, methodFlag, registrationFlag):
     # ----------------------------------------------------------------------------------------------------------------------
     # get inputFileName content
     fileContent=[]
-    #i=0;
     for line in open(inputFileName):
         fileContent.append(line.rstrip("\n"))
+    
+    # clear empty spaces at the end of strings (if human enters spaces by mistake)
+    for i in range(0,len(fileContent)):
+        fileContent[i] = fileContent[i].rstrip()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # look for needed folders

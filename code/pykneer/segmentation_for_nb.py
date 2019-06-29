@@ -301,7 +301,7 @@ def show_segmented_images(allImageData):
 
 
         # get paths and file names of the current image
-        imageData                   =  allImageData[i]
+        imageData                   = allImageData[i]
         imageData["currentAnatomy"] = imageData["cartilage"]
         anatomy                     = imageData["currentAnatomy"]
         movingFileName              = imageData["movingFolder"]    + imageData["movingName"]
@@ -342,8 +342,8 @@ def show_segmented_images(allImageData):
             ax1 = fig.add_subplot(nOfRows,nOfColumns,axisIndex)
 
             # get slices
-            slice_moving_py = moving_py[:,:,sliceID[a]]
-            slice_mask_py   = mask_py[:,:,sliceID[a]]
+            slice_moving_py   = moving_py[:,:,sliceID[a]]
+            slice_mask_py     = mask_py[:,:,sliceID[a]]
             slice_mask_masked = np.ma.masked_where(slice_mask_py == 0, slice_mask_py)
 
             # show image

@@ -6,6 +6,7 @@ import itk
 
 
 
+
 def print_image_info(img):
 
     print ("Size:      %d   %d   %d"   % (img.GetSize   ()[0], img.GetSize   ()[1], img.GetSize   ()[2]))
@@ -59,10 +60,14 @@ def read_dicom_header(imageFolder):
     return metaDataKeys, metaData
 
 
+
+
 def orientation_to_rai(img):
     
     # this function is implemented using ITK since SimpleITK has not implemented the filter "OrientImageFilter" yet
     # the ITK orientation system is from this blog post: https://itk.org/pipermail/insight-users/2017-May/054606.html
+    # comparison ITK - simpleITK filters: https://itk.org/SimpleITKDoxygen/html/Filter_Coverage.html
+    # see also: https://github.com/fedorov/lidc-idri-conversion/blob/master/seg/seg_converter.py
 
     # change image name
     img_sitk = img
@@ -146,7 +151,8 @@ def orientation_to_rai(img):
     filter.SetInput(img_itk)
     filter.Update()
     img_itk    = filter.GetOutput()
-
+    
+    
     # get characteristics of ITK image
     spacingOut_itk   = img_itk.GetSpacing()
     originOut_itk    = img_itk.GetOrigin()
