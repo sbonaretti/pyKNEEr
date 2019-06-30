@@ -34,6 +34,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Preprocessing" href="preprocessing.html" />
@@ -94,8 +95,7 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#python">python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pykneer"><em>pyKNEEr</em></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#jupyter-notebooks">Jupyter notebooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#demo">Demo</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
@@ -143,22 +143,26 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 </div>
 <div class="section" id="pykneer">
 <h2><em>pyKNEEr</em><a class="headerlink" href="#pykneer" title="Permalink to this headline">¶</a></h2>
-<p>In terminal type:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install pykneer
+<p>Go to <a class="reference internal" href="faq.html#terminal"><span class="std std-ref">terminal</span></a>, copy/paste each line and press <code class="docutils literal notranslate"><span class="pre">enter</span></code>:</p>
+<p>(in future versions the first two lines will not be necessary)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install itk-core<span class="o">==</span><span class="m">4</span>.13.1.post1 itk-numerics<span class="o">==</span><span class="m">4</span>.13.1.post1 itk-filtering<span class="o">==</span><span class="m">4</span>.13.1.post1 itk-io<span class="o">==</span><span class="m">4</span>.13.1.post1 itk-segmentation<span class="o">==</span><span class="m">4</span>.13.1.post1 itk-registration<span class="o">==</span><span class="m">4</span>.13.1.post1 --force-reinstall --no-cache-dir
+pip install <span class="nv">itk</span><span class="o">==</span><span class="m">4</span>.13.1.post1
+pip install pykneer
 </pre></div>
 </div>
 <p>The installation contains <em>elastix v4.8</em> for atlas-based segmentation</p>
 <p>Note: We recommend to install <em>pyKNEEr</em> in a python <a class="reference internal" href="faq.html#virtualenv-what"><span class="std std-ref">virtual environment</span></a></p>
 </div>
-<div class="section" id="jupyter-notebooks">
-<span id="demo"></span><h2>Jupyter notebooks<a class="headerlink" href="#jupyter-notebooks" title="Permalink to this headline">¶</a></h2>
-You can download the Jupyter notebooks serving as a user interface from <i>pyKNEEr</i> <a href="https://github.com/sbonaretti/pyKNEEr/tree/master/code" target="_blank">GitHub</a> repository</div>
-<div class="section" id="id2">
-<h2>Demo<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>To become familiar with <em>pyKNEEr</em>, we provide a demo example that you can replicate following the instructions in the next pages</p>
-Download or clone <i>pyKNEEr</i> package from <a href="https://github.com/sbonaretti/pyKNEEr/" target="_blank">GitHub</a> repository<p>Go to <code class="docutils literal notranslate"><span class="pre">./code/demo</span></code>. The folder is structured as follows:</p>
+<div class="section" id="demo">
+<span id="id2"></span><h2>Demo<a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
+<p>To become familiar with <em>pyKNEEr</em>, we provide a demo that you can replicate following the step-by-step instructions in the following pages</p>
+<ul>
+<li><div class="first">Download the demo images <a href="https://www.doi.org/10.5281/zenodo.3262307" target="_blank">here</a></div></li>
+<li><p class="first">Unzip the file and open it. It contains two folders:</p>
+<ul>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">input</span></code>: It is the basic folder to work with <em>pyKNEEr</em>:</p>
 <div class="figure align-center">
-<a class="reference internal image-reference" href="_images/demoFolders.png"><img alt="_images/demoFolders.png" src="_images/demoFolders.png" style="width: 730.0999999999999px; height: 295.4px;" /></a>
+<a class="reference internal image-reference" href="_images/demoFolders.png"><img alt="_images/demoFolders.png" src="_images/demoFolders.png" style="width: 741.6px; height: 301.8px;" /></a>
 </div>
 <p>The folder <code class="docutils literal notranslate"><span class="pre">original</span></code> contains images of subjects <code class="docutils literal notranslate"><span class="pre">01</span></code>, which contains:</p>
 <ul class="simple">
@@ -173,7 +177,17 @@ Download or clone <i>pyKNEEr</i> package from <a href="https://github.com/sbonar
 <li><code class="docutils literal notranslate"><span class="pre">reference_fc.mha</span></code>: Femoral cartilage mask of the reference image</li>
 </ul>
 <p>You can use this reference image and its masks also when you segment your <strong>own</strong> data</p>
-<p>In the folder you will also find Jupyter notebooks and input <code class="docutils literal notranslate"><span class="pre">.txt</span></code> files</p>
+<p>In the folder you will also find Jupyter notebooks (<code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>) and input files (<code class="docutils literal notranslate"><span class="pre">.txt</span></code>) to run <em>pyKNEEr</em> workflow</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In the following instructions we will assume that <code class="docutils literal notranslate"><span class="pre">input</span></code> is your working directory</p>
+</div>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">output</span></code>: It contains the outputs of the demo, so you can compare your findings with ours</p>
+</li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
 

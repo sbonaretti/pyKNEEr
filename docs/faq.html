@@ -117,6 +117,8 @@ The figure has to be in the folder "build" (not in the subfolder "html")
   <div class="section" id="faq">
 <span id="id1"></span><h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference internal" href="#name"><span class="std std-ref">Why the name pyKNEEr?</span></a></p>
+<p><a class="reference internal" href="#terminal"><span class="std std-ref">Which terminal?</span></a></p>
+<p><a class="reference internal" href="#cores"><span class="std std-ref">How do I choose the number of cores?</span></a></p>
 <p><a class="reference internal" href="#faqlaterality"><span class="std std-ref">How do I determine knee laterality?</span></a></p>
 <p id="howtojupyter"><a class="reference internal" href="#launch-jup"><span class="std std-ref">How do I launch Jupyter notebook?</span></a></p>
 <p><a class="reference internal" href="#run-jup"><span class="std std-ref">How do I run a Jupyter notebook?</span></a></p>
@@ -135,6 +137,32 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 <p id="name"><strong>Why the name pyKNEEr?</strong></p>
 <blockquote>
 <div><code class="docutils literal notranslate"><span class="pre">py</span></code> is for python, <code class="docutils literal notranslate"><span class="pre">KNEE</span></code> is for femoral knee cartilage, and <code class="docutils literal notranslate"><span class="pre">r</span></code> is for reproducibility</div></blockquote>
+<p id="terminal"><strong>Which terminal?</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>MacOS:</dt>
+<dd>Open the terminal: Applications <span class="math notranslate nohighlight">\(\rightarrow\)</span> Utilities <span class="math notranslate nohighlight">\(\rightarrow\)</span> Terminal</dd>
+<dt>Windows:</dt>
+<dd>Open the Anaconda prompt: Start Menu <span class="math notranslate nohighlight">\(\rightarrow\)</span> Anaconda <span class="math notranslate nohighlight">\(\rightarrow\)</span> Anaconda Prompt</dd>
+</dl>
+</div></blockquote>
+<p id="cores"><strong>How do I choose the number of cores?</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>MacOS:</dt>
+<dd><p class="first">Open your <a class="reference internal" href="#terminal"><span class="std std-ref">terminal</span></a> and type:</p>
+<p><code class="docutils literal notranslate"><span class="pre">sysctl</span> <span class="pre">hw.physicalcpu</span> <span class="pre">hw.logicalcpu</span></code></p>
+<p>You will get something like this:</p>
+<p><code class="docutils literal notranslate"><span class="pre">hw.physicalcpu:</span> <span class="pre">2</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">hw.logicalcpu:</span> <span class="pre">4</span></code></p>
+<p class="last">In this example, this Mac has 2 physical (harware) cores and 4 logical (virtual) cores, as for every physical core there are two logical cores.
+It is recommended not to use all your cores, so you can keep using your laptop while <em>pyKNEEr</em> is computing.
+For example, if your Mac has 4 logical core, you can use 3 for <em>pyKNEEr</em></p>
+</dd>
+<dt>Windows:</dt>
+<dd>coming soon!</dd>
+</dl>
+</div></blockquote>
 <p id="faqlaterality"><strong>How do I determine knee laterality?</strong></p>
 <blockquote>
 <div><p>A practical way to determine knee laterality in <em>pyKNEEr</em> coordinate system is by considering the position of the fibula next to the tibia:</p>

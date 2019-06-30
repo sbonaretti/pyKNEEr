@@ -34,6 +34,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Relaxometry" href="relaxometry.html" />
@@ -169,7 +170,12 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 <ul class="simple">
 <li><a class="reference internal" href="faq.html#launch-jup"><span class="std std-ref">Launch</span></a> Jupyter notebook</li>
 <li>In <em>File Browser</em>, navigate to <code class="docutils literal notranslate"><span class="pre">morphology.ipynb</span></code>, open it, and:<ul>
-<li>Customize the input variables <code class="docutils literal notranslate"><span class="pre">input_file_name</span></code>, <code class="docutils literal notranslate"><span class="pre">thickness_algo</span></code>, <code class="docutils literal notranslate"><span class="pre">n_of_cores</span></code>, <code class="docutils literal notranslate"><span class="pre">output_file_name_thickness</span></code>, and <code class="docutils literal notranslate"><span class="pre">output_file_name_volume</span></code></li>
+<li>Customize the input variables :<ul>
+<li><code class="docutils literal notranslate"><span class="pre">n_of_cores</span></code> (<a class="reference internal" href="faq.html#cores"><span class="std std-ref">How do I choose the number of cores?</span></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">output_file_name_thickness</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">output_file_name_volume</span></code></li>
+</ul>
+</li>
 <li>Follow the instructions in the notebook</li>
 <li><em>Note</em>: Cartilage thickness and volume are <strong>calculated independently</strong>, so it is not necessary to calculate thickness before calculating the volume</li>
 </ul>
