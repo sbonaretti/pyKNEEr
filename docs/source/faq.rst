@@ -5,6 +5,10 @@ FAQ
 
 :ref:`Why the name pyKNEEr? <name>`
 
+:ref:`Which terminal? <terminal>`
+
+:ref:`How do I choose the number of cores? <cores>`
+
 :ref:`How do I determine knee laterality? <faqLaterality>`
 
 .. _:howToJupyter:
@@ -39,6 +43,39 @@ FAQ
 
   ``py`` is for python, ``KNEE`` is for femoral knee cartilage, and ``r`` is for reproducibility
 
+
+.. _terminal:
+
+**Which terminal?**
+
+  MacOS:
+    Open the terminal: Applications :math:`\rightarrow` Utilities :math:`\rightarrow` Terminal
+
+  Windows:
+    Open the Anaconda prompt: Start Menu :math:`\rightarrow` Anaconda :math:`\rightarrow` Anaconda Prompt
+
+
+.. _cores:
+
+**How do I choose the number of cores?**
+
+  MacOS:
+    Open your :ref:`terminal <terminal>` and type:
+
+    ``sysctl hw.physicalcpu hw.logicalcpu``
+
+    You will get something like this:
+
+    ``hw.physicalcpu: 2``
+
+    ``hw.logicalcpu: 4``
+
+    In this example, this Mac has 2 physical (harware) cores and 4 logical (virtual) cores, as for every physical core there are two logical cores.
+    It is recommended not to use all your cores, so you can keep using your laptop while *pyKNEEr* is computing.
+    For example, if your Mac has 4 logical core, you can use 3 for *pyKNEEr*
+
+  Windows:
+    coming soon!
 
 
 .. _faqLaterality:

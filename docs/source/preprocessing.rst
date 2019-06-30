@@ -68,7 +68,10 @@ To preprocess data:
 - :ref:`Launch <launch_jup>` Jupyter notebook
 - In *File Browser*, navigate to ``preprocessing.ipynb``, open it, and:
 
-  - Customize the input variables ``input_file_name``, ``n_of_cores``, and ``intensity_standardization``
+  - Customize the input variables:
+
+    - ``n_of_cores`` (:ref:`How do I choose the number of cores? <cores>`)
+    - ``intensity_standardization`` (0 for only spatial preprocessing, 1 for spatial and intensity preprocessing)
   - Follow the instructions in the notebook
 
 - :ref:`Save <save_jup>` your notebook at the end of the process

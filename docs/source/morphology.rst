@@ -54,7 +54,12 @@ To compute femoral cartilage morphology:
 - :ref:`Launch <launch_jup>` Jupyter notebook
 - In *File Browser*, navigate to ``morphology.ipynb``, open it, and:
 
-  - Customize the input variables ``input_file_name``, ``thickness_algo``, ``n_of_cores``, ``output_file_name_thickness``, and ``output_file_name_volume``
+  - Customize the input variables :
+
+    - ``n_of_cores`` (:ref:`How do I choose the number of cores? <cores>`)
+    - ``output_file_name_thickness``
+    - ``output_file_name_volume``
+
   - Follow the instructions in the notebook
   - *Note*: Cartilage thickness and volume are **calculated independently**, so it is not necessary to calculate thickness before calculating the volume
 

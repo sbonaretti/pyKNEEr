@@ -106,7 +106,7 @@ To segment the data:
 - :ref:`Launch <launch_jup>` Jupyter notebook
 - In *File Browser*, navigate to ``segmentation_newsubject.ipynb``, open it, and:
 
-  - Customize the input variables ``input_file_name`` and ``n_of_cores``
+  - Customize the input variable ``n_of_cores`` (:ref:`How do I choose the number of cores? <cores>`)
   - Notice that variable ``modality`` is set to ``newsubject``
   - Follow the instructions in the notebook
 

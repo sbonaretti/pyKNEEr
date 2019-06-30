@@ -64,7 +64,12 @@ To calculate relaxometry maps:
 - :ref:`Launch <launch_jup>` Jupyter notebook
 - In *File Browser*, navigate to ``relaxometry_fitting.ipynb``, open it, and:
 
-  - Customize the input variables ``input_file_name``, ``method_flag``, ``registration_flag``, ``n_of_cores``, and ``output_file_name``
+  - Customize the input variables:
+
+    - ``method_flag`` (1 for linear fitting, 0 for exponential fitting)
+    - ``registration_flag`` (1 to execute rigid registration, 0 otherwise)
+    - ``n_of_cores`` (:ref:`How do I choose the number of cores? <cores>`)
+    - ``output_file_name``
   - Follow the instructions in the notebook
 
 - :ref:`Save <save_jup>` your notebook at the end of the process
@@ -99,6 +104,7 @@ Relaxometry maps are visualized as:
 .. figure:: _figures/relaxometry.png
    :align: center
    :scale: 60%
+
 |
 
 
@@ -140,7 +146,9 @@ Execution, Output, and Visualization
 
 Execution:
 
-- To calculate the map, apply the :ref:`instructions <execution_relax>` above to the notebook ``relaxometry_EPG.ipynb``. In the notebook, customize the variables ``input_file_name``, ``number_of_cores``, and ``output_file_name``
+- To calculate the map, apply the :ref:`instructions <execution_relax>` above to the notebook ``relaxometry_EPG.ipynb``. In the notebook, customize the variables:
+  - ``number_of_cores`` (:ref:`How do I choose the number of cores? <cores>`)
+  - ``output_file_name``
 
 Output and visualization:
 
