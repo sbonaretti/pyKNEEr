@@ -1,4 +1,4 @@
-# *pyKNEEr*
+# pyKNEEr
 
 ### An image analysis workflow for **open** and **reproducible** research on **femoral knee cartilage**
 
