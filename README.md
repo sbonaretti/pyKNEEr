@@ -32,5 +32,6 @@ User feedbacks and suggestions for improvements:
 ---  
 
 ### Changelog 
-
-v.0.0.1: First release
+v 0.0.3: Reduced mask file size, added check to end of string in input .txt files, fixing ITK version to download for image orientation in preprocessing, added demo to Zenodo 
+v 0.0.2: Minor  
+v 0.0.1: First release  
