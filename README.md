@@ -24,7 +24,6 @@ Open source code included in pyKNEEr:
 - [intensity preprocessing](https://bitbucket.org/marcniethammer/ksrt/src) by Liang Shan and [Marc Niethammer](http://wwwx.cs.unc.edu/~mn/?q=content/overview) 
 - [Elastix](https://github.com/SuperElastix/elastix) for registration in atlas-based segmentation by [Stefan Klein](http://bigr.nl/people/StefanKlein/)
 - Cylinder fitting for cartilage flattening by https://github.com/xingjiepan/cylinder_fitting
-Suggestions and feedbacks:  
 
 User feedbacks and suggestions for improvements:
 - Tijmen Van Zadelhoff  
