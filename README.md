@@ -29,3 +29,8 @@ User feedbacks and suggestions for improvements:
 - Tijmen Van Zadelhoff  
 - Piyush Kumar Prajapati  
   
+---  
+
+### Changelog 
+
+v.0.0.1: First release
