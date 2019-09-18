@@ -12,3 +12,17 @@ Documentation on [website](https://sbonaretti.github.io/pyKNEEr/)
 Peprint paper on [bioRxiv](https://www.biorxiv.org/content/10.1101/556423v1.article-info)
 
 Release on Zenodo: [![DOI](https://zenodo.org/badge/155445441.svg)](https://zenodo.org/badge/latestdoi/155445441)
+
+---
+
+### Contributors
+
+New code:
+- Serena Bonaretti  
+
+Open source code included in pyKNEEr:  
+- [intensity preprocessing](https://bitbucket.org/marcniethammer/ksrt/src) by Liang Shan and [Marc Niethammer](http://wwwx.cs.unc.edu/~mn/?q=content/overview) 
+- [Elastix](https://github.com/SuperElastix/elastix) for registration in atlas-based segmentation by [Stefan Klein](http://bigr.nl/people/StefanKlein/)
+- Cylinder interpolation for cartilage flattening by 
+Suggestions and feedbacks:  
+- 
