@@ -45,5 +45,8 @@ User feedbacks and suggestions for improvements:
 - Fixing issue with ITK version to download for image orientation in preprocessing  
 - Added demo_v1 to Zenodo  
 
-*v 0.0.2*: Minor   
-*v 0.0.1*: First release   
+*v 0.0.2*:  
+- Minor   
+
+*v 0.0.1*:   
+- First release   
