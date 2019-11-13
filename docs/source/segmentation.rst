@@ -26,21 +26,16 @@ These steps are applied:
 In *pyKNEEr*, there are three segmentation modalities:
 
 - **New subject**: Segmentation of single images, baseline images in longitudinal studies, or high-resolution images in multimodal acquisitions
-- **Longitudinal**: Segmentation of followup images, where the baseline image has already been segmented as *new subject*
 - **Multimodal**: Segmentation of images acquired with different protocols, where the highest resolution image has already been segmented as *new subject*
+- **Longitudinal**: Segmentation of followup images, where the baseline image has already been segmented as *new subject*
 
-For the execution, the difference among the three modalities are:
+For the execution, the differences among the three modalities are:
 
 - The **reference image**
 - The structure of the **input file**
-- The variable ``modality`` in ``segmentation.ipynb``
+- The variable ``modality`` in ``segmentation_sa.ipynb``
 
 |
-
-  .. raw:: html
-
-    The Jupyter notebook to segment femoral knee cartilage is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/segmentation.ipynb" target="_blank">segmentation.ipynb</a>
-
 
 .. _newsubject:
 
@@ -98,13 +93,13 @@ where:
 
 .. _execution:
 
-Executing segmentation.ipynb
+Executing segmentation_sa_ns.ipynb
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 To segment the data:
 
 - :ref:`Launch <launch_jup>` Jupyter notebook
-- In *File Browser*, navigate to ``segmentation_newsubject.ipynb``, open it, and:
+- In *File Browser*, navigate to ``segmentation_sa_ns.ipynb``, open it, and:
 
   - Customize the input variable ``n_of_cores`` (:ref:`How do I choose the number of cores? <cores>`)
   - Notice that variable ``modality`` is set to ``newsubject``
@@ -221,7 +216,7 @@ Execution, Output, and Visualization
 
 Execution:
 
-- To segment the data, apply the :ref:`instructions <execution>` above to the notebook ``segmentation_multimodal.ipynb``. Note that the variable ``modality`` is set to ``multimodal``
+- To segment the data, apply the :ref:`instructions <execution>` above to the notebook ``segmentation_sa_mm.ipynb``. Note that the variable ``modality`` is set to ``multimodal``
 
 Output and visualization:
 
@@ -393,7 +388,11 @@ Segmentation quality
 
 You can quantify segmentation quality when a **ground truth** segmentation is present, whereas you can  evaluate segmentation quality only visually when a ground truth segmentation is not available
 
-The metrics we use to evaluate segmentation quality are Dice coefficient, Jaccard coefficient, and volume similarity, which quantify the overlap between ground truth segmentations and *pyKNEEr* segmentations
+The metrics we use to evaluate segmentation quality are:
+
+- Measures of overlap agreement: Dice coefficient, Jaccard coefficient, and volume similarity, which quantify the overlap between ground truth segmentations and *pyKNEEr* segmentations
+
+- Measure of surface distance: Average of the Euclidean distances between ground truth segmentations and *pyKNEEr* segmentations
 
   .. raw:: html
 
@@ -426,9 +425,13 @@ where:
 Execution, Output, and Visualization
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-In ``segmentation_quality.ipynb``, customize ``input_file_name`` and ``output_file_name``
+Execution:
 
-Execute the notebook. Results will be visualized as a graph and as a table, and will be saved in ``output_file_name`` for possible subsequent analysis
+- In ``segmentation_quality.ipynb``, customize ``input_file_name``, ``output_file_name_overlap``, and ``output_file_name_distances``, and execute
+
+Output and visualization:
+
+- Results will be visualized as graphs and tables, and will be saved in the ``.csv`` files for possible subsequent analysis
 
 
 

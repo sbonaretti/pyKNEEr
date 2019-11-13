@@ -17,6 +17,16 @@ pyKNEEr
 
 |
 
+
+.. raw:: html
+
+   <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+       <iframe src="https://www.youtube.com/embed/7WPf5KFtYi8" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+   </div>
+
+
+|
+
 Try *pyKNEEr* on Binder:
 
 .. raw:: html
@@ -42,11 +52,12 @@ Try *pyKNEEr* on Binder:
 
    &nbsp; &nbsp; &nbsp;
 
-   Developer: <a href="https://sbonaretti.github.io" target="_blank">Serena Bonaretti</a>
+   License: <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
    &nbsp; &nbsp; &nbsp;
 
-   License: <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br /></a>
+   Developer: <a href="https://sbonaretti.github.io" target="_blank">Serena Bonaretti</a>
+
 
 
 |
@@ -62,4 +73,5 @@ Try *pyKNEEr* on Binder:
    segmentation
    morphology
    relaxometry
+   development
    faq

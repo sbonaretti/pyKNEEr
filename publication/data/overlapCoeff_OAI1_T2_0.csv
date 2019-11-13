@@ -1,4 +1,4 @@
-Subjects,DiceCoeff,JaccardCoeff,VolumeSimilarity
+subjects,dice_coeff,jaccard_coeff,volume_similarity
 YR04_01_T2_0_prep_fc,0.81,0.68,0.08
 YR04_02_T2_0_prep_fc,0.71,0.55,0.04
 YR04_03_T2_0_prep_fc,0.75,0.6,0.2

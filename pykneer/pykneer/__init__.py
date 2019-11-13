@@ -11,6 +11,6 @@ from . import preprocessing_for_nb
 from . import pykneer_io
 from . import relaxometry_for_nb
 from . import relaxometry_functions
-from . import segmentation_for_nb
+from . import segmentation_sa_for_nb
 from . import segmentation_quality_for_nb
 from . import cylinder_fitting

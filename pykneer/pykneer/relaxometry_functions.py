@@ -1,5 +1,13 @@
 # Serena Bonaretti, 2018
 
+""" 
+Functions to calculate cartilage relaxometry. 
+They are separeted in: 
+    - Functions to calculate linear fitting
+    - Functions to calculate exponential fitting
+    - Functions to calculate T2 using EPG modeling
+"""
+
 import math
 import numpy     as np
 import scipy as sp
@@ -23,9 +31,9 @@ from . import morphology_functions as mf
 #    https://stackoverflow.com/questions/3938042/fitting-exponential-decay-with-no-initial-guessing
 
 
-
-# ---------------------------------------------------------------------------------------------------------------
-# LINEAR FITTING
+# ---------------------------------------------------------------------------------------------------------------------------
+#  LINEAR FITTING -----------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 
 def calculate_fitting_maps_lin(tsl, list_of_arrays):
 
@@ -69,9 +77,9 @@ def calculate_fitting_maps_lin(tsl, list_of_arrays):
     return map_py_v
 
 
-
-# ---------------------------------------------------------------------------------------------------------------
-# EXPONENTIAL FITTING
+# ---------------------------------------------------------------------------------------------------------------------------
+#  EXPONENTIAL FITTING ------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 
 def exp_func(x, A_0, K_0):
 
@@ -99,8 +107,8 @@ def calculate_fitting_maps_exp(tsl, list_of_arrays):
     '''
 
     # initialize the parameters for the function exp_func
-    A_0 = 10
-    K_0 = 0.1
+    A_0 = 10  # parameters used in exp_func
+    K_0 = 0.1 # parameters used in exp_func
 
     # initialize relaxation time
     map_py_v = np.full(np.size(list_of_arrays[0],0), 0)
@@ -108,7 +116,7 @@ def calculate_fitting_maps_exp(tsl, list_of_arrays):
     # for each voxel
     for i in range (0,np.size(map_py_v,0)):
 
-        exceptionFlag = 0
+        exception_flag = 0
 
         # extract the intensities from the 4 arrays for this index position
         #y = np.array([array1[i], array2[i], array3[i], array4[i]])
@@ -130,10 +138,10 @@ def calculate_fitting_maps_exp(tsl, list_of_arrays):
         except RuntimeError:
             #print("Error - curve_fit failed for values: " +  str(array1[i]) + " " +  str(array2[i]) + " " + str(array3[i]) + " " + str(array4[i]) +
             #      " at index " + str(i) + "of masked vector " " - 0 was assigned")
-            exceptionFlag = 1
+            exception_flag = 1
 
         # calculate relaxation time
-        if exceptionFlag == 0:
+        if exception_flag == 0:
             #A = param_exp[0]
             K = param_exp[1]
             map_voxel =  1 / K
@@ -149,10 +157,11 @@ def calculate_fitting_maps_exp(tsl, list_of_arrays):
 
 
 
-# ---------------------------------------------------------------------------------------------------------------
-# EPG MODELING (T2 FROM DESS - Bragi's)
+# ---------------------------------------------------------------------------------------------------------------------------
+# EPG MODELING (T2 FROM DESS - Bragi's) -------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 
-def calculate_t2_maps_from_dess(echo1L, echo2L, repetitionTime, echoTime, alpha_deg_L):
+def calculate_t2_maps_from_dess(echo_1L, echo_2L, repetition_time, echo_time, alpha_deg_L):
 
     '''
     function courtesy of Bragi Sveinsson (translated from Matlab to Python)
@@ -161,82 +170,82 @@ def calculate_t2_maps_from_dess(echo1L, echo2L, repetitionTime, echoTime, alpha_
            Magn Reson Imaging. 2017 May;38:63-70
     '''
 
-    # images echo1L and echo2L are in sitk
+    # images echo_1L and echo_2L are in sitk
 
     # constant values
-    assumedT1 = 1.2
-    mapMin    = 0
-    mapMax    = 100
-    mapMult   = 1000
+    assumed_T1 = 1.2
+    map_min    = 0
+    map_max    = 100
+    map_mult   = 1000
 
     # calculate TR and TE
-    TR = repetitionTime / 1000
-    TE = echoTime       / 1000
+    TR = repetition_time / 1000
+    TE = echo_time       / 1000
 
     # convert echos to np
-    echo1L_py = sitk.GetArrayFromImage(echo1L)
-    echo2L_py = sitk.GetArrayFromImage(echo2L)
+    echo_1L_py = sitk.GetArrayFromImage(echo_1L)
+    echo_2L_py = sitk.GetArrayFromImage(echo_2L)
 
     # allocate T2 map
-    map_py = np.zeros((echo1L_py.shape[0], echo1L_py.shape[1], echo1L_py.shape[2]), dtype=int)
+    map_py = np.zeros((echo_1L_py.shape[0], echo_1L_py.shape[1], echo_1L_py.shape[2]), dtype=int)
 
     # compute map
-    for i in range(0, echo1L.GetSize()[0]):
+    for i in range(0, echo_1L.GetSize()[0]):
 
         # get slice
-        echo1L_slice = echo1L_py[:,:,i]
-        echo2L_slice = echo2L_py[:,:,i]
+        echo_1L_slice = echo_1L_py[:,:,i]
+        echo_2L_slice = echo_2L_py[:,:,i]
 
         # convert to float and change 0s into nonZeros for division
-        echo1L_slice = echo1L_slice.astype(float)
-        echo2L_slice = echo2L_slice.astype(float)
-        echo1L_slice[echo1L_slice == 0.0] = 0.0001
-        echo2L_slice[echo2L_slice == 0.0] = 0.0001
+        echo_1L_slice = echo_1L_slice.astype(float)
+        echo_2L_slice = echo_2L_slice.astype(float)
+        echo_1L_slice[echo_1L_slice == 0.0] = 0.0001
+        echo_2L_slice[echo_2L_slice == 0.0] = 0.0001
 
         # compute fit
-        mapSlice = -2*(TR-TE)/ np.log(echo2L_slice/  (echo1L_slice * (math.sin(math.radians(alpha_deg_L/2))) **2 * (1 + math.exp(-TR/assumedT1))/ (1 - math.cos(math.radians(alpha_deg_L)) * math.exp(-TR/assumedT1))  )  )
+        map_slice = -2*(TR-TE)/ np.log(echo_2L_slice/  (echo_1L_slice * (math.sin(math.radians(alpha_deg_L/2))) **2 * (1 + math.exp(-TR/assumed_T1))/ (1 - math.cos(math.radians(alpha_deg_L)) * math.exp(-TR/assumed_T1))  )  )
 
         # mask out noise
-        M = np.ones(echo1L_slice.shape)
-        M[echo1L_slice < 0.15 * np.amax(abs(echo1L_slice))] = 0
-        mapSlice = mapSlice * M
+        M = np.ones(echo_1L_slice.shape)
+        M[echo_1L_slice < 0.15 * np.amax(abs(echo_1L_slice))] = 0
+        map_slice = map_slice * M
 
         # adjust map for visualization
-        mapSlice = mapSlice * mapMult
-        mapSlice[mapSlice<mapMin] = mapMin
-        mapSlice[mapSlice>mapMax] = mapMax
+        map_slice = map_slice * map_mult
+        map_slice[map_slice<map_min] = map_min
+        map_slice[map_slice>map_max] = map_max
 
         # put map slice into map matrix
-        map_py[:,:,i] = mapSlice
+        map_py[:,:,i] = map_slice
 
     # transform map_py to map (SimpleITK)
-    T2map = sitk.GetImageFromArray(map_py)
-    T2map.SetSpacing  (echo1L.GetSpacing())
-    T2map.SetOrigin   (echo1L.GetOrigin())
-    T2map.SetDirection(echo1L.GetDirection())
-    T2map = sitk.Cast(T2map,sitk.sitkInt16)
+    T2_map = sitk.GetImageFromArray(map_py)
+    T2_map.SetSpacing  (echo_1L.GetSpacing())
+    T2_map.SetOrigin   (echo_1L.GetOrigin())
+    T2_map.SetDirection(echo_1L.GetDirection())
+    T2_map = sitk.Cast(T2_map,sitk.sitkInt16)
 
-    return T2map
+    return T2_map
 
 
-def mask_map(T2map, mask):
+def mask_map(T2_map, mask):
 
     '''
     function to mask an image
     '''
 
     # from SimpleITK to np
-    T2map_py = sitk.GetArrayFromImage(T2map)
+    T2_map_py = sitk.GetArrayFromImage(T2_map)
     mask_py = sitk.GetArrayFromImage(mask)
 
     # mask map
-    masked_map_py = np.where(mask_py==1, T2map_py, 0)
+    masked_map_py = np.where(mask_py==1, T2_map_py, 0)
 
     # transform masked_map_py to masked_map (SimpleITK)
     masked_map = sitk.GetImageFromArray(masked_map_py)
-    masked_map.SetSpacing  (T2map.GetSpacing())
-    masked_map.SetOrigin   (T2map.GetOrigin())
-    masked_map.SetDirection(T2map.GetDirection())
+    masked_map.SetSpacing  (T2_map.GetSpacing())
+    masked_map.SetOrigin   (T2_map.GetOrigin())
+    masked_map.SetDirection(T2_map.GetDirection())
     masked_map = sitk.Cast(masked_map,sitk.sitkInt16)
 
     return masked_map

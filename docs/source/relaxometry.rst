@@ -10,11 +10,6 @@ Relaxometry
 
 |
 
-  .. raw:: html
-
-    The Jupyter notebooks to calculate relaxometry are <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/relaxometry_fitting.ipynb" target="_blank">relaxometry_fitting.ipynb</a> and <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/relaxometry_EPG.ipynb" target="_blank">relaxometry_EPG.ipynb</a>
-
-
 Exponential or linear fitting
 --------------------------------------------------------------------------------
 

@@ -1,5 +1,22 @@
 # Serena Bonaretti, 2018
 
+"""
+Module with the functions called by the notebooks relaxometry_EPG.ipynb and relaxometry_fitting.ipynb
+
+There are two group of functions to:
+    - Calculate exponential and linear fitting
+    - Calculate T2 using EPG modeling from DESS acquisitions 
+For each group there are functions to:
+    - calculate fitting
+    - show map, graph, and table of values
+For exponential and linear fitting, there is the option to rigidly register images acquired at different echo times 
+    
+Functions are in pairs for parallelization. Example:
+align_acquisitions launches align_acquisitions_s as many times as the length of all_image_data (subtituting a for loop).
+pool.map() takes care of sending one single element of the list all_image_data (all_image_data[i]) to align_acquisitions_s, as if it was a for loop.
+
+"""
+
 from datetime import datetime
 import matplotlib.pyplot as plt
 import multiprocessing
@@ -13,74 +30,74 @@ import time
 
 from . import relaxometry_functions as rf
 from . import elastix_transformix
-from . import pykneer_io as io
+#from . import pykneer_io as io
 
 
+# ---------------------------------------------------------------------------------------------------------------------------
+# EXPONENTIAL AND LINEAR FITTING MAPS ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------------------------------------------
-# EXPONENTIAL AND LINEAR FITTING MAPS
-# ---------------------------------------------------------------------------------------------------------------
+# --- OPTIONAL ALIGNMENT ----------------------------------------------------------------------------------------------------
 
-
-def align_acquisitions_s(imageData):
+def align_acquisitions_s(image_data):
     """
-    Function for images acquired with CubeQuant sequence.
+    Function for images acquired subsequently, at different echo times.
     Alignment of following acquisitions to image 1 using rigid registration. This is done because images are acquired one after the other, and the subject can move among acquisitions
     The alignment consists in the rigid registration implemented in the class elastix_transformix
     This function mainly moves files to the t1rhoMap folder and creates dictionaries of filenames as requested by the class elastix_transformix
     """
 
-    # get folderDiv
+    # get folder_div
     sys = platform.system()
     if sys == "Linux":
-        folderDiv = "/"
+        folder_div = "/"
     elif sys == "Darwin":
-        folderDiv = "/"
+        folder_div = "/"
     elif sys == "windows":
-        folderDiv = "\\"
+        folder_div = "\\"
 
     # get image names for current subject
-    acquisitionFileNames = imageData["acquisitionFileNames"]
+    acquisition_file_names    = image_data["acquisition_file_names"]
 
     # create folder named after the first image in the folder "relaxometry" for registration (the first image is the reference for the rigid registration)
-    mapFolder = imageData["relaxometryFolder"]
-    referenceRoot, imageExt    = os.path.splitext(acquisitionFileNames[0])
-    registeredFolder = mapFolder + referenceRoot + folderDiv
-    if not os.path.isdir(registeredFolder):
-        os.mkdir(registeredFolder)
+    map_folder                = image_data["relaxometry_folder"]
+    reference_root, image_ext = os.path.splitext(acquisition_file_names[0])
+    registered_folder         = map_folder + reference_root + folder_div
+    if not os.path.isdir(registered_folder):
+        os.mkdir(registered_folder)
 
-    print ("-> " + acquisitionFileNames[0])
+    print ("-> " + acquisition_file_names[0])
 
 
     # --- REFERENCE -----------------------------------------------------------------------------------------------------------------
 
     # create the reference folder
-    referenceFolder = registeredFolder + "reference" + folderDiv
-    if not os.path.isdir(referenceFolder):
-        os.mkdir(referenceFolder)
+    reference_folder = registered_folder + "reference" + folder_div
+    if not os.path.isdir(reference_folder):
+        os.mkdir(reference_folder)
 
     # move the reference (first image) to the reference folder and rename it
-    referenceRoot = "reference"
-    referenceName = referenceRoot + ".mha"
-    shutil.copyfile(imageData["preprocessedFolder"] + acquisitionFileNames[0],
-                    referenceFolder + referenceName)
+    reference_root = "reference"
+    reference_name = reference_root + ".mha"
+    shutil.copyfile(image_data["preprocessed_folder"] + acquisition_file_names[0],
+                    reference_folder + reference_name)
 
     # move the femur and femoral cartilage masks to the reference folder and rename them
-    boneMaskFileName = referenceRoot + "_f.mha"
-    shutil.copyfile(imageData["segmentedFolder"] + imageData["boneMaskFileName"],
-                    referenceFolder + boneMaskFileName)
-    cartMaskFileName = referenceRoot + "_fc.mha" # not needed but the function 'prepare_reference' of the class 'elastix_transformix' will look for it
-    shutil.copyfile(imageData["segmentedFolder"] + imageData["cartMaskFileName"],
-                    referenceFolder + cartMaskFileName)
+    bone_mask_file_name = reference_root + "_f.mha"
+    shutil.copyfile(image_data["segmented_folder"] + image_data["bone_mask_file_name"],
+                    reference_folder + bone_mask_file_name)
+    cart_mask_file_name = reference_root + "_fc.mha" # not needed but the function 'prepare_reference' of the class 'elastix_transformix' will look for it
+    shutil.copyfile(image_data["segmented_folder"] + image_data["cart_mask_file_name"],
+                    reference_folder + cart_mask_file_name)
 
     # create new dictionary specifically for the elastix_transformix class (trick)
     reference = {}
-    reference["currentAnatomy"]  = imageData["bone"]
-    reference["referenceFolder"] = referenceFolder
-    reference[reference["currentAnatomy"] + "maskFileName"]          = boneMaskFileName
-    reference[reference["currentAnatomy"] + "dilMaskFileName"]       = referenceRoot + "_" + reference["currentAnatomy"] + "_" + str(imageData["dilateRadius"]) + ".mha"
-    reference[reference["currentAnatomy"] + "levelSetsMaskFileName"] = referenceRoot + "_" + reference["currentAnatomy"] + "_" + "levelSet.mha"
-    reference["dilateRadius"]    = imageData["dilateRadius"]
+    reference["current_anatomy"]  = image_data["bone"]
+    reference["reference_folder"] = reference_folder
+    reference[reference["current_anatomy"] + "mask_file_name"]          = bone_mask_file_name
+    reference[reference["current_anatomy"] + "dil_mask_file_name"]      = reference_root + "_" + reference["current_anatomy"] + "_" + str(image_data["dilate_radius"]) + ".mha"
+    reference[reference["current_anatomy"] + "levelset_mask_file_name"] = reference_root + "_" + reference["current_anatomy"] + "_" + "levelSet.mha"
+    reference["dilate_radius"]    = image_data["dilate_radius"]
 
     # instanciate bone class and prepare reference
     bone = elastix_transformix.bone()
@@ -90,87 +107,88 @@ def align_acquisitions_s(imageData):
     # --- MOVING IMAGES -----------------------------------------------------------------------------------------------------------------
 
     # image file names will contain "align"
-    acquisitionFileNames_new = []
+    acquisition_file_names_new = []
 
     # move and rename image 1 (reference) to the folder preprocessing to calculate the fitting in the function calculate_t1rho_maps
-    fileNameRoot, fileExt   = os.path.splitext(acquisitionFileNames[0])
-    acquisitionFileNames_new.append(fileNameRoot + "_aligned.mha")
-    shutil.copyfile(imageData["preprocessedFolder"] + acquisitionFileNames[0],
-                    imageData["preprocessedFolder"] + acquisitionFileNames_new[0])
+    file_name_root, file_ext   = os.path.splitext(acquisition_file_names[0])
+    acquisition_file_names_new.append(file_name_root + "_aligned.mha")
+    shutil.copyfile(image_data["preprocessed_folder"] + acquisition_file_names[0],
+                    image_data["preprocessed_folder"] + acquisition_file_names_new[0])
 
     # move all prep images 2,3,4 (1 is the reference) to the registration folder
-    for a in range (1, len(acquisitionFileNames)):
-        shutil.copyfile(imageData["preprocessedFolder"] + acquisitionFileNames[a],
-                        registeredFolder  + acquisitionFileNames[a])
+    for a in range (1, len(acquisition_file_names)):
+        shutil.copyfile(image_data["preprocessed_folder"] + acquisition_file_names[a],
+                        registered_folder  + acquisition_file_names[a])
 
     # rigid registration
-    for a in range(1,len(acquisitionFileNames)):
+    for a in range(1,len(acquisition_file_names)):
 
         # create new dictionary for current image for the elastix_transformix class (trick)
         img = {}
-        img["movingName"]          = acquisitionFileNames[a]
-        img["movingFolder"]        = registeredFolder
-        img["currentAnatomy"]      = imageData["bone"]
-        img["referenceFolder"]     = referenceFolder
-        img["referenceName"]       = referenceName
-        img[img["currentAnatomy"] + "dilMaskFileName"] = referenceRoot + "_" + reference["currentAnatomy"] + "_" + str(imageData["dilateRadius"]) + ".mha"
-        img["paramFileRigid"]      = imageData["parameterFolder"] + imageData["paramFileRigid"]
-        img["elastixFolder"]       = imageData["elastixFolder"]
-        img["completeElastixPath"] = imageData["completeElastixPath"]
-        img["registeredSubFolder"] = registeredFolder
-        img[img["currentAnatomy"] + "rigidName"]       = "rigid_2.mha"
-        img[img["currentAnatomy"] + "rigidTransfName"] = "transf_2.txt"
+        img["moving_name"]           = acquisition_file_names[a]
+        img["moving_folder"]         = registered_folder
+        img["current_anatomy"]       = image_data["bone"]
+        img["reference_folder"]      = reference_folder
+        img["reference_name"]        = reference_name
+        img[img["current_anatomy"] + "dil_mask_file_name"] = reference_root + "_" + reference["current_anatomy"] + "_" + str(image_data["dilate_radius"]) + ".mha"
+        img["param_file_rigid"]      = image_data["parameter_folder"] + image_data["param_file_rigid"]
+        img["elastix_folder"]        = image_data["elastix_folder"]
+        img["complete_elastix_path"] = image_data["complete_elastix_path"]
+        img["registered_sub_folder"] = registered_folder
+        img[img["current_anatomy"] + "rigid_name"]       = "rigid_2.mha"
+        img[img["current_anatomy"] + "rigid_transf_name"] = "transf_2.txt"
 
         # register
-        #print ("   registering " + acquisitionFileNames[a])
+        #print ("   registering " + acquisition_file_names[a])
         bone.rigid (img)
         # copy aligned image to the folder preprocessing
-        fileNameRoot, fileExt = os.path.splitext(acquisitionFileNames[a])
-        acquisitionFileNames_new.append(fileNameRoot + "_aligned.mha")
-        shutil.copyfile(img["registeredSubFolder"] + img[img["currentAnatomy"] + "rigidName"],
-                        imageData["preprocessedFolder"]  + acquisitionFileNames_new[-1])
+        file_name_root, file_ext = os.path.splitext(acquisition_file_names[a])
+        acquisition_file_names_new.append(file_name_root + "_aligned.mha")
+        shutil.copyfile(img["registered_sub_folder"] + img[img["current_anatomy"] + "rigid_name"],
+                        image_data["preprocessed_folder"]  + acquisition_file_names_new[-1])
 
     # assign new file names to the main dictionary for the function calculate_fitting_maps
-    imageData["acquisitionFileNames"] = acquisitionFileNames_new
+    image_data["acquisition_file_names"] = acquisition_file_names_new
 
-def align_acquisitions(allImageData, nOfProcesses):
+def align_acquisitions(all_image_data, n_of_processes):
 
     start_time = time.time()
-    pool = multiprocessing.Pool(processes=nOfProcesses)
-    pool.map(align_acquisitions_s, allImageData)
+    pool = multiprocessing.Pool(processes=n_of_processes)
+    pool.map(align_acquisitions_s, all_image_data)
     print ("-> Acquisitions aligned")
     print ("-> The total time was %.2f seconds (about %d min)" % ((time.time() - start_time), (time.time() - start_time)/60))
 
 
 
-def calculate_fitting_maps_s(imageData):
+# --- CALCULATE FITTING -----------------------------------------------------------------------------------------------------
+def calculate_fitting_maps_s(image_data):
 
 
     # define the kind of fitting to compute (linear or exponential)
-    methodFlag = imageData["methodFlag"] # get info from the first image
+    method_flag = image_data["method_flag"] # get info from the first image
 
     # get fileNames
-    preprocessedFolder   = imageData["preprocessedFolder"]
-    acquisitionFileNames = imageData["acquisitionFileNames"]
-    infoFileNames        = imageData["infoFileNames"]
+    preprocessed_folder    = image_data["preprocessed_folder"]
+    acquisition_file_names = image_data["acquisition_file_names"]
+    info_file_names        = image_data["info_file_names"]
     # mask
-    segmentedFolder      = imageData["segmentedFolder"]
-    maskFileName         = imageData["cartMaskFileName"] #maskFileName
+    segmented_folder       = image_data["segmented_folder"]
+    mask_file_name         = image_data["cart_mask_file_name"] #mask_file_name
     # output maps
-    mapFolder            = imageData["relaxometryFolder"]
-    mapFileName          = imageData["mapFileName"]
+    map_folder             = image_data["relaxometry_folder"]
+    map_file_name          = image_data["map_file_name"]
 
-    print(acquisitionFileNames[0])
+    print(acquisition_file_names[0])
 
     # read info files and get spin lock time (saved as echo time) (x-values for fitting)
     tsl = []
-    for currentInfo in infoFileNames:
-        for line in open(preprocessedFolder + currentInfo):
+    for current_info in info_file_names:
+        for line in open(preprocessed_folder + current_info):
             if "0018|0081" in line:
                 tsl.append(float(line[10:len(line)]))
 
     # read the mask
-    mask = sitk.ReadImage(segmentedFolder + maskFileName)
+    mask = sitk.ReadImage(segmented_folder + mask_file_name)
     # from SimpleITK to numpy
     mask_py = sitk.GetArrayFromImage(mask)
     # rotate mask to be compatible with flat bone surface for visualization later
@@ -185,9 +203,9 @@ def calculate_fitting_maps_s(imageData):
     # get values from images (y-values of fitting)
     array_of_masked_images = []
 
-    for a in range(0, len(acquisitionFileNames)):
+    for a in range(0, len(acquisition_file_names)):
         # read image
-        img = sitk.ReadImage(preprocessedFolder + acquisitionFileNames[a])
+        img = sitk.ReadImage(preprocessed_folder + acquisition_file_names[a])
         # from SimpleITK to numpy
         img_py = sitk.GetArrayFromImage(img)
         # rotate images to be compatible with flat bone surface for visualization later
@@ -201,9 +219,9 @@ def calculate_fitting_maps_s(imageData):
         array_of_masked_images.append(array)
 
     # calculate fitting
-    if methodFlag == 0: # linear fitting
+    if method_flag == 0: # linear fitting
         map_py_v = rf.calculate_fitting_maps_lin(tsl, array_of_masked_images)
-    elif methodFlag == 1: # exponential fitting
+    elif method_flag == 1: # exponential fitting
         map_py_v = rf.calculate_fitting_maps_exp(tsl, array_of_masked_images)
 
     # assign map to image-long vector
@@ -225,50 +243,50 @@ def calculate_fitting_maps_s(imageData):
     fitting_map = sitk.Cast(fitting_map,sitk.sitkInt16)
 
     # write map
-    sitk.WriteImage(fitting_map, (mapFolder + mapFileName))
+    sitk.WriteImage(fitting_map, (map_folder + map_file_name))
 
-def calculate_fitting_maps(allImageData, nOfProcesses):
+def calculate_fitting_maps(all_image_data, n_of_processes):
 
-    methodFlag = allImageData[0]["methodFlag"]
-    if methodFlag == 0: # linear fitting
+    method_flag = all_image_data[0]["method_flag"]
+    if method_flag == 0: # linear fitting
         print ('-> using linear fitting ')
-    elif methodFlag == 1: # exponential fitting
+    elif method_flag == 1: # exponential fitting
         print ('-> using exponential fitting ')
 
     start_time = time.time()
-    pool = multiprocessing.Pool(processes=nOfProcesses)
-    pool.map(calculate_fitting_maps_s, allImageData)
+    pool = multiprocessing.Pool(processes=n_of_processes)
+    pool.map(calculate_fitting_maps_s, all_image_data)
     print ("-> Fitting maps calculated")
     print ("-> The total time was %.2f seconds (about %d min)" % ((time.time() - start_time), (time.time() - start_time)/60))
 
 
-def show_fitting_maps(allImageData):
+def show_fitting_maps(all_image_data):
 
-    nOfImages   = len(allImageData)
-    imgLW       = 6
-    figureWidth = imgLW * 3
-    figLength   = imgLW * nOfImages
-    plt.rcParams['figure.figsize'] = [figureWidth, figLength] # figsize=() seems to be ineffective on notebooks
-    fig     = plt.figure() # cannot call figures inside the for loop because python has a max of 20 figures (nOfImages can be larger)
+    n_of_images  = len(all_image_data)
+    img_LW       = 6
+    figure_width = img_LW * 3
+    figure_length   = img_LW * n_of_images
+    plt.rcParams['figure.figsize'] = [figure_width, figure_length] # figsize=() seems to be ineffective on notebooks
+    fig     = plt.figure() # cannot call figures inside the for loop because python has a max of 20 figures (n_of_images can be larger)
     fig.tight_layout() # avoids subplots overlap
     # subplots characteristics
-    nOfColumns = 3
-    nOfRows    = nOfImages
-    axisIndex = 1;
+    n_of_columns = 3
+    n_of_rows    = n_of_images
+    axis_index   = 1;
 
 
-    for i in range(0, nOfImages):
+    for i in range(0, n_of_images):
 
         # get paths and file names of the current image
-        preprocessedFolder = allImageData[i]["preprocessedFolder"]
-        i1fileName         = allImageData[i]["acquisitionFileNames"][0]
-        mapFolder          = allImageData[i]["relaxometryFolder"]
-        mapFileName        = allImageData[i]["mapFileName"]
-        imageNameRoot, imageExt = os.path.splitext(i1fileName)
+        preprocessed_folder = all_image_data[i]["preprocessed_folder"]
+        i1_file_name        = all_image_data[i]["acquisition_file_names"][0]
+        map_folder          = all_image_data[i]["relaxometry_folder"]
+        map_file_name       = all_image_data[i]["map_file_name"]
+        image_name_root, image_ext = os.path.splitext(i1_file_name)
 
         # read images
-        img  = sitk.ReadImage(preprocessedFolder + i1fileName)
-        map_ = sitk.ReadImage(mapFolder + mapFileName)
+        img  = sitk.ReadImage(preprocessed_folder + i1_file_name)
+        map_ = sitk.ReadImage(map_folder + map_file_name)
 
         # images from simpleitk to numpy
         img_py = sitk.GetArrayFromImage(img)
@@ -281,26 +299,26 @@ def show_fitting_maps(allImageData):
         for b in range(0,int(size/2)):
             slice = map_py[:,:,b]
             if np.sum(slice) != 0:
-                firstValue = b
+                first_value = b
                 break
         # get the last slice of the mask in the sagittal direction
         for b in range(size-1,int(size/2),-1):
             slice = map_py[:,:,b]
             if np.sum(slice) != 0:
-                lastValue = b
+                last_value = b
                 break
-        sliceStep = int ((lastValue-firstValue)/4)
-        sliceID = (firstValue + sliceStep, firstValue + 2*sliceStep, firstValue + 3*sliceStep)
+        slice_step = int ((last_value-first_value)/4)
+        slice_ID   = (first_value + slice_step, first_value + 2*slice_step, first_value + 3*slice_step)
 
         # show slices with maps
-        for a in range (0,len(sliceID)):
+        for a in range (0,len(slice_ID)):
 
             # create subplot
-            ax1 = fig.add_subplot(nOfRows,nOfColumns,axisIndex)
+            ax1 = fig.add_subplot(n_of_rows,n_of_columns,axis_index)
 
             # get slices
-            slice_img_py = img_py[:,:,sliceID[a]]
-            slice_map_py = map_py[:,:,sliceID[a]]
+            slice_img_py = img_py[:,:,slice_ID[a]]
+            slice_map_py = map_py[:,:,slice_ID[a]]
             slice_map_masked = np.ma.masked_where(slice_map_py == 0, slice_map_py)
 
             # show image
@@ -308,198 +326,198 @@ def show_fitting_maps(allImageData):
             ren2 = ax1.imshow(slice_map_masked, 'jet' , interpolation=None, origin='lower', alpha=1, vmin=0, vmax=100)
             clb = plt.colorbar(ren2, orientation='vertical', shrink=0.60, ticks=[0, 20, 40, 60, 80, 100])
             clb.ax.set_title('[ms]')
-            ax1.set_title(str(i+1) + ". " + imageNameRoot + " - Slice: " + str(sliceID[a]))
+            ax1.set_title(str(i+1) + ". " + image_name_root + " - Slice: " + str(slice_ID[a]))
             ax1.axis('off')
 
-            axisIndex = axisIndex + 1
+            axis_index = axis_index + 1
 
 
-def show_fitting_graph(allImageData):
+def show_fitting_graph(all_image_data):
 
     # calculate average and standard deviation
     average = []
-    stdDev  = []
-    for i in range(0, len(allImageData)):
+    std_dev  = []
+    for i in range(0, len(all_image_data)):
         # file name
-        mapFolder      = allImageData[i]["relaxometryFolder"]
-        mapFileName    = allImageData[i]["mapFileName"]
+        map_folder    = all_image_data[i]["relaxometry_folder"]
+        map_file_name = all_image_data[i]["map_file_name"]
         # read image
-        mapImage = sitk.ReadImage(mapFolder + mapFileName)
+        map_image = sitk.ReadImage(map_folder + map_file_name)
         # from SimpleITK to numpy
-        map_py = sitk.GetArrayFromImage(mapImage)
+        map_py = sitk.GetArrayFromImage(map_image)
         # from 3D matrix to array
         map_py_array = np.reshape(map_py, np.size(map_py,0)*np.size(map_py,1)*np.size(map_py,2))
         # get only non zero values (= masked cartilage)
         index = np.where(map_py_array != 0)
         map_vector = map_py_array[index]
-        # calculate average and stddev
+        # calculate average and std_dev
         average.append(np.average(map_vector))
-        stdDev.append(np.std(map_vector))
+        std_dev.append(np.std(map_vector))
 
     average = np.asarray(average)
-    stdDev  = np.asarray(stdDev)
-    x = np.arange(len(allImageData))
+    std_dev = np.asarray(std_dev)
+    x       = np.arange(len(all_image_data))
 
     # figure size
-    figureWidth = 18
-    figLength   = 8
-    plt.rcParams['figure.figsize'] = [figureWidth, figLength] # figsize=() seems to be ineffective on notebooks
+    figure_width  = 18
+    figure_length = 8
+    plt.rcParams['figure.figsize'] = [figure_width, figure_length] # figsize=() seems to be ineffective on notebooks
 
     # error bar
-    fig     = plt.figure() # cannot call figures inside the for loop because python has a max of 20 figures (nOfImages can be larger)
+    fig     = plt.figure() # cannot call figures inside the for loop because python has a max of 20 figures (n_of_images can be larger)
     fig, ax = plt.subplots(nrows=1, ncols=1)
-    ax.errorbar(x, average, yerr=stdDev, linestyle='None', marker='o')
+    ax.errorbar(x, average, yerr=std_dev, linestyle='None', marker='o')
 
     # set ticks and labels
     plt.xticks(x)
-    imageNames= []
-    for i in range(0, len(allImageData)):
-        imageRoot, imageExt = os.path.splitext(allImageData[i]["mapFileName"])
-        imageNames.append(imageRoot)
-    ax.set_xticklabels(imageNames, rotation='vertical')
+    image_names= []
+    for i in range(0, len(all_image_data)):
+        image_root, image_ext = os.path.splitext(all_image_data[i]["map_file_name"])
+        image_names.append(image_root)
+    ax.set_xticklabels(image_names, rotation='vertical')
     ax.set_ylabel('t1rho [ms]')
 
     # show
     plt.show()
 
 
-def show_fitting_table(allImageData, outputFileName):
+def show_fitting_table(all_image_data, output_file_name):
 
     # read and calculate values for table
-    imageNames = []
-    average = []
-    stdDev  = []
+    image_names = []
+    average     = []
+    std_dev     = []
 
-    for i in range(0, len(allImageData)):
+    for i in range(0, len(all_image_data)):
         # file name
-        mapFolder      = allImageData[i]["relaxometryFolder"]
-        mapFileName    = allImageData[i]["mapFileName"]
-        imageRoot, imageExt = os.path.splitext(allImageData[i]["mapFileName"])
-        imageNames.append(imageRoot)
+        map_folder    = all_image_data[i]["relaxometry_folder"]
+        map_file_name = all_image_data[i]["map_file_name"]
+        image_root, image_ext = os.path.splitext(all_image_data[i]["map_file_name"])
+        image_names.append(image_root)
         # read image
-        imageMap = sitk.ReadImage(mapFolder + mapFileName)
+        image_map = sitk.ReadImage(map_folder + map_file_name)
         # from SimpleITK to numpy
-        map_py = sitk.GetArrayFromImage(imageMap)
+        map_py = sitk.GetArrayFromImage(image_map)
         # from 3D matrix to array
         map_py_array = np.reshape(map_py, np.size(map_py,0)*np.size(map_py,1)*np.size(map_py,2))
         # get only non zero values (= masked cartilage)
         index = np.where(map_py_array != 0)
         map_vector = map_py_array[index]
-        # calculate average and stddev
+        # calculate average and std_dev
         average.append(np.average(map_vector))
-        stdDev.append(np.std(map_vector))
+        std_dev.append(np.std(map_vector))
 
     # create table
     table = pd.DataFrame(
         {
-            "subjects"      : mapFileName,
+            "subjects"      : map_file_name,
             "average"       : average,
-            "std.dev"       : stdDev
+            "std_dev"       : std_dev
         }
     )
     table.index = np.arange(1,len(table)+1) # First ID column starting from 1
     table = table.round(2) #show 2 decimals
 
     # show all the lines of the table
-    dataDimension = table.shape # get number of rows
-    pd.set_option("display.max_rows",dataDimension[0]) # show all the rows
+    data_dimension = table.shape # get number of rows
+    pd.set_option("display.max_rows",data_dimension[0]) # show all the rows
 
     # save table as csv
-    table.to_csv(outputFileName,  index = False)
-    print("Table saved as: " + outputFileName)
+    table.to_csv(output_file_name,  index = False)
+    print("Table saved as: " + output_file_name)
 
     return table
 
 
 
 
-# ---------------------------------------------------------------------------------------------------------------
-# T2 USING EPG MODELING FROM DESS ACQUISITIONS
-# ---------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
+# T2 USING EPG MODELING FROM DESS ACQUISITIONS ------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 
-def calculate_t2_maps_s(imageData):
+def calculate_t2_maps_s(image_data):
 
 
     # get fileNames
     # images
-    preprocessedFolder = imageData["preprocessedFolder"]
-    infoFileName       = imageData["infoFileName"]
-    i1fileName         = imageData["i1fileName"]
-    i2fileName         = imageData["i2fileName"]
+    preprocessed_folder   = image_data["preprocessed_folder"]
+    info_file_name        = image_data["info_file_name"]
+    i1_file_name          = image_data["i1_file_name"]
+    i2_file_name          = image_data["i2_file_name"]
     # mask
-    segmentedFolder    = imageData["segmentedFolder"]
-    maskFileName       = imageData["maskFileName"]
+    segmented_folder      = image_data["segmented_folder"]
+    mask_file_name        = image_data["mask_file_name"]
     # t2 maps
-    relaxometryFolder  = imageData["relaxometryFolder"]
-    t2mapFileName      = imageData["t2mapFileName"]
-    t2mapMaskFileName  = imageData["t2mapMaskFileName"]
-    imageNameRoot      = imageData["imageNameRoot"]
+    relaxometry_folder    = image_data["relaxometry_folder"]
+    t2_map_file_name      = image_data["t2_map_file_name"]
+    t2_map_mask_file_name = image_data["t2_map_mask_file_name"]
+    image_name_root       = image_data["image_name_root"]
 
-    print (imageNameRoot)
+    print (image_name_root)
 
     # read txt file and get acquisition parameters
-    for line in open(preprocessedFolder + infoFileName):
+    for line in open(preprocessed_folder + info_file_name):
         if "0018|0080" in line:
-            repetitionTime = float(line[10:len(line)])
+            repetition_time = float(line[10:len(line)])
         if "0018|0081" in line:
-            echoTime       = float(line[10:len(line)])
+            echo_time       = float(line[10:len(line)])
         if "0018|1314" in line:
-            alpha_deg_L    = float(line[10:len(line)]) #alpha_deg_L = flipAngle
+            alpha_deg_L     = float(line[10:len(line)]) #alpha_deg_L = flipAngle
 
     # read images
-    img1L = sitk.ReadImage(preprocessedFolder + i1fileName)
-    img2L = sitk.ReadImage(preprocessedFolder + i2fileName)
-    mask  = sitk.ReadImage(segmentedFolder    + maskFileName)
+    img_1L = sitk.ReadImage(preprocessed_folder + i1_file_name)
+    img_2L = sitk.ReadImage(preprocessed_folder + i2_file_name)
+    mask   = sitk.ReadImage(segmented_folder    + mask_file_name)
 
     # compute T2 map
-    T2map = rf.calculate_t2_maps_from_dess(img1L, img2L, repetitionTime, echoTime, alpha_deg_L)
+    t2_map = rf.calculate_t2_maps_from_dess(img_1L, img_2L, repetition_time, echo_time, alpha_deg_L)
 
     # write T2 map
-    sitk.WriteImage(T2map, relaxometryFolder + t2mapFileName)
+    sitk.WriteImage(t2_map, relaxometry_folder + t2_map_file_name)
 
     # mask T2 map
-    masked_map = rf.mask_map(T2map, mask)
+    masked_map = rf.mask_map(t2_map, mask)
 
     # write masked T2 map
-    sitk.WriteImage(masked_map, relaxometryFolder + t2mapMaskFileName)
+    sitk.WriteImage(masked_map, relaxometry_folder + t2_map_mask_file_name)
 
-def calculate_t2_maps(allImageData, nOfProcesses):
+def calculate_t2_maps(all_image_data, n_of_processes):
 
     start_time = time.time()
-    pool = multiprocessing.Pool(processes=nOfProcesses)
-    pool.map(calculate_t2_maps_s, allImageData)
+    pool = multiprocessing.Pool(processes=n_of_processes)
+    pool.map(calculate_t2_maps_s, all_image_data)
     print ("-> T2 maps calculated")
     print ("-> The total time was %.2f seconds (about %d min)" % ((time.time() - start_time), (time.time() - start_time)/60))
 
 
 
-def show_t2_maps(allImageData):
+def show_t2_maps(all_image_data):
 
-    nOfImages   = len(allImageData)
-    imgLW       = 6
-    figureWidth = imgLW * 3
-    figLength   = imgLW * nOfImages
-    plt.rcParams['figure.figsize'] = [figureWidth, figLength] # figsize=() seems to be ineffective on notebooks
-    fig     = plt.figure() # cannot call figures inside the for loop because python has a max of 20 figures (nOfImages can be larger)
+    n_of_images   = len(all_image_data)
+    img_LW        = 6
+    figure_width  = img_LW * 3
+    figure_length = img_LW * n_of_images
+    plt.rcParams['figure.figsize'] = [figure_width, figure_length] # figsize=() seems to be ineffective on notebooks
+    fig     = plt.figure() # cannot call figures inside the for loop because python has a max of 20 figures (n_of_images can be larger)
     fig.tight_layout() # avoids subplots overlap
     # subplots characteristics
-    nOfColumns = 3
-    nOfRows    = nOfImages
-    axisIndex = 1;
+    n_of_columns = 3
+    n_of_rows    = n_of_images
+    axis_index   = 1
 
 
-    for i in range(0, nOfImages):
+    for i in range(0, n_of_images):
 
         # get paths and file names of the current image
-        preprocessedFolder = allImageData[i]["preprocessedFolder"]
-        i1fileName         = allImageData[i]["i1fileName"]
-        relaxometryFolder  = allImageData[i]["relaxometryFolder"]
-        t2mapMaskFileName  = allImageData[i]["t2mapMaskFileName"]
-        imageNameRoot      = allImageData[i]["imageNameRoot"]
+        preprocessed_folder   = all_image_data[i]["preprocessed_folder"]
+        i1_file_name          = all_image_data[i]["i1_file_name"]
+        relaxometry_folder    = all_image_data[i]["relaxometry_folder"]
+        t2_map_mask_file_name = all_image_data[i]["t2_map_mask_file_name"]
+        image_name_root       = all_image_data[i]["image_name_root"]
 
         # read images
-        img = sitk.ReadImage(preprocessedFolder + i1fileName)
-        map = sitk.ReadImage(relaxometryFolder + t2mapMaskFileName)
+        img = sitk.ReadImage(preprocessed_folder + i1_file_name)
+        map = sitk.ReadImage(relaxometry_folder  + t2_map_mask_file_name)
 
         # images from simpleitk to numpy
         img_py = sitk.GetArrayFromImage(img)
@@ -512,26 +530,26 @@ def show_t2_maps(allImageData):
         for b in range(0,int(size/2)):
             slice = map_py[:,:,b]
             if np.sum(slice) != 0:
-                firstValue = b
+                first_value = b
                 break
         # get the last slice of the mask in the sagittal direction
         for b in range(size-1,int(size/2),-1):
             slice = map_py[:,:,b]
             if np.sum(slice) != 0:
-                lastValue = b
+                last_value = b
                 break
 
-        sliceStep = int ((lastValue-firstValue)/4)
-        sliceID = (firstValue + sliceStep, firstValue + 2*sliceStep, firstValue + 3*sliceStep)
+        slice_step = int ((last_value-first_value)/4)
+        slice_ID   = (first_value + slice_step, first_value + 2*slice_step, first_value + 3*slice_step)
 
-        for a in range (0,len(sliceID)):
+        for a in range (0,len(slice_ID)):
 
             # create subplot
-            ax1 = fig.add_subplot(nOfRows,nOfColumns,axisIndex)
+            ax1 = fig.add_subplot(n_of_rows,n_of_columns,axis_index)
 
             # get slices
-            slice_img_py = img_py[:,:,sliceID[a]]
-            slice_map_py = map_py[:,:,sliceID[a]]
+            slice_img_py = img_py[:,:,slice_ID[a]]
+            slice_map_py = map_py[:,:,slice_ID[a]]
             slice_map_masked = np.ma.masked_where(slice_map_py == 0, slice_map_py)
 
             # show image
@@ -539,107 +557,107 @@ def show_t2_maps(allImageData):
             ren2 = ax1.imshow(slice_map_masked, 'jet' , interpolation=None, origin='lower', alpha=1, vmin=0, vmax=100)
             clb = plt.colorbar(ren2, orientation='vertical', shrink=0.60, ticks=[0, 20, 40, 60, 80, 100])
             clb.ax.set_title('[ms]')
-            ax1.set_title(str(i+1) + ". " + imageNameRoot + " - Slice: " + str(sliceID[a]))
+            ax1.set_title(str(i+1) + ". " + image_name_root + " - Slice: " + str(slice_ID[a]))
             ax1.axis('off')
 
-            axisIndex = axisIndex + 1
+            axis_index = axis_index + 1
 
 
-def show_t2_graph(allImageData):
+def show_t2_graph(all_image_data):
 
     # calculate average and standard deviation
     average = []
-    stdDev  = []
-    for i in range(0, len(allImageData)):
+    std_dev  = []
+    for i in range(0, len(all_image_data)):
         # file name
-        relaxometryFolder = allImageData[i]["relaxometryFolder"]
-        t2MapFileName     = allImageData[i]["t2mapFileName"]
+        relaxometry_folder = all_image_data[i]["relaxometry_folder"]
+        t2_map_file_name     = all_image_data[i]["t2_map_file_name"]
         # read image
-        t2Map = sitk.ReadImage(relaxometryFolder + t2MapFileName)
+        t2_map = sitk.ReadImage(relaxometry_folder + t2_map_file_name)
         # from SimpleITK to numpy
-        t2Map_py = sitk.GetArrayFromImage(t2Map)
+        t2_map_py = sitk.GetArrayFromImage(t2_map)
         # from 3D matrix to array
-        t2Map_py_array = np.reshape(t2Map_py, np.size(t2Map_py,0)*np.size(t2Map_py,1)*np.size(t2Map_py,2))
+        t2_map_py_array = np.reshape(t2_map_py, np.size(t2_map_py,0)*np.size(t2_map_py,1)*np.size(t2_map_py,2))
         # get only non zero values (= masked cartilage)
-        index = np.where(t2Map_py_array != 0)
-        t1rho_vector = t2Map_py_array[index]
-        # calculate average and stddev
-        average.append(np.average(t1rho_vector))
-        stdDev.append(np.std(t1rho_vector))
+        index = np.where(t2_map_py_array != 0)
+        t1_rho_vector = t2_map_py_array[index]
+        # calculate average and std_dev
+        average.append(np.average(t1_rho_vector))
+        std_dev.append(np.std(t1_rho_vector))
 
     average = np.asarray(average)
-    stdDev  = np.asarray(stdDev)
-    x = np.arange(len(allImageData))
+    std_dev = np.asarray(std_dev)
+    x       = np.arange(len(all_image_data))
 
     # figure size
-    figureWidth = 18
-    figLength   = 8
-    plt.rcParams['figure.figsize'] = [figureWidth, figLength] # figsize=() seems to be ineffective on notebooks
+    figure_width  = 18
+    figure_length = 8
+    plt.rcParams['figure.figsize'] = [figure_width, figure_length] # figsize=() seems to be ineffective on notebooks
 
     # error bar
-    fig     = plt.figure() # cannot call figures inside the for loop because python has a max of 20 figures (nOfImages can be larger)
+    fig     = plt.figure() # cannot call figures inside the for loop because python has a max of 20 figures (n_of_images can be larger)
     fig, ax = plt.subplots(nrows=1, ncols=1)
-    ax.errorbar(x, average, yerr=stdDev, linestyle='None', marker='o')
+    ax.errorbar(x, average, yerr=std_dev, linestyle='None', marker='o')
 
     # set ticks and labels
     plt.xticks(x)
-    imageNames= []
-    for i in range(0, len(allImageData)):
-        imageRoot, imageExt = os.path.splitext(allImageData[i]["t2mapFileName"])
-        imageNames.append(imageRoot)
-    ax.set_xticklabels(imageNames, rotation='vertical')
+    image_names= []
+    for i in range(0, len(all_image_data)):
+        image_root, image_ext = os.path.splitext(all_image_data[i]["t2_map_file_name"])
+        image_names.append(image_root)
+    ax.set_xticklabels(image_names, rotation='vertical')
     ax.set_ylabel('t2 [ms]')
 
     # show
     plt.show()
 
 
-def show_t2_table(allImageData, outputFileName):
+def show_t2_table(all_image_data, output_file_name):
 
     # read and calculate values for table
-    imageNames = []
-    average = []
-    stdDev  = []
+    image_names = []
+    average     = []
+    std_dev     = []
 
-    for i in range(0, len(allImageData)):
+    for i in range(0, len(all_image_data)):
         # file name
-        relaxometryFolder = allImageData[i]["relaxometryFolder"]
-        t2MapFileName     = allImageData[i]["t2mapFileName"]
-        imageRoot, imageExt = os.path.splitext(allImageData[i]["t2mapFileName"])
-        imageNames.append(imageRoot)
+        relaxometry_folder    = all_image_data[i]["relaxometry_folder"]
+        t2_map_file_name      = all_image_data[i]["t2_map_file_name"]
+        image_root, image_ext = os.path.splitext(all_image_data[i]["t2_map_file_name"])
+        image_names.append(image_root)
         # read image
-        t2Map = sitk.ReadImage(relaxometryFolder + t2MapFileName)
+        t2_map = sitk.ReadImage(relaxometry_folder + t2_map_file_name)
         # from SimpleITK to numpy
-        t2Map_py = sitk.GetArrayFromImage(t2Map)
+        t2_map_py = sitk.GetArrayFromImage(t2_map)
         # from 3D matrix to array
-        t2Map_py_array = np.reshape(t2Map_py, np.size(t2Map_py,0)*np.size(t2Map_py,1)*np.size(t2Map_py,2))
+        t2_map_py_array = np.reshape(t2_map_py, np.size(t2_map_py,0)*np.size(t2_map_py,1)*np.size(t2_map_py,2))
         # get only non zero values (= masked cartilage)
-        index = np.where(t2Map_py_array != 0)
-        t2_vector = t2Map_py_array[index]
-        # calculate average and stddev
+        index = np.where(t2_map_py_array != 0)
+        t2_vector = t2_map_py_array[index]
+        # calculate average and std_dev
         average.append(np.average(t2_vector))
-        stdDev.append(np.std(t2_vector))
+        std_dev.append(np.std(t2_vector))
 
     # create table
     table = pd.DataFrame(
         {
-            "subjects" : t2MapFileName,
+            "subjects" : t2_map_file_name,
             "average"  : average,
-            "stddev"   : stdDev
+            "std_dev"  : std_dev
         }
     )
     table.index = np.arange(1,len(table)+1) # First ID column starting from 1
     table = table.round(2) #show 2 decimals
 
     # show all the lines of the table
-    dataDimension = table.shape # get number of rows
-    pd.set_option("display.max_rows",dataDimension[0]) # show all the rows
+    data_dimension = table.shape # get number of rows
+    pd.set_option("display.max_rows",data_dimension[0]) # show all the rows
 
     # save table as csv
     #now = datetime.now().strftime('%Y-%m-%d_%H-%M')
-    #csvFileName = allImageData[0]["relaxometryFolder"] + now + "_t2.csv"
+    #csvFileName = all_image_data[0]["relaxometry_folder"] + now + "_t2.csv"
     #table.to_csv(csvFileName,  index = False)
-    table.to_csv(outputFileName,  index = False)
-    print("Table saved as: " + outputFileName)
+    table.to_csv(output_file_name,  index = False)
+    print("Table saved as: " + output_file_name)
 
     return table

@@ -1,6 +1,18 @@
 # Serena Bonaretti, 2018
 
-# python modules
+""" 
+Functions to calculate cartilage thickness. 
+They are separeted in three groups: 
+    - Functions to separate cartilage sufaces:
+        - separate_cartilage calls separate_cartilage_slice
+    - Functions to flatten cartilage for 2D visualization:
+        flatten_point_cloud calls rotate_to_x and flatten_surface
+    - Function to associate thickness to 2D surface after flattening: 
+        flatten_thickness
+    - Functions to calculate cartilage thickness:
+        - nearest_neighbor_thickness calls find_closest_point
+"""
+
 import numpy     as np
 import SimpleITK as sitk
 import skimage   as ski
@@ -13,16 +25,17 @@ from .cylinder_fitting import fit
 import time
 
 
-# ---------------------------------------------------------------------------------------------------------------
-# FUNCTIONS TO SEPARATE CARTILAGE SURFACES
+# ---------------------------------------------------------------------------------------------------------------------------
+# FUNCTIONS TO SEPARATE CARTILAGE SURFACES ----------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 
 # Functions to calculate circle center and radius. From: https://gist.github.com/lorenzoriano/6799568
-def calc_R(x,y, xc, yc):
-    # calculate the distance of each 2D points from the center (xc, yc)
-    return np.sqrt((x-xc)**2 + (y-yc)**2)
+def calc_R(x,y, x_c, y_c):
+    # calculate the distance of each 2D points from the center (x_c, y_c)
+    return np.sqrt((x-x_c)**2 + (y-y_c)**2)
 
 def f(c, x, y):
-    # calculate the algebraic distance between the data points and the mean circle centered at c=(xc, yc)
+    # calculate the algebraic distance between the data points and the mean circle centered at c=(x_c, y_c)
     Ri = calc_R(x, y, *c)
     return Ri - Ri.mean()
 
@@ -32,10 +45,10 @@ def leastsq_circle(x,y): # from: https://gist.github.com/lorenzoriano/6799568
     y_m = np.mean(y)
     center_estimate = x_m, y_m
     center, ier = optimize.leastsq(f, center_estimate, args=(x,y))
-    xc, yc = center
+    x_c, y_c = center
     Ri       = calc_R(x, y, *center)
     R        = Ri.mean()
-    return xc, yc, R
+    return x_c, y_c, R
 
 
 # Functions to calculate segment intersections. From: https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
@@ -50,24 +63,26 @@ def ccw(A,B,C):
 def intersect(A,B,C,D):
 	return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
 
+# ---------------------------------------------------------------------------------------------------------------------------
 
-def separate_cartilage_slice(xc, yc, x, y):
+
+def separate_cartilage_slice(x_c, y_c, x, y):
 
     # check if radius connecting center and countour points intersects contour segments.
     # if yes, it's bone cartilage, if not, it is articular cartilage
 
-    boneCart_x = []
-    boneCart_y = []
-    pointIndex = []
+    bone_cart_x = []
+    bone_cart_y = []
+    point_index = []
 
     # for each point of the contour
     for j in range(0, len(x)):
 
         # get the center and the current contour point
-        center       = Point(xc, yc)
-        contourPoint = Point(x[j],y[j])
+        center        = Point(x_c, y_c)
+        contour_point = Point(x[j],y[j])
 
-        # in the contour coordinates, delete the current contourPoint and copy the first point to the end of the array
+        # in the contour coordinates, delete the current contour_point and copy the first point to the end of the array
         x_temp = x
         x_temp = np.delete(x_temp,j)
         x_temp = np.append(x_temp, x[0])
@@ -77,40 +92,40 @@ def separate_cartilage_slice(xc, yc, x, y):
 
         # look for the intersection
         for k in range(0, len(x)-1):
-            contourPointA = Point(x[k]  ,y[k])
-            contourPointB = Point(x[k+1],y[k+1])
-            intersection = intersect(center,contourPoint,contourPointA,contourPointB)
+            contour_point_A = Point(x[k]  ,y[k])
+            contour_point_B = Point(x[k+1],y[k+1])
+            intersection = intersect(center,contour_point,contour_point_A,contour_point_B)
 
             # if there is intersection, it is bone cartilage
             if intersection == True:
-                boneCart_x.append(x[j])
-                boneCart_y.append(y[j])
-                pointIndex.append(j)
+                bone_cart_x.append(x[j])
+                bone_cart_y.append(y[j])
+                point_index.append(j)
                 break
 
     # convert bone cartilage to numpy
-    boneCart_x = np.asarray(boneCart_x)
-    boneCart_y = np.asarray(boneCart_y)
-    boneCart   = np.array((boneCart_x, boneCart_y)).T
+    bone_cart_x = np.asarray(bone_cart_x)
+    bone_cart_y = np.asarray(bone_cart_y)
+    bone_cart   = np.array((bone_cart_x, bone_cart_y)).T
 
     # get articular cartilage
-    pointIndex = np.asarray(pointIndex)
-    artiCart_x = x
-    artiCart_x = np.delete(artiCart_x,pointIndex)
-    artiCart_y = y
-    artiCart_y = np.delete(artiCart_y,pointIndex)
-    artiCart   = np.array((artiCart_x, artiCart_y)).T
+    point_index = np.asarray(point_index)
+    arti_cart_x = x
+    arti_cart_x = np.delete(arti_cart_x,point_index)
+    arti_cart_y = y
+    arti_cart_y = np.delete(arti_cart_y,point_index)
+    arti_cart   = np.array((arti_cart_x, arti_cart_y)).T
 
-    return boneCart, artiCart
+    return bone_cart, arti_cart
 
 
 
 def separate_cartilage (mask):
 
-    minArea           = 15
-    sliceWithContours = []
-    boneCart          = []
-    artiCart          = []
+    min_area             = 15
+    slice_with_contour_S = []
+    bone_cart            = []
+    arti_cart            = []
 
     # mask from SimpleITK to python
     mask_py = sitk.GetArrayFromImage(mask)
@@ -126,23 +141,23 @@ def separate_cartilage (mask):
         if sum(sum(slice)) != 0:
 
             # contours containers
-            contourS = []                # list:    each cell of the list contains a contour (for the slices with several regions)
-                                         #          used to separate bone and articular cartilage (small regions are not considered)
-            contourA = np.ndarray((1,2)) # nparray: contains the the contour of all the regions of the  slice
-                                         #          used to calculate the circle center (small regions are considered)
+            contour_S = []                # list:    each cell of the list contains a contour (for the slices with several regions)
+                                          #          used to separate bone and articular cartilage (small regions are not considered)
+            contour_A = np.ndarray((1,2)) # nparray: contains the the contour of all the regions of the  slice
+                                          #          used to calculate the circle center (small regions are considered)
 
             # find number of labelled regions (at the edges cartilage can be broken in pieces)
-            regions, nOfRegions = ndi.label(slice)
+            regions, n_of_regions = ndi.label(slice)
             regions = np.asarray(regions)
 
-            for w in range (0,nOfRegions):
+            for w in range (0,n_of_regions):
 
                 # get binary region
                 temp_slice = np.full((slice.shape[0], slice.shape[1]), 0)
                 temp_slice [regions == w+1] = 1
 
-                # consider only regions with area > minArea
-                if sum(sum(temp_slice)) < minArea:
+                # consider only regions with area > min_area
+                if sum(sum(temp_slice)) < min_area:
                     continue
 
                 else:
@@ -150,104 +165,104 @@ def separate_cartilage (mask):
                     contour = ski.measure.find_contours(temp_slice, 0.5)
 
                     # add region contour separately for region (to discriminate bone and articular cartilage)
-                    contourS.append(contour)
+                    contour_S.append(contour)
 
                     # put all (A) contours together (to find the circle center)
-                    contour = contour[0]
-                    contourA = np.vstack((contourA,contour))
+                    contour   = contour[0]
+                    contour_A = np.vstack((contour_A,contour))
 
 
-                # if the areas is < minArea, do not consider the contour
-                if len(contourS) == 0:
-#                    print(str(len(contourS)))
+                # if the areas is < min_area, do not consider the contour
+                if len(contour_S) == 0:
+#                    print(str(len(contour_S)))
                     continue
 
                 else:
 
                     # save slice number
-                    sliceWithContours.append(i)
+                    slice_with_contour_S.append(i)
 
                     # get the center of the interpolation circle
-                    contourA = np.delete(contourA,0,0) # delete first row, which was needed for allocation
-                    x = contourA[:, 1]
-                    y = contourA[:, 0]
-                    xc, yc, R = leastsq_circle(x,y)
+                    contour_A = np.delete(contour_A,0,0) # delete first row, which was needed for allocation
+                    x = contour_A[:, 1]
+                    y = contour_A[:, 0]
+                    x_c, y_c, R = leastsq_circle(x,y)
 
                     # get bone and articular cartilage
-                    boneCartSlice = []
-                    artiCartSlice = []
+                    bone_cart_slice = []
+                    arti_cart_slice = []
 
                     # for each region
-                    for w in range (0,len(contourS)):
+                    for w in range (0,len(contour_S)):
 
-                        # convert contours from list to np.array
-                        temp = contourS[w]
+                        # convert contour_S from list to np.array
+                        temp = contour_S[w]
                         temp = np.array(temp)
                         temp = temp[0]
-                        xS   = temp[:,1]
-                        yS   = temp[:,0]
+                        x_S  = temp[:,1]
+                        y_S  = temp[:,0]
 
                         # get bone and articular cartilage
-                        boneC, artiC = separate_cartilage_slice(xc,yc,xS,yS)
-                        boneCartSlice.append(boneC)
-                        artiCartSlice.append(artiC)
+                        bone_C, arti_C = separate_cartilage_slice(x_c,y_c,x_S,y_S)
+                        bone_cart_slice.append(bone_C)
+                        arti_cart_slice.append(arti_C)
 
-                    # assign contours
-                    # the points of each region go to a cell of the list boneCart/artiCart
-                    # if the slice contains two regions, the cell of boneCart/artiCart contains two separate contour arrays, one per region
-                    # e.g. boneCart is [1][2][1][1][1]... ;
-                    #      boneCart[0] = [xyzArrayOfRegion1]
-                    #      boneCart[1] = [xyzArrayOfRegion1][xyzArrayOfRegion2]
+                    # assign contour_S
+                    # the points of each region go to a cell of the list bone_cart/arti_cart
+                    # if the slice contains two regions, the cell of bone_cart/arti_cart contains two separate contour array_S, one per region
+                    # e.g. bone_cart is [1][2][1][1][1]... ;
+                    #      bone_cart[0] = [xyzArrayOfRegion1]
+                    #      bone_cart[1] = [xyzArrayOfRegion1][xyzArrayOfRegion2]
                     #      ...
-                    boneCart.append(boneCartSlice)
-                    artiCart.append(artiCartSlice)
+                    bone_cart.append(bone_cart_slice)
+                    arti_cart.append(arti_cart_slice)
 
-    # combine bone contours and articular contours across slices
-    # allocate np arrays
-    boneCartAll = np.ndarray((1,3))
-    artiCartAll = np.ndarray((1,3))
+    # combine bone contour_S and articular contour_S across slices
+    # allocate np array_S
+    bone_cart_all = np.ndarray((1,3))
+    arti_cart_all = np.ndarray((1,3))
 
-    for i in range(0, len(sliceWithContours)):
+    for i in range(0, len(slice_with_contour_S)):
 
         # get contours of the current slice
-        boneC = boneCart[i]
-        artiC = artiCart[i]
+        bone_C = bone_cart[i]
+        arti_C = arti_cart[i]
 
         # extract contours from all regions
-        for a in range (0,len(boneC)):
+        for a in range (0,len(bone_C)):
 
             # bone
-            temp = np.array (boneC[a])
-            z    = np.full  ((temp.shape[0],1), sliceWithContours[i])
-            temp = np.hstack((temp,z))
-            boneCartAll   = np.vstack((boneCartAll,temp))
+            temp          = np.array (bone_C[a])
+            z             = np.full  ((temp.shape[0],1), slice_with_contour_S[i])
+            temp          = np.hstack((temp,z))
+            bone_cart_all = np.vstack((bone_cart_all,temp))
 
             # cartilage
-            temp = np.array (artiC[a])
-            z    = np.full  ((temp.shape[0],1), sliceWithContours[i])
-            temp = np.hstack((temp,z))
-            artiCartAll   = np.vstack((artiCartAll,temp))
+            temp          = np.array (arti_C[a])
+            z             = np.full  ((temp.shape[0],1), slice_with_contour_S[i])
+            temp          = np.hstack((temp,z))
+            arti_cart_all = np.vstack((arti_cart_all,temp))
 
     # delete first row, which was needed for allocation
-    boneCartAll = np.delete(boneCartAll,0,0)
-    artiCartAll = np.delete(artiCartAll,0,0)
+    bone_cart_all = np.delete(bone_cart_all,0,0)
+    arti_cart_all = np.delete(arti_cart_all,0,0)
 
     # multiply by image spacing
-    boneCartAll_mm = np.copy(boneCartAll)
-    boneCartAll_mm[:,0] = boneCartAll[:,0] * mask.GetSpacing()[1]
-    boneCartAll_mm[:,1] = boneCartAll[:,1] * mask.GetSpacing()[2]
-    boneCartAll_mm[:,2] = boneCartAll[:,2] * mask.GetSpacing()[0]
-    artiCartAll_mm = np.copy(artiCartAll)
-    artiCartAll_mm[:,0] = artiCartAll[:,0] * mask.GetSpacing()[1]
-    artiCartAll_mm[:,1] = artiCartAll[:,1] * mask.GetSpacing()[2]
-    artiCartAll_mm[:,2] = artiCartAll[:,2] * mask.GetSpacing()[0]
+    bone_cart_all_mm = np.copy(bone_cart_all)
+    bone_cart_all_mm[:,0] = bone_cart_all[:,0] * mask.GetSpacing()[1]
+    bone_cart_all_mm[:,1] = bone_cart_all[:,1] * mask.GetSpacing()[2]
+    bone_cart_all_mm[:,2] = bone_cart_all[:,2] * mask.GetSpacing()[0]
+    arti_cart_all_mm = np.copy(arti_cart_all)
+    arti_cart_all_mm[:,0] = arti_cart_all[:,0] * mask.GetSpacing()[1]
+    arti_cart_all_mm[:,1] = arti_cart_all[:,1] * mask.GetSpacing()[2]
+    arti_cart_all_mm[:,2] = arti_cart_all[:,2] * mask.GetSpacing()[0]
 
-    return boneCartAll_mm, artiCartAll_mm
+    return bone_cart_all_mm, arti_cart_all_mm
 
 
-
-# ---------------------------------------------------------------------------------------------------------------
-# FUNCTIONS TO FLATTEN CARTILAGE
+# ---------------------------------------------------------------------------------------------------------------------------
+# FUNCTIONS TO FLATTEN CARTILAGE FOR 2D VISUALIZATION -----------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 
 ## Functions to fit cylinder and rotate along axis and angle.
 #  Cylinder fitting from https://github.com/xingjiepan/cylinder_fitting
@@ -273,18 +288,18 @@ def rotation_matrix(phi, theta, psi):
     return A
 
 
-def rotate_to_x(pointCloud):
+def rotate_to_x(point_cloud):
 
+    
     # fit to a cylinder
     step = 10
-    start_time = time.time()
-    w_fit, C_fit, r_fit, fit_err = fit(pointCloud[1:np.size(pointCloud,0):step,:])
+    w_fit, C_fit, r_fit, fit_err = fit(point_cloud[1:np.size(point_cloud,0):step,:])
 
     # cyl-axis has to be positive for homogeneity
     w_fit = np.abs(w_fit)
 
     # translate point cloud to origin
-    pointCloud = pointCloud - C_fit # do this before the following step, where C_fit becomes the origin
+    point_cloud = point_cloud - C_fit # do this before the following step, where C_fit becomes the origin
 
     # translate cyl-axis to origin
     C_fit = C_fit - C_fit
@@ -305,28 +320,28 @@ def rotate_to_x(pointCloud):
     # Rotation matrix
     M1 = rotation_matrix(phi, theta, psi)
     # Apply rotation cyl-axis
-    vector_out1 = np.dot(M1,vector)
-    # Apply rotation to pointCloud
-    pointCloud_out1 = np.copy(pointCloud)
-    for i in range(np.size(pointCloud,0)):
-        pointCloud_out1[i,:] = np.dot(M1,pointCloud[i,:])
+    vector_out_1 = np.dot(M1,vector)
+    # Apply rotation to point_cloud
+    point_cloud_out_1 = np.copy(point_cloud)
+    for i in range(np.size(point_cloud,0)):
+        point_cloud_out_1[i,:] = np.dot(M1,point_cloud[i,:])
 
     # -- second rotation
     # angles
     phi   = 0
-    theta = np.arccos( np.dot([vector_out1[0], vector_out1[2]], [versor[0], versor[2]]) /
-                       np.linalg.norm([vector_out1[0], vector_out1[2]]) * np.linalg.norm([versor[0], versor[2]]))
+    theta = np.arccos( np.dot([vector_out_1[0], vector_out_1[2]], [versor[0], versor[2]]) /
+                       np.linalg.norm([vector_out_1[0], vector_out_1[2]]) * np.linalg.norm([versor[0], versor[2]]))
     psi   = 0
     # Rotation matrix
     M2 = rotation_matrix(phi, theta, psi)
     # Apply rotation cyl-axis
-    vector_out2 = np.dot(M2,vector_out1)
-    # Apply rotation to pointCloud
-    pointCloud_out2 = np.copy(pointCloud_out1)
-    for i in range(np.size(pointCloud_out1,0)):
-        pointCloud_out2[i,:] = np.dot(M2,pointCloud_out2[i,:])
+    #vector_out_2 = np.dot(M2,vector_out_1)
+    # Apply rotation to point_cloud
+    point_cloud_out_2 = np.copy(point_cloud_out_1)
+    for i in range(np.size(point_cloud_out_1,0)):
+        point_cloud_out_2[i,:] = np.dot(M2,point_cloud_out_2[i,:])
 
-    return pointCloud_out2
+    return point_cloud_out_2
 
 
 def flatten_surface(pts):
@@ -361,7 +376,7 @@ def flatten_surface(pts):
 
     # extract the coordinates in x and z
     for a in range (0, len(phi_unique)):
-        x_bin   = np.extract(phi == phi_unique[a], pts[:,0])
+        x_bin = np.extract(phi == phi_unique[a], pts[:,0])
         y_bin = np.full((len(x_bin),1), phi_unique[a])
         y_bin = np.extract(y_bin==y_bin, y_bin)
         x = np.hstack((x,x_bin))
@@ -407,18 +422,19 @@ def flatten_surface(pts):
     y = y - np.mean(y)
 
     pts_out = np.vstack((x,y))
+    print (pts_out[0:10])
 
     return pts_out, phi #, color_out
 
 
-def fletten_point_cloud(pts_in):
+def flatten_point_cloud(pts_in):
 
     # rotate point cloud so that the axis of the cloud coincides with the x-axis
     pts_rot = rotate_to_x(pts_in)
 
     # flatten the surface around the x-axis
     pts_out, phi = flatten_surface(pts_rot)
-
+    
     return pts_out, phi
 
 
@@ -441,23 +457,30 @@ def flatten_thickness(thickness_in, phi):
 
 
 
-# ---------------------------------------------------------------------------------------------------------------
-# FUNCTIONS TO CALCULATE THICKNESS
+# ---------------------------------------------------------------------------------------------------------------------------
+# FUNCTIONS TO CALCULATE CARTILAGE THICKNESS --------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 
-def find_closest_point(pt, ptCloud):
+def find_closest_point(pt, pt_cloud):
+    
+    """
+    Calculates the minumum distance between a point and a point clould (euclidean pt-to-pt distance)
+    pt is a (dim x 1) numpy array (dim is the point dimention, usually 2(i.e. x,y) or 3(i.e. x,y,z) )
+    pt_cloud is a (dim x n) numpu array (n is the number of points)
+    """
 
-    ptArray     = np.tile(pt, (ptCloud.shape[0],1))
-    distances   = np.sqrt(np.sum((ptArray - ptCloud)**2, axis=1))
-    minDistance = np.min(distances)
+    pt_array     = np.tile(pt, (pt_cloud.shape[0],1))
+    distances    = np.sqrt(np.sum((pt_array - pt_cloud)**2, axis=1))
+    min_distance = np.min(distances)
 
-    return minDistance
+    return min_distance
 
 
-def nearest_neighbor_thickness (boneCart, artiCart):
+def nearest_neighbor_thickness (bone_cart, arti_cart):
 
-    boneCartThickness = np.full((boneCart.shape[0],1), 0.0)
+    bone_cart_thickness = np.full((bone_cart.shape[0],1), 0.0)
 
-    for i in range (0, boneCart.shape[0]):
-        boneCartThickness[i] = find_closest_point(boneCart[i,:], artiCart)
+    for i in range (0, bone_cart.shape[0]):
+        bone_cart_thickness[i] = find_closest_point(bone_cart[i,:], arti_cart)
 
-    return boneCartThickness
+    return bone_cart_thickness

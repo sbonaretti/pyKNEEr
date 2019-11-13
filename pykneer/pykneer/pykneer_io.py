@@ -1,111 +1,143 @@
 # Serena Bonaretti, 2018
 
+"""
+Module with functions to read/write .txt files in pykneer
+
+Functions:
+    - folder_divider
+    - load_image_data_preprocessing
+    - load_image_data_find_reference
+    - load_image_data_segmentation
+    - add_names_to_image_data
+    - load_image_data_segmentation_quality
+    - load_image_data_morphology
+    - load_image_data_EPG
+    - load_image_data_fitting
+    - read_txt_to_np_array
+    - write_np_array_to_txt
+"""
+
+
 import numpy as np
 import os
 import pkg_resources
 import platform
 import re
 
+
 # ---------------------------------------------------------------------------------------------------------------------------
-# PREPROCESSING -------------------------------------------------------------------------------------------------------------
+# BASIC FUNCTIONS  ----------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
 def folder_divider():
 
-    # determine the sistem to define the folder divider ("\" or "/")
+    """
+    Based on the OS determines if file path strings contain "\" or "/"
+
+    """
+
+    # determine the system to define the folder divider ("\" or "/")
     sys = platform.system()
     if sys == "Linux":
-        folderDiv = "/"
+        folder_div = "/"
     elif sys == "Darwin":
-        folderDiv = "/"
+        folder_div = "/"
     elif sys == "Windows":
-        folderDiv = "\\"
+        folder_div = "\\"
 
-    return folderDiv
+    return folder_div
 
 
-def load_image_data_preprocessing(inputFileName):
+# ---------------------------------------------------------------------------------------------------------------------------
+# PREPROCESSING -------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 
-    folderDiv = folder_divider()
+def load_image_data_preprocessing(input_file_name):
+
+    """
+    Parses the input file of preprocessing.ipynb
+    """
+
+    folder_div = folder_divider()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # check if input file exists
-    if not os.path.exists(inputFileName):
+    if not os.path.exists(input_file_name):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file  %s does not exist" % (inputFileName) )
+        print("ERROR: The file  %s does not exist" % (input_file_name) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # ----------------------------------------------------------------------------------------------------------------------
-    # get inputFileName content
-    fileContent=[]
-    for line in open(inputFileName):
-        fileContent.append(line.rstrip("\n"))
+    # get input_file_name content
+    file_content=[]
+    for line in open(input_file_name):
+        file_content.append(line.rstrip("\n"))
 
     # clear empty spaces at the end of strings (if human enters spaces by mistake)
-    for i in range(0,len(fileContent)):
-        fileContent[i] = fileContent[i].rstrip()
+    for i in range(0,len(file_content)):
+        file_content[i] = file_content[i].rstrip()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # folders
 
     # line 1 is the original folder of acquired dcm
     # add slash or back slash at the end
-    originalFolder = fileContent[0]
-    if not originalFolder.endswith(folderDiv):
-        originalFolder = originalFolder + folderDiv
+    original_folder = file_content[0]
+    if not original_folder.endswith(folder_div):
+        original_folder = original_folder + folder_div
     # make sure the last folder is called "original"
-    temp = os.path.basename(os.path.normpath(originalFolder))
+    temp = os.path.basename(os.path.normpath(original_folder))
     if temp != "original":
         print("----------------------------------------------------------------------------------------")
         print("""ERROR: Put your dicoms in a parent folder called "original" """)
         print("----------------------------------------------------------------------------------------")
         return {}
     # make sure that the path exists
-    if not os.path.isdir(originalFolder):
+    if not os.path.isdir(original_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The original folder %s does not exist" % (originalFolder) )
+        print("ERROR: The original folder %s does not exist" % (original_folder) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # create the preprocessed folder
-    preprocessedFolder = os.path.split(originalFolder)[0] # remove the slash or backslash
-    preprocessedFolder = os.path.split(preprocessedFolder)[0] # remove "original"
-    preprocessedFolder = preprocessedFolder + folderDiv + "preprocessed" + folderDiv
-    if not os.path.isdir(preprocessedFolder):
-        os.mkdir(preprocessedFolder)
-        print("-> preprocessedFolder %s created" % (preprocessedFolder) )
+    preprocessed_folder = os.path.split(original_folder)[0]     # remove the slash or backslash
+    preprocessed_folder = os.path.split(preprocessed_folder)[0] # remove "original"
+    preprocessed_folder = preprocessed_folder + folder_div + "preprocessed" + folder_div
+    if not os.path.isdir(preprocessed_folder):
+        os.mkdir(preprocessed_folder)
+        print("-> preprocessed_folder %s created" % (preprocessed_folder) )
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get images and create a dictionary for each of them
-    allImageData = []
-    for i in range(1,len(fileContent),2):
+    all_image_data = []
+    for i in range(1,len(file_content),2):
 
         # current image folder name
-        imageFolderFileName = fileContent[i]
+        image_folder_file_name = file_content[i]
 
-        # if there are empty lines at the end of the file
-        if len(imageFolderFileName) != 0:
+        # if there are empty lines at the end of the file skip them
+        if len(image_folder_file_name) != 0:
 
-            if not os.path.isdir(originalFolder + imageFolderFileName):
+            # make sure the folder exists
+            if not os.path.isdir(original_folder + image_folder_file_name):
                 print("----------------------------------------------------------------------------------------")
-                print("ERROR: The folder %s does not exist" % (imageFolderFileName) )
+                print("ERROR: The folder %s does not exist" % (image_folder_file_name) )
                 print("----------------------------------------------------------------------------------------")
                 return {}
+
             # make sure there are dicom files in the folder
-            for fname in os.listdir(originalFolder + imageFolderFileName):
+            for fname in os.listdir(original_folder + image_folder_file_name):
                 if fname.endswith(".dcm") or fname.endswith(".DCM") or fname.endswith(""):
-                    a = 1
-                    #print(originalFolder + imageFolderFileName)
+                    a = 1 #print(original_folder + image_folder_file_name)
                 else:
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The folder %s does not contain dicom files" % (originalFolder + imageFolderFileName) )
+                    print("ERROR: The folder %s does not contain dicom files" % (original_folder + image_folder_file_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
             # knee laterality
-            #print (fileContent[i+1])
-            laterality = fileContent[i+1]
+            laterality = file_content[i+1]
             if laterality != "right" and laterality != "Right" and laterality != "left" and laterality != "left":
                 print("----------------------------------------------------------------------------------------")
                 print("ERROR: Knee laterality must be 'right' or 'left'")
@@ -113,156 +145,163 @@ def load_image_data_preprocessing(inputFileName):
                 return {}
 
             # create the dictionary
-            imageData = {}
-            imageData["originalFolder"]       = originalFolder
-            imageData["preprocessedFolder"]   = preprocessedFolder
-            imageData["imageFolderFileName"]  = imageFolderFileName
-            imageData["laterality"]           = laterality
-            # add output file names
-            imageNameRoot = imageFolderFileName.replace(folderDiv, "_")
-            imageData["imageNameRoot"]        = imageNameRoot
-            imageData["tempFileName"]         = preprocessedFolder + imageData["imageNameRoot"] + "_temp.mha"
-            imageData["originalFileName"]     = preprocessedFolder + imageData["imageNameRoot"] + "_orig.mha"
-            imageData["preprocessedFileName"] = preprocessedFolder + imageData["imageNameRoot"] + "_prep.mha"
-            imageData["infoFileName"]         = preprocessedFolder + imageData["imageNameRoot"] + "_orig.txt"
+            image_data = {}
+            # add inputs
+            image_data["original_folder"]        = original_folder
+            image_data["preprocessed_folder"]    = preprocessed_folder
+            image_data["image_folder_file_name"] = image_folder_file_name
+            image_data["laterality"]             = laterality
+            # add outputs
+            image_name_root = image_folder_file_name.replace(folder_div, "_")
+            image_data["image_name_root"]        = image_name_root
+            image_data["temp_file_name"]         = preprocessed_folder + image_data["image_name_root"] + "_temp.mha"
+            image_data["original_file_name"]     = preprocessed_folder + image_data["image_name_root"] + "_orig.mha"
+            image_data["preprocessed_file_name"] = preprocessed_folder + image_data["image_name_root"] + "_prep.mha"
+            image_data["info_file_name"]         = preprocessed_folder + image_data["image_name_root"] + "_orig.txt"
 
-            # print out file name
-            print (imageData["imageNameRoot"])
+            # print current file name
+            print (image_data["image_name_root"])
 
             # send to the data list
-            allImageData.append(imageData)
+            all_image_data.append(image_data)
 
-    print ("-> information loaded for " + str(len(allImageData)) + " subjects")
+    print ("-> information loaded for " + str(len(all_image_data)) + " subjects")
 
-    # return the image info
-    return allImageData
-
+    # return the dictionary
+    return all_image_data
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
 # FIND REFERENCE ------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
-def load_image_data_find_reference(inputFileName):
+def load_image_data_find_reference(input_file_name):
 
-    folderDiv = folder_divider()
+    """
+    Parses the input file of find_reference.ipynb
+    """
+
+    folder_div = folder_divider()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # check if input file exists
-    if not os.path.exists(inputFileName):
+    if not os.path.exists(input_file_name):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file  %s does not exist" % (inputFileName) )
+        print("ERROR: The file  %s does not exist" % (input_file_name) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # ----------------------------------------------------------------------------------------------------------------------
-    # get inputFileName content
-    fileContent=[]
-    for line in open(inputFileName):
-        fileContent.append(line.rstrip("\n"))
+    # get input_file_name content
+    file_content=[]
+    for line in open(input_file_name):
+        file_content.append(line.rstrip("\n"))
 
     # clear empty spaces at the end of strings (if human enters spaces by mistake)
-    for i in range(0,len(fileContent)):
-        fileContent[i] = fileContent[i].rstrip()
+    for i in range(0,len(file_content)):
+        file_content[i] = file_content[i].rstrip()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get folders
     # line 1 is the parent folder
-    parentFolder = fileContent[0]
-    if not parentFolder.endswith(folderDiv):
-        parentFolder = parentFolder + folderDiv
-    if not os.path.isdir(parentFolder):
+    parent_folder = file_content[0]
+    if not parent_folder.endswith(folder_div):
+        parent_folder = parent_folder + folder_div
+    if not os.path.isdir(parent_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The parent folder %s does not exist" % (parentFolder) )
+        print("ERROR: The parent folder %s does not exist" % (parent_folder) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get images and create a dictionary for each of them
-    allImageData = []
+    all_image_data = []
 
-    for i in range(1,len(fileContent)):
+    for i in range(1,len(file_content)):
 
-        currentLine = fileContent[i]
+        current_line = file_content[i]
 
         # if there are empty lines at the end of the file
-        if len(currentLine) != 0:
+        if len(current_line) != 0:
 
             # get image type (image or mask)
-            imageType = currentLine[0]
-            if imageType != "r" and imageType != "m":
+            image_type = current_line[0]
+            if image_type != "r" and image_type != "m":
                 print("----------------------------------------------------------------------------------------")
                 print("ERROR: Image type must be 'r' or 'm'")
                 print("----------------------------------------------------------------------------------------")
                 return {}
 
             # if the current image is the refence image
-            if imageType == "r":
+            if image_type == "r":
                 # get image name
-                referenceName = currentLine[2:len(currentLine)]
+                reference_name = current_line[2:len(current_line)]
                 # check that the reference image exists
-                if not os.path.isfile(parentFolder + referenceName):
+                if not os.path.isfile(parent_folder + reference_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (parentFolder + referenceName) )
+                    print("ERROR: The file %s does not exist" % (parent_folder + reference_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
             # if the current image is the moving image
-            if imageType == "m":
+            if image_type == "m":
                 # get image name
-                movingName = currentLine[2:len(currentLine)]
+                moving_name = current_line[2:len(current_line)]
                 # check that the reference image exists
-                if not os.path.isfile(parentFolder + movingName):
+                if not os.path.isfile(parent_folder + moving_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (parentFolder + movingName) )
+                    print("ERROR: The file %s does not exist" % (parent_folder + moving_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
                 # current image in a struct to the registration class
-                imageData = {}
+                image_data = {}
 
                 # from input file
-                imageData["parentFolder"]     = parentFolder
-                imageData["referenceName"]    = referenceName
-                imageData["movingName"]       = movingName
+                image_data["parent_folder"]     = parent_folder
+                image_data["reference_name"]    = reference_name
+                image_data["moving_name"]       = moving_name
 
                 # added to uniform with requirements in ElastixTransformix classes
-                referenceRoot, imageExt       = os.path.splitext(referenceName)
-                movingRoot, imageExt          = os.path.splitext(movingName)
-                imageData["referenceRoot"]    = referenceRoot
-                imageData["movingRoot"]       = movingRoot
-                imageData["movingFolder"]     = parentFolder
-                imageData["cartilage"]        = "fc"
-                imageData["bone"]             = "f"
-                imageData["currentAnatomy"]   = "f"
-                imageData["registeredFolder"] = parentFolder
-                imageData["segmentedFolder"]  = []
-                imageData["vectorFieldName"]  = movingRoot +"_VF.mha"
+                reference_root, image_ext       = os.path.splitext(reference_name)
+                moving_root, image_ext          = os.path.splitext(moving_name)
+                image_data["reference_root"]    = reference_root
+                image_data["moving_root"]       = moving_root
+                image_data["moving_folder"]     = parent_folder
+                image_data["cartilage"]         = "fc"
+                image_data["bone"]              = "f"
+                image_data["current_anatomy"]   = "f"
+                image_data["registered_folder"] = parent_folder
+                image_data["segmented_folder"]  = []
+                image_data["vector_field_name"] = moving_root +"_VF.mha"
 
                 # add extra filenames and paths
-                imageData = add_names_to_image_data(imageData,0)
+                image_data = add_names_to_image_data(image_data,0)
 
                 # send to the data list
-                allImageData.append(imageData)
+                all_image_data.append(image_data)
 
     print ("-> image information loaded")
 
     # return the image info
-    return allImageData
-
+    return all_image_data
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
 # SEGMENTATION --------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
-def load_image_data_segmentation(registrationType, inputFileName):
+def load_image_data_segmentation(registration_type, input_file_name):
 
-    folderDiv = folder_divider()
+    """
+    Parses the input file of segmentation.ipynb
+    """
+
+    folder_div = folder_divider()
 
     # ----------------------------------------------------------------------------------------------------------------------
-    # check if registrationType is allowed
-    if registrationType != "newsubject" and registrationType != "longitudinal" and registrationType != "multimodal":
+    # check if registration_type is allowed
+    if registration_type != "newsubject" and registration_type != "longitudinal" and registration_type != "multimodal":
         print("----------------------------------------------------------------------------------------")
         print("ERROR: Please add 'newsubject' or 'longitudinal' or 'multimodal' as first input")
         print("----------------------------------------------------------------------------------------")
@@ -270,268 +309,273 @@ def load_image_data_segmentation(registrationType, inputFileName):
 
 #    # ----------------------------------------------------------------------------------------------------------------------
 #    # check if anatomy is allowed
-#    if anatomy != "femurCart" and anatomy != "tibiaCart" and anatomy != "patellaCart":
+#    if anatomy != "femur_cart" and anatomy != "tibia_cart" and anatomy != "patella_cart":
 #        print("----------------------------------------------------------------------------------------")
-#        print("ERROR: Please add 'femurCart' or 'tibiaCart' or 'patellaCart' as second input")
+#        print("ERROR: Please add 'femur_cart' or 'tibia_cart' or 'patella_cart' as second input")
 #        print("----------------------------------------------------------------------------------------")
 #        return {}
-#    if anatomy == "femurCart":
+#    if anatomy == "femur_cart":
 #        bone = "f"
 #        cartilage = "fc"
-#    elif anatomy == "tibiaCart":
+#    elif anatomy == "tibia_cart":
 #        bone = "t"
 #        cartilage = "tc"
-#    elif anatomy == "patellaCart":
+#    elif anatomy == "patella_cart":
 #        bone = "p"
 #        cartilage = "pc"
     # In the future, extensions for all knee cartilages
-    anatomy = "femurCart"
+    #anatomy = "femur_cart"
     bone = "f"
     cartilage = "fc"
 
     # ----------------------------------------------------------------------------------------------------------------------
     # check if input file exists
-    if not os.path.exists(inputFileName):
+    if not os.path.exists(input_file_name):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file  %s does not exist" % (inputFileName) )
+        print("ERROR: The file  %s does not exist" % (input_file_name) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # ----------------------------------------------------------------------------------------------------------------------
-    # get inputFileName content
-    fileContent=[]
-    for line in open(inputFileName):
-        fileContent.append(line.rstrip("\n"))
-        
+    # get input_file_name content
+    file_content=[]
+    for line in open(input_file_name):
+        file_content.append(line.rstrip("\n"))
+
     # clear empty spaces at the end of strings (if human enters spaces by mistake)
-    for i in range(0,len(fileContent)):
-        fileContent[i] = fileContent[i].rstrip()
+    for i in range(0,len(file_content)):
+        file_content[i] = file_content[i].rstrip()
 
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get folders
     # line 1 is folder of reference image
-    referenceFolder = fileContent[0]
-    if not referenceFolder.endswith(folderDiv):
-        referenceFolder = referenceFolder + folderDiv
-    if not os.path.isdir(referenceFolder):
+    reference_folder = file_content[0]
+    if not reference_folder.endswith(folder_div):
+        reference_folder = reference_folder + folder_div
+    if not os.path.isdir(reference_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The reference folder %s does not exist" % (referenceFolder) )
+        print("ERROR: The reference folder %s does not exist" % (reference_folder) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # line 2 is folder of the preprocessed (*_prep.mha) images, i.e. the moving image folder
-    movingFolder = fileContent[1]
-    if not movingFolder.endswith(folderDiv):
-        movingFolder = movingFolder + folderDiv
-    if not os.path.isdir(movingFolder):
+    moving_folder = file_content[1]
+    if not moving_folder.endswith(folder_div):
+        moving_folder = moving_folder + folder_div
+    if not os.path.isdir(moving_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The preprocessed folder %s does not exist" % (movingFolder) )
+        print("ERROR: The preprocessed folder %s does not exist" % (moving_folder) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # create the registered folder
-    registeredFolder = os.path.split(movingFolder)[0] # remove the slash or backslash
-    registeredFolder = os.path.split(registeredFolder)[0] # remove "original"
-    registeredFolder = registeredFolder + folderDiv + "registered" + folderDiv
-    if not os.path.isdir(registeredFolder):
-        os.mkdir(registeredFolder)
-        print("-> registeredFolder %s created" % (registeredFolder) )
+    registered_folder = os.path.split(moving_folder)[0] # remove the slash or backslash
+    registered_folder = os.path.split(registered_folder)[0] # remove "original"
+    registered_folder = registered_folder + folder_div + "registered" + folder_div
+    if not os.path.isdir(registered_folder):
+        os.mkdir(registered_folder)
+        print("-> registered_folder %s created" % (registered_folder) )
 
     # create the segmented folder
-    segmentedFolder = os.path.split(movingFolder)[0] # remove the slash or backslash
-    segmentedFolder = os.path.split(segmentedFolder)[0] # remove "original"
-    segmentedFolder = segmentedFolder + folderDiv + "segmented" + folderDiv
-    if not os.path.isdir(segmentedFolder):
-        os.mkdir(segmentedFolder)
-        print("-> segmentedFolder %s created" % (segmentedFolder) )
+    segmented_folder = os.path.split(moving_folder)[0] # remove the slash or backslash
+    segmented_folder = os.path.split(segmented_folder)[0] # remove "original"
+    segmented_folder = segmented_folder + folder_div + "segmented" + folder_div
+    if not os.path.isdir(segmented_folder):
+        os.mkdir(segmented_folder)
+        print("-> segmented_folder %s created" % (segmented_folder) )
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get images and create a dictionary for each of them
-    allImageData = []
+    all_image_data = []
 
-    for i in range(2,len(fileContent)):
+    for i in range(2,len(file_content)):
 
-        currentLine = fileContent[i]
+        current_line = file_content[i]
 
         # if there are empty lines at the end of the file
-        if len(currentLine) != 0:
+        if len(current_line) != 0:
 
             # get image type (reference or moving)
-            imageType = currentLine[0]
-            if imageType != "r" and imageType != "m":
+            image_type = current_line[0]
+            if image_type != "r" and image_type != "m":
                 print("----------------------------------------------------------------------------------------")
                 print("ERROR: Image type must be 'r' or 'm'")
                 print("----------------------------------------------------------------------------------------")
                 return {}
 
             # if the current image is the reference image
-            if imageType == "r":
+            if image_type == "r":
                 # get image name
-                referenceName = currentLine[2:len(currentLine)]
+                reference_name = current_line[2:len(current_line)]
                 # check that the reference image exists
-                if not os.path.isfile(referenceFolder + referenceName):
+                if not os.path.isfile(reference_folder + reference_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (referenceFolder + referenceName) )
+                    print("ERROR: The file %s does not exist" % (reference_folder + reference_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
             # if the current image is the moving image
-            if imageType == "m":
+            if image_type == "m":
                 # get image name
-                movingName = currentLine[2:len(currentLine)]
+                moving_name = current_line[2:len(current_line)]
                 # check that the reference image exists
-                if not os.path.isfile(movingFolder + movingName):
+                if not os.path.isfile(moving_folder + moving_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (movingFolder + movingName) )
+                    print("ERROR: The file %s does not exist" % (moving_folder + moving_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
                 # current image in a struct to the registration class
-                referenceRoot, referenceExt = os.path.splitext(referenceName)
-                movingRoot, movingExt = os.path.splitext(movingName)
-                imageData = {}
-                imageData["registrationType"]     = registrationType
-                imageData["cartilage"]            = cartilage
-                imageData["bone"]                 = bone
-                imageData["currentAnatomy"]       = []
-                imageData["referenceFolder"]      = referenceFolder
-                imageData["referenceName"]        = referenceName
-                imageData["referenceRoot"]        = referenceRoot
-                imageData["movingFolder"]         = movingFolder
-                imageData["movingName"]           = movingName
-                imageData["movingRoot"]           = movingRoot
-                imageData["registeredFolder"]     = registeredFolder
-                imageData["segmentedFolder"]      = segmentedFolder
+                reference_root, reference_ext = os.path.splitext(reference_name)
+                moving_root, moving_ext = os.path.splitext(moving_name)
+                image_data = {}
+                image_data["registration_type"]     = registration_type
+                image_data["cartilage"]             = cartilage
+                image_data["bone"]                  = bone
+                image_data["current_anatomy"]       = []
+                image_data["reference_folder"]      = reference_folder
+                image_data["reference_name"]        = reference_name
+                image_data["reference_root"]        = reference_root
+                image_data["moving_folder"]         = moving_folder
+                image_data["moving_name"]           = moving_name
+                image_data["moving_root"]           = moving_root
+                image_data["registered_folder"]     = registered_folder
+                image_data["segmented_folder"]      = segmented_folder
 
                 # add extra filenames and paths
-                imageData = add_names_to_image_data(imageData,1)
+                image_data = add_names_to_image_data(image_data,1)
 
                 # send to the data list
-                allImageData.append(imageData)
+                all_image_data.append(image_data)
 
     print ("-> image information loaded")
 
     # return all the info on the images to be segmented
-    return allImageData
+    return all_image_data
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
 # ADD NAMES -----------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
-# Function used by loadImageDataSegmentation and loadImageDataFindReference
-def add_names_to_image_data(imageData,folderFlag):
+# Function used by loadimage_dataSegmentation and loadimage_dataFindReference
+def add_names_to_image_data(image_data,folderFlag):
 
-    folderDiv = folder_divider()
+    """
+    Adds file and folder names for registration (atlas-based segmentation)
+    Called by load_image_data_find_reference and load_image_data_segmentation
+    """
+
+    folder_div = folder_divider()
 
     # output folders
-    imageData["registeredSubFolder"]        = imageData["registeredFolder"] + imageData["movingRoot"] + folderDiv
-    imageData["iregisteredSubFolder"]       = imageData["registeredSubFolder"] + "invert" + folderDiv
+    image_data["registered_sub_folder"]        = image_data["registered_folder"] + image_data["moving_root"] + folder_div
+    image_data["i_registered_sub_folder"]       = image_data["registered_sub_folder"] + "invert" + folder_div
 
     # create output folders that do not exist
     if folderFlag ==1:
-        if not os.path.isdir(imageData["registeredSubFolder"]):
-            os.makedirs(imageData["registeredSubFolder"])
-        if not os.path.isdir(imageData["iregisteredSubFolder"]):
-            os.makedirs(imageData["iregisteredSubFolder"])
+        if not os.path.isdir(image_data["registered_sub_folder"]):
+            os.makedirs(image_data["registered_sub_folder"])
+        if not os.path.isdir(image_data["i_registered_sub_folder"]):
+            os.makedirs(image_data["i_registered_sub_folder"])
 
     # get current bone and cartilage
-    bone      = imageData["bone"]
-    cartilage = imageData["cartilage"]
+    bone      = image_data["bone"]
+    cartilage = image_data["cartilage"]
 
     # reference mask file names
-    imageData["dilateRadius"]                      = 15
-    imageData[bone + "maskFileName"]               = imageData["referenceRoot"] + "_" + bone + ".mha"
-    imageData[bone + "dilMaskFileName"]            = imageData["referenceRoot"] + "_" + bone + "_" + str(imageData["dilateRadius"]) + ".mha"
-    imageData[bone + "levelSetsMaskFileName"]      = imageData["referenceRoot"] + "_" + bone + "_levelSet.mha"
-    imageData[cartilage + "maskFileName"]          = imageData["referenceRoot"] + "_" + cartilage + ".mha"
-    imageData[cartilage + "dilMaskFileName"]       = imageData["referenceRoot"] + "_" + cartilage + "_" + str(imageData["dilateRadius"]) + ".mha"
-    imageData[cartilage + "levelSetsMaskFileName"] = imageData["referenceRoot"] + "_" + cartilage + "_levelSet.mha"
+    image_data["dilate_radius"]                        = 15
+    image_data[bone + "mask_file_name"]                = image_data["reference_root"] + "_" + bone + ".mha"
+    image_data[bone + "dil_mask_file_name"]            = image_data["reference_root"] + "_" + bone + "_" + str(image_data["dilate_radius"]) + ".mha"
+    image_data[bone + "levelset_mask_file_name"]      = image_data["reference_root"] + "_" + bone + "_levelSet.mha"
+    image_data[cartilage + "mask_file_name"]           = image_data["reference_root"] + "_" + cartilage + ".mha"
+    image_data[cartilage + "dil_mask_file_name"]       = image_data["reference_root"] + "_" + cartilage + "_" + str(image_data["dilate_radius"]) + ".mha"
+    image_data[cartilage + "levelset_mask_file_name"] = image_data["reference_root"] + "_" + cartilage + "_levelSet.mha"
 
     # output image file names
-    imageData[bone + "rigidName"]            = bone + "_rigid.mha"
-    imageData[bone + "similarityName"]       = bone + "_similarity.mha"
-    imageData[bone + "splineName"]           = bone + "_spline.mha"
-    imageData[cartilage + "splineName"]      = cartilage + "_spline.mha"
+    image_data[bone + "rigid_name"]            = bone + "_rigid.mha"
+    image_data[bone + "similarity_name"]       = bone + "_similarity.mha"
+    image_data[bone + "spline_name"]           = bone + "_spline.mha"
+    image_data[cartilage + "spline_name"]      = cartilage + "_spline.mha"
 
     # output mask file names
-    imageData[bone + "mRigidName"]           = bone + "_rigidMask.mha"
-    imageData[bone + "mSimilarityName"]      = bone + "_similarityMask.mha"
-    imageData[bone + "mSplineName"]          = bone + "_splineMask.mha"
-    imageData[bone + "mask"]                 = imageData["movingRoot"] + "_" + bone + ".mha"
-    imageData[cartilage + "mRigidName"]      = cartilage + "_rigidMask.mha"
-    imageData[cartilage + "mSimilarityName"] = cartilage + "_similarityMask.mha"
-    imageData[cartilage + "mSplineName"]     = cartilage + "_splineMask.mha"
-    imageData[cartilage + "mask"]            = cartilage + "_mask.mha"
-    imageData[cartilage + "mask"]            = imageData["movingRoot"] + "_" + cartilage + ".mha"
+    image_data[bone + "m_rigid_name"]           = bone + "_rigidMask.mha"
+    image_data[bone + "m_similarity_name"]      = bone + "_similarityMask.mha"
+    image_data[bone + "m_spline_name"]          = bone + "_splineMask.mha"
+    image_data[bone + "mask"]                   = image_data["moving_root"] + "_" + bone + ".mha"
+    image_data[cartilage + "m_rigid_name"]      = cartilage + "_rigidMask.mha"
+    image_data[cartilage + "m_similarity_name"] = cartilage + "_similarityMask.mha"
+    image_data[cartilage + "m_spline_name"]     = cartilage + "_splineMask.mha"
+    image_data[cartilage + "mask"]              = cartilage + "_mask.mha"
+    image_data[cartilage + "mask"]              = image_data["moving_root"] + "_" + cartilage + ".mha"
 
     # output transformation names
-    imageData[bone + "rigidTransfName"]        = "TransformParameters."  + bone + "_rigid.txt"
-    imageData[bone + "similarityTransfName"]   = "TransformParameters."  + bone + "_similarity.txt"
-    imageData[bone + "splineTransfName"]       = "TransformParameters."  + bone + "_spline.txt"
-    imageData[bone + "iRigidTransfName"]       = "iTransformParameters." + bone + "_rigid.txt"
-    imageData[bone + "iSimilarityTransfName"]  = "iTransformParameters." + bone + "_similarity.txt"
-    imageData[bone + "iSplineTransfName"]      = "iTransformParameters." + bone + "_spline.txt"
-    imageData[bone + "mRigidTransfName"]       = "mTransformParameters." + bone + "_rigid.txt"
-    imageData[bone + "mSimilarityTransfName"]  = "mTransformParameters." + bone + "_similarity.txt"
-    imageData[bone + "mSplineTransfName"]      = "mTransformParameters." + bone + "_spline.txt"
-    imageData[cartilage + "splineTransfName"]  = "TransformParameters."  + cartilage + "_spline.txt"
-    imageData[cartilage + "iSplineTransfName"] = "iTransformParameters." + cartilage + "_spline.txt"
-    imageData[cartilage + "mSplineTransfName"] = "mTransformParameters." + cartilage + "_spline.txt"
+    image_data[bone + "rigid_transf_name"]         = "TransformParameters."  + bone + "_rigid.txt"
+    image_data[bone + "similarity_transf_name"]    = "TransformParameters."  + bone + "_similarity.txt"
+    image_data[bone + "spline_transf_name"]        = "TransformParameters."  + bone + "_spline.txt"
+    image_data[bone + "i_rigid_transf_name"]       = "iTransformParameters." + bone + "_rigid.txt"
+    image_data[bone + "i_similarity_transf_name"]  = "iTransformParameters." + bone + "_similarity.txt"
+    image_data[bone + "i_spline_transf_name"]      = "iTransformParameters." + bone + "_spline.txt"
+    image_data[bone + "m_rigid_transf_name"]       = "mTransformParameters." + bone + "_rigid.txt"
+    image_data[bone + "m_similarity_transf_name"]  = "mTransformParameters." + bone + "_similarity.txt"
+    image_data[bone + "m_spline_transf_name"]      = "mTransformParameters." + bone + "_spline.txt"
+    image_data[cartilage + "spline_transf_name"]   = "TransformParameters."  + cartilage + "_spline.txt"
+    image_data[cartilage + "i_spline_transf_name"] = "iTransformParameters." + cartilage + "_spline.txt"
+    image_data[cartilage + "m_spline_transf_name"] = "mTransformParameters." + cartilage + "_spline.txt"
 
     # parameter files
-    parameterFolder = pkg_resources.resource_filename('pykneer','parameterFiles') + folderDiv
-    if not parameterFolder.endswith(folderDiv):
-        parameterFolder = parameterFolder + folderDiv
-    if not os.path.isdir(parameterFolder):
+    parameter_folder = pkg_resources.resource_filename('pykneer','parameterFiles') + folder_div
+    if not parameter_folder.endswith(folder_div):
+        parameter_folder = parameter_folder + folder_div
+    if not os.path.isdir(parameter_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The parameter folder %s does not exist" % (parameterFolder) )
+        print("ERROR: The parameter folder %s does not exist" % (parameter_folder) )
         print("----------------------------------------------------------------------------------------")
         return {}
     # check if the folder contains all the parameter files
-    paramFileRigid       = parameterFolder + "MR_param_rigid.txt"
-    iparamFileRigid      = parameterFolder + "MR_iparam_rigid.txt"
-    paramFileSimilarity  = parameterFolder + "MR_param_similarity.txt"
-    iparamFileSimilarity = parameterFolder + "MR_iparam_similarity.txt"
-    paramFileSpline      = parameterFolder + "MR_param_spline.txt"
-    iparamFileSpline     = parameterFolder + "MR_iparam_spline.txt"
-    if not os.path.isfile(paramFileRigid):
+    param_file_rigid        = parameter_folder + "MR_param_rigid.txt"
+    i_param_file_rigid      = parameter_folder + "MR_iparam_rigid.txt"
+    param_file_similarity   = parameter_folder + "MR_param_similarity.txt"
+    i_param_file_similarity = parameter_folder + "MR_iparam_similarity.txt"
+    param_file_spline       = parameter_folder + "MR_param_spline.txt"
+    i_param_file_spline     = parameter_folder + "MR_iparam_spline.txt"
+    if not os.path.isfile(param_file_rigid):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file %s does not exist" % (paramFileRigid) )
-        print("----------------------------------------------------------------------------------------")
-        return {}
-    if not os.path.isfile(iparamFileRigid):
-        print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file %s does not exist" % (iparamFileRigid) )
+        print("ERROR: The file %s does not exist" % (param_file_rigid) )
         print("----------------------------------------------------------------------------------------")
         return {}
-    if not os.path.isfile(paramFileSimilarity):
+    if not os.path.isfile(i_param_file_rigid):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file %s does not exist" % (paramFileSimilarity) )
-        print("----------------------------------------------------------------------------------------")
-        return {}
-    if not os.path.isfile(iparamFileSimilarity):
-        print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file %s does not exist" % (iparamFileSimilarity) )
+        print("ERROR: The file %s does not exist" % (i_param_file_rigid) )
         print("----------------------------------------------------------------------------------------")
         return {}
-    if not os.path.isfile(paramFileSpline):
+    if not os.path.isfile(param_file_similarity):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file %s does not exist" % (paramFileSpline) )
-        print("----------------------------------------------------------------------------------------")
-        return {}
-    if not os.path.isfile(iparamFileSpline):
-        print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file %s does not exist" % (iparamFileSpline) )
+        print("ERROR: The file %s does not exist" % (param_file_similarity) )
         print("----------------------------------------------------------------------------------------")
         return {}
-    # add parameter files to imageData
-    imageData["paramFileRigid"]       = paramFileRigid
-    imageData["iparamFileRigid"]      = iparamFileRigid
-    imageData["paramFileSimilarity"]  = paramFileSimilarity
-    imageData["iparamFileSimilarity"] = iparamFileSimilarity
-    imageData["paramFileSpline"]      = paramFileSpline
-    imageData["iparamFileSpline"]     = iparamFileSpline
+    if not os.path.isfile(i_param_file_similarity):
+        print("----------------------------------------------------------------------------------------")
+        print("ERROR: The file %s does not exist" % (i_param_file_similarity) )
+        print("----------------------------------------------------------------------------------------")
+        return {}
+    if not os.path.isfile(param_file_spline):
+        print("----------------------------------------------------------------------------------------")
+        print("ERROR: The file %s does not exist" % (param_file_spline) )
+        print("----------------------------------------------------------------------------------------")
+        return {}
+    if not os.path.isfile(i_param_file_spline):
+        print("----------------------------------------------------------------------------------------")
+        print("ERROR: The file %s does not exist" % (i_param_file_spline) )
+        print("----------------------------------------------------------------------------------------")
+        return {}
+    # add parameter files to image_data
+    image_data["param_file_rigid"]        = param_file_rigid
+    image_data["i_param_file_rigid"]      = i_param_file_rigid
+    image_data["param_file_similarity"]   = param_file_similarity
+    image_data["i_param_file_similarity"] = i_param_file_similarity
+    image_data["param_file_spline"]       = param_file_spline
+    image_data["i_param_file_spline"]     = i_param_file_spline
 
     # elastix path (from binaries in pykneer package)
     sys = platform.system()
@@ -541,532 +585,548 @@ def add_names_to_image_data(imageData,folderFlag):
         dirpath = pkg_resources.resource_filename('pykneer','elastix/Windows/')
     elif sys == "Darwin":
         dirpath = pkg_resources.resource_filename('pykneer','elastix/Darwin/')
-    imageData["elastixFolder"]           = dirpath
-    imageData["completeElastixPath"]     = dirpath + "elastix"
-    imageData["completeTransformixPath"] = dirpath + "transformix"
+    image_data["elastix_folder"]            = dirpath
+    image_data["complete_elastix_path"]     = dirpath + "elastix"
+    image_data["complete_transformix_path"] = dirpath + "transformix"
 
-    return imageData
+    return image_data
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
 # SEGMENTATION QUALITY ------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
-def load_image_data_segmentation_quality(inputFileName):
+def load_image_data_segmentation_quality(input_file_name):
 
-    folderDiv = folder_divider()
+    """
+    Parses the input file of segmentation_quality.ipynb
+    """
+
+    folder_div = folder_divider()
 
      # ----------------------------------------------------------------------------------------------------------------------
     # check if input file exists
-    if not os.path.exists(inputFileName):
+    if not os.path.exists(input_file_name):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file  %s does not exist" % (inputFileName) )
+        print("ERROR: The file  %s does not exist" % (input_file_name) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # ----------------------------------------------------------------------------------------------------------------------
-    # get inputFileName content
-    fileContent=[]
-    for line in open(inputFileName):
-        fileContent.append(line.rstrip("\n"))
-    
+    # get input_file_name content
+    file_content=[]
+    for line in open(input_file_name):
+        file_content.append(line.rstrip("\n"))
+
     # clear empty spaces at the end of strings (if human enters spaces by mistake)
-    for i in range(0,len(fileContent)):
-        fileContent[i] = fileContent[i].rstrip()
+    for i in range(0,len(file_content)):
+        file_content[i] = file_content[i].rstrip()
 
 
     # line 0 is folder of the registered images
-    segmentedFolder = fileContent[0]
-    if not segmentedFolder.endswith(folderDiv):
-        segmentedFolder = segmentedFolder + folderDiv
-    if not os.path.isdir(segmentedFolder):
+    segmented_folder = file_content[0]
+    if not segmented_folder.endswith(folder_div):
+        segmented_folder = segmented_folder + folder_div
+    if not os.path.isdir(segmented_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The segmented folder %s does not exist" % (segmentedFolder) )
+        print("ERROR: The segmented folder %s does not exist" % (segmented_folder) )
         print("----------------------------------------------------------------------------------------")
 
     # line 1 is folder of the segmented masks
-    groundTruthFolder = fileContent[1]
-    if not groundTruthFolder.endswith(folderDiv):
-        groundTruthFolder = groundTruthFolder + folderDiv
-    if not os.path.isdir(groundTruthFolder):
+    ground_truth_folder = file_content[1]
+    if not ground_truth_folder.endswith(folder_div):
+        ground_truth_folder = ground_truth_folder + folder_div
+    if not os.path.isdir(ground_truth_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The ground truth folder %s does not exist" % (groundTruthFolder) )
+        print("ERROR: The ground truth folder %s does not exist" % (ground_truth_folder) )
         print("----------------------------------------------------------------------------------------")
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get images and create a dictionary for each of them
-    allImageData = []
+    all_image_data = []
 
-    for i in range(2,len(fileContent)):
+    for i in range(2,len(file_content)):
 
-        currentLine = fileContent[i]
+        current_line = file_content[i]
 
         # if there are empty lines at the end of the file
-        if len(currentLine) != 0:
+        if len(current_line) != 0:
 
             # get image type (reference or moving)
-            imageType = currentLine[0]
-            if imageType != "s" and imageType != "g":
+            image_type = current_line[0]
+            if image_type != "s" and image_type != "g":
                 print("----------------------------------------------------------------------------------------")
                 print("ERROR: Image type must be 's' or 'g'")
                 print("----------------------------------------------------------------------------------------")
                 return {}
 
             # if the current image is the segmented image
-            if imageType == "s":
+            if image_type == "s":
                 # get image name
-                segmentedName = currentLine[2:len(currentLine)]
+                segmented_name = current_line[2:len(current_line)]
                 # check that the segmented image exists
-                if not os.path.isfile(segmentedFolder + segmentedName):
+                if not os.path.isfile(segmented_folder + segmented_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (segmentedFolder + segmentedName) )
+                    print("ERROR: The file %s does not exist" % (segmented_folder + segmented_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
             # if the current image is the moving image
-            if imageType == "g":
+            if image_type == "g":
                 # get image name
-                groundTruthName = currentLine[2:len(currentLine)]
+                ground_truth_name = current_line[2:len(current_line)]
                 # check that the groundTruth image exists
-                if not os.path.isfile(groundTruthFolder + groundTruthName):
+                if not os.path.isfile(ground_truth_folder + ground_truth_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (groundTruthFolder + groundTruthName) )
+                    print("ERROR: The file %s does not exist" % (ground_truth_folder + ground_truth_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
                 # put pair in a list
-                imageData = {}
-                imageData["segmentedFolder"]        = segmentedFolder
-                imageData["groundTruthFolder"]      = groundTruthFolder
-                imageData["segmentedName"]          = segmentedName
-                imageData["groundTruthName"]        = groundTruthName
+                image_data = {}
+                image_data["segmented_folder"]         = segmented_folder
+                image_data["ground_truth_folder"]      = ground_truth_folder
+                image_data["segmented_name"]           = segmented_name
+                image_data["ground_truth_name"]        = ground_truth_name
 
                 # send to the data list
-                allImageData.append(imageData)
+                all_image_data.append(image_data)
 
     print ("-> image information loaded")
 
     # return the image info
-    return allImageData
+    return all_image_data
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
 # MORPHOLOGY ----------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
-def load_image_data_morphology(inputFileName):
+def load_image_data_morphology(input_file_name):
 
-    folderDiv = folder_divider()
+    """
+    Parses the input file of morphology.ipynb
+    """
+
+    folder_div = folder_divider()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # check if input file exists
-    if not os.path.exists(inputFileName):
+    if not os.path.exists(input_file_name):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file  %s does not exist" % (inputFileName) )
+        print("ERROR: The file  %s does not exist" % (input_file_name) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # ----------------------------------------------------------------------------------------------------------------------
-    # get inputFileName content
-    fileContent=[]
-    for line in open(inputFileName):
-        fileContent.append(line.rstrip("\n"))
+    # get input_file_name content
+    file_content=[]
+    for line in open(input_file_name):
+        file_content.append(line.rstrip("\n"))
 
     # clear empty spaces at the end of strings (if human enters spaces by mistake)
-    for i in range(0,len(fileContent)):
-        fileContent[i] = fileContent[i].rstrip()
+    for i in range(0,len(file_content)):
+        file_content[i] = file_content[i].rstrip()
 
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get folder - line 1 is the input folder
-    inputFolder = fileContent[0]
-    if not inputFolder.endswith(folderDiv):
-        inputFolder = inputFolder + folderDiv
-    if not os.path.isdir(inputFolder):
+    input_folder = file_content[0]
+    if not input_folder.endswith(folder_div):
+        input_folder = input_folder + folder_div
+    if not os.path.isdir(input_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The input folder %s does not exist" % (inputFolder) )
+        print("ERROR: The input folder %s does not exist" % (input_folder) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # create the morphology folder
-    morphologyFolder = os.path.split(inputFolder)[0] # remove the slash or backslash
-    morphologyFolder = os.path.split(morphologyFolder)[0] # remove "original"
-    morphologyFolder = morphologyFolder + folderDiv + "morphology" + folderDiv
-    if not os.path.isdir(morphologyFolder):
-        os.mkdir(morphologyFolder)
-        print("-> morphologyFolder %s created" % (morphologyFolder) )
+    morphology_folder = os.path.split(input_folder)[0] # remove the slash or backslash
+    morphology_folder = os.path.split(morphology_folder)[0] # remove "original"
+    morphology_folder = morphology_folder + folder_div + "morphology" + folder_div
+    if not os.path.isdir(morphology_folder):
+        os.mkdir(morphology_folder)
+        print("-> morphology_folder %s created" % (morphology_folder) )
 
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get images and create a dictionary for each of them
-    allImageData = []
+    all_image_data = []
 
-    for i in range(1,len(fileContent)):
+    for i in range(1,len(file_content)):
 
-        maskName = fileContent[i]
+        mask_name = file_content[i]
 
         # if there are empty lines at the end of the file
-        if len(maskName) != 0:
+        if len(mask_name) != 0:
 
             # check that the mask exists
-            if not os.path.isfile(inputFolder + maskName):
+            if not os.path.isfile(input_folder + mask_name):
                 print("----------------------------------------------------------------------------------------")
-                print("ERROR: The file %s does not exist" % (inputFolder + maskName) )
+                print("ERROR: The file %s does not exist" % (input_folder + mask_name) )
                 print("----------------------------------------------------------------------------------------")
                 return {}
 
             # create the dictionary
-            imageData = {}
+            image_data = {}
             # input names
-            imageData["inputFolder"]      = inputFolder
-            imageData["maskName"]         = maskName
+            image_data["input_folder"]        = input_folder
+            image_data["mask_name"]           = mask_name
             # output names
-            maskNameRoot, maskNameExt     = os.path.splitext(maskName)
-            imageData["boneCartName"]     = maskNameRoot + "_boneCart.txt"
-            imageData["artiCartName"]     = maskNameRoot + "_artiCart.txt"
-            imageData["thicknessName"]    = []
-            imageData["algorithm"]        = []
-            imageData["volumeName"]       = maskNameRoot + "_volume.txt"
-            imageData["morphologyFolder"] = morphologyFolder
+            mask_name_root, mask_name_ext       = os.path.splitext(mask_name)
+            image_data["bone_cart_name"]      = mask_name_root + "_bone_cart.txt"
+            image_data["arti_cart_name"]      = mask_name_root + "_arti_cart.txt"
+            image_data["thickness_name"]      = []
+            image_data["thickness_flat_name"] = []
+            image_data["algorithm"]           = []
+            image_data["volume_name"]         = mask_name_root + "_volume.txt"
+            image_data["morphology_folder"]   = morphology_folder
             # for visualization
-            imageData["boneCartFletName"] = maskNameRoot + "_boneCartFlet.txt"
-            imageData["artiCartFletName"] = maskNameRoot + "_artiCartFlet.txt"
-            imageData["bonePhiName"]      = maskNameRoot + "_bonePhi.txt"
-            imageData["artiPhiName"]      = maskNameRoot + "_artiPhi.txt"
+            image_data["bone_cart_flat_name"] = mask_name_root + "_bone_cart_flat.txt"
+            image_data["arti_cart_flat_name"] = mask_name_root + "_arti_cart_flat.txt"
+            image_data["bone_phi_name"]       = mask_name_root + "_bone_phi.txt"
+            image_data["arti_phi_name"]       = mask_name_root + "_arti_phi.txt"
 
             # send to the whole data array
-            allImageData.append(imageData)
+            all_image_data.append(image_data)
 
     print ("-> image information loaded")
 
     # return the image info
-    return allImageData
+    return all_image_data
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
 # EPG (T2 from DESS)---------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
-def load_image_data_EPG(inputFileName):
+def load_image_data_EPG(input_file_name):
+
+    """
+    Parses the input file of relaxation_EPG.ipynb
+    """
 
     # determine the sistem to define the folder divider ("\" or "/")
-    folderDiv = folder_divider()
+    folder_div = folder_divider()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # check if input file exists
-    if not os.path.exists(inputFileName):
+    if not os.path.exists(input_file_name):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file %s does not exist" % (inputFileName) )
+        print("ERROR: The file %s does not exist" % (input_file_name) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # ----------------------------------------------------------------------------------------------------------------------
-    # get inputFileName content
-    fileContent=[]
-    for line in open(inputFileName):
-        fileContent.append(line.rstrip("\n"))
+    # get input_file_name content
+    file_content=[]
+    for line in open(input_file_name):
+        file_content.append(line.rstrip("\n"))
 
     # clear empty spaces at the end of strings (if human enters spaces by mistake)
-    for i in range(0,len(fileContent)):
-        fileContent[i] = fileContent[i].rstrip()
+    for i in range(0,len(file_content)):
+        file_content[i] = file_content[i].rstrip()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # look for needed folders
     # preprocessed folder
-    preprocessedFolder = fileContent[0]
-    if not preprocessedFolder.endswith(folderDiv):
-        preprocessedFolder = preprocessedFolder + folderDiv
-    if not os.path.isdir(preprocessedFolder):
+    preprocessed_folder = file_content[0]
+    if not preprocessed_folder.endswith(folder_div):
+        preprocessed_folder = preprocessed_folder + folder_div
+    if not os.path.isdir(preprocessed_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The preprocessing folder %s does not exist" % (preprocessedFolder) )
+        print("ERROR: The preprocessing folder %s does not exist" % (preprocessed_folder) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # segmented folder
-    segmentedFolder = fileContent[1]
-    if not segmentedFolder.endswith(folderDiv):
-        segmentedFolder = segmentedFolder + folderDiv
-    if not os.path.isdir(segmentedFolder):
+    segmented_folder = file_content[1]
+    if not segmented_folder.endswith(folder_div):
+        segmented_folder = segmented_folder + folder_div
+    if not os.path.isdir(segmented_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The segmented folder %s does not exist" % (segmentedFolder) )
+        print("ERROR: The segmented folder %s does not exist" % (segmented_folder) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # create the t2mapping folder
-    relaxometryFolder = os.path.split(preprocessedFolder)[0] # remove the slash or backslash
-    relaxometryFolder = os.path.split(relaxometryFolder)[0] # remove "original"
-    relaxometryFolder = relaxometryFolder + folderDiv + "relaxometry" + folderDiv
-    if not os.path.isdir(relaxometryFolder):
-        os.mkdir(relaxometryFolder)
-        print("-> relaxometry folder %s created" % (relaxometryFolder) )
+    relaxometry_folder = os.path.split(preprocessed_folder)[0] # remove the slash or backslash
+    relaxometry_folder = os.path.split(relaxometry_folder)[0] # remove "original"
+    relaxometry_folder = relaxometry_folder + folder_div + "relaxometry" + folder_div
+    if not os.path.isdir(relaxometry_folder):
+        os.mkdir(relaxometry_folder)
+        print("-> relaxometry folder %s created" % (relaxometry_folder) )
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get images and create a dictionary for each of them
-    allImageData = []
+    all_image_data = []
 
-    for i in range(2,len(fileContent)):
+    for i in range(2,len(file_content)):
 
-        currentLine = fileContent[i]
+        current_line = file_content[i]
 
         # if there are empty lines at the end of the file
-        if len(currentLine) != 0:
+        if len(current_line) != 0:
 
             # get image type (reference or moving)
-            imageType = currentLine[0:2]
-            if imageType != "i1" and imageType != "i2" and imageType != "cm":
+            image_type = current_line[0:2]
+            if image_type != "i1" and image_type != "i2" and image_type != "cm":
                 print("----------------------------------------------------------------------------------------")
                 print("ERROR: Image type must be 'i1' or 'i2' or 'cm' ")
                 print("----------------------------------------------------------------------------------------")
                 return {}
 
             # if the current image is the i1 image
-            if imageType == "i1":
+            if image_type == "i1":
                 # get image name
-                i1fileName = currentLine[3:len(currentLine)]
+                i1_file_name = current_line[3:len(current_line)]
                 # check that the segmented image exists
-                if not os.path.isfile(preprocessedFolder + i1fileName):
+                if not os.path.isfile(preprocessed_folder + i1_file_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (preprocessedFolder + i1fileName) )
+                    print("ERROR: The file %s does not exist" % (preprocessed_folder + i1_file_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
             # check that the info file exists
-            imageNameRoot, imageExt         = os.path.splitext(i1fileName)
-            infoFileName = imageNameRoot + ".txt"
-            if not os.path.isfile(preprocessedFolder + infoFileName):
+            image_name_root, image_ext         = os.path.splitext(i1_file_name)
+            info_file_name = image_name_root + ".txt"
+            if not os.path.isfile(preprocessed_folder + info_file_name):
                 print("----------------------------------------------------------------------------------------")
-                print("ERROR: The file %s does not exist" % (preprocessedFolder + infoFileName) )
+                print("ERROR: The file %s does not exist" % (preprocessed_folder + info_file_name) )
                 print("----------------------------------------------------------------------------------------")
                 return {}
 
             # if the current image is the i2 image
-            if imageType == "i2":
+            if image_type == "i2":
                 # get image name
-                i2fileName = currentLine[3:len(currentLine)]
+                i2_file_name = current_line[3:len(current_line)]
                 # check that the segmented image exists
-                if not os.path.isfile(preprocessedFolder + i2fileName):
+                if not os.path.isfile(preprocessed_folder + i2_file_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (preprocessedFolder + i2fileName) )
+                    print("ERROR: The file %s does not exist" % (preprocessed_folder + i2_file_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
             # if the current image is the cartilage mask
-            if imageType == "cm":
+            if image_type == "cm":
                 # get image name
-                maskFileName = currentLine[3:len(currentLine)]
+                mask_file_name = current_line[3:len(current_line)]
                 # check that the segmented image exists
-                if not os.path.isfile(segmentedFolder + maskFileName):
+                if not os.path.isfile(segmented_folder + mask_file_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (segmentedFolder + maskFileName) )
+                    print("ERROR: The file %s does not exist" % (segmented_folder + mask_file_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
                 # create the dictionary
-                imageData = {}
+                image_data = {}
                 # add folders
-                imageData["preprocessedFolder"] = preprocessedFolder
-                imageData["segmentedFolder"]    = segmentedFolder
-                imageData["relaxometryFolder"]  = relaxometryFolder
+                image_data["preprocessed_folder"]   = preprocessed_folder
+                image_data["segmented_folder"]      = segmented_folder
+                image_data["relaxometry_folder"]    = relaxometry_folder
                 # add input file names
-                imageData["i1fileName"]         = i1fileName
-                imageData["i2fileName"]         = i2fileName
-                imageData["maskFileName"]       = maskFileName
-                imageData["infoFileName"]       = infoFileName
+                image_data["i1_file_name"]          = i1_file_name
+                image_data["i2_file_name"]          = i2_file_name
+                image_data["mask_file_name"]        = mask_file_name
+                image_data["info_file_name"]        = info_file_name
                 # add output file names
-                imageData["t2mapFileName"]      = imageNameRoot + "_T2map.mha"
-                imageData["t2mapMaskFileName"]  = imageNameRoot + "_T2map_masked.mha"
+                image_data["t2_map_file_name"]      = image_name_root + "_T2map.mha"
+                image_data["t2_map_mask_file_name"] = image_name_root + "_T2map_masked.mha"
                 # others
-                imageData["imageNameRoot"]      = imageNameRoot
+                image_data["image_name_root"]       = image_name_root
 
-                print (imageData["imageNameRoot"])
+                print (image_data["image_name_root"])
 
                 # send to the data dictionary
-                allImageData.append(imageData)
+                all_image_data.append(image_data)
 
 
 
-    print ("-> information loaded for " + str(len(allImageData)) + " subjects")
+    print ("-> information loaded for " + str(len(all_image_data)) + " subjects")
 
     # return the image info
-    return allImageData
-
+    return all_image_data
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
 # FITTING FOR RELAXOMETRY MAPS ----------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
-def load_image_data_fitting(inputFileName, methodFlag, registrationFlag):
+def load_image_data_fitting(input_file_name, method_flag, registrationFlag):
+
+    """
+    Parses the input file of relaxation_fitting.ipynb
+    """
 
     # determine the sistem to define the folder divider ("\" or "/")
-    folderDiv = folder_divider()
+    folder_div = folder_divider()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # check if input file exists
-    if not os.path.exists(inputFileName):
+    if not os.path.exists(input_file_name):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The file  %s does not exist" % (inputFileName) )
+        print("ERROR: The file  %s does not exist" % (input_file_name) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # ----------------------------------------------------------------------------------------------------------------------
-    # get inputFileName content
-    fileContent=[]
-    for line in open(inputFileName):
-        fileContent.append(line.rstrip("\n"))
-    
+    # get input_file_name content
+    file_content=[]
+    for line in open(input_file_name):
+        file_content.append(line.rstrip("\n"))
+
     # clear empty spaces at the end of strings (if human enters spaces by mistake)
-    for i in range(0,len(fileContent)):
-        fileContent[i] = fileContent[i].rstrip()
+    for i in range(0,len(file_content)):
+        file_content[i] = file_content[i].rstrip()
 
     # ----------------------------------------------------------------------------------------------------------------------
     # look for needed folders
     # preprocessed folder
-    preprocessedFolder = fileContent[0]
-    if not preprocessedFolder.endswith(folderDiv):
-        preprocessedFolder = preprocessedFolder + folderDiv
-    if not os.path.isdir(preprocessedFolder):
+    preprocessed_folder = file_content[0]
+    if not preprocessed_folder.endswith(folder_div):
+        preprocessed_folder = preprocessed_folder + folder_div
+    if not os.path.isdir(preprocessed_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The preprocessing folder %s does not exist" % (preprocessedFolder) )
+        print("ERROR: The preprocessing folder %s does not exist" % (preprocessed_folder) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # segmented folder
-    segmentedFolder = fileContent[1]
-    if not segmentedFolder.endswith(folderDiv):
-        segmentedFolder = segmentedFolder + folderDiv
-    if not os.path.isdir(segmentedFolder):
+    segmented_folder = file_content[1]
+    if not segmented_folder.endswith(folder_div):
+        segmented_folder = segmented_folder + folder_div
+    if not os.path.isdir(segmented_folder):
         print("----------------------------------------------------------------------------------------")
-        print("ERROR: The segmented folder %s does not exist" % (segmentedFolder) )
+        print("ERROR: The segmented folder %s does not exist" % (segmented_folder) )
         print("----------------------------------------------------------------------------------------")
         return {}
 
     # create the relaxometry folder
-    relaxometryFolder = os.path.split(preprocessedFolder)[0] # remove the slash or backslash
-    relaxometryFolder = os.path.split(relaxometryFolder)[0] # remove "original"
-    relaxometryFolder = relaxometryFolder + folderDiv + "relaxometry" + folderDiv
-    if not os.path.isdir(relaxometryFolder):
-        os.mkdir(relaxometryFolder)
-        print("-> relaxometry %s created" % (relaxometryFolder) )
+    relaxometry_folder = os.path.split(preprocessed_folder)[0] # remove the slash or backslash
+    relaxometry_folder = os.path.split(relaxometry_folder)[0] # remove "original"
+    relaxometry_folder = relaxometry_folder + folder_div + "relaxometry" + folder_div
+    if not os.path.isdir(relaxometry_folder):
+        os.mkdir(relaxometry_folder)
+        print("-> relaxometry %s created" % (relaxometry_folder) )
 
     # ----------------------------------------------------------------------------------------------------------------------
     # number of acquisitions
-    nOfAcquisitions = int(fileContent[2])
+    n_of_acquisitions = int(file_content[2])
     # create the IDs for the acquisitions
-    acquisitionID = []
-    for a in range(0,nOfAcquisitions):
-        acquisitionID.append("i" + str(a+1))
+    acquisition_ID = []
+    for a in range(0,n_of_acquisitions):
+        acquisition_ID.append("i" + str(a+1))
 
     # ----------------------------------------------------------------------------------------------------------------------
     # get images and create a dictionary for each of them
-    allImageData     = []
-    acquisitionFileNames = []
-    infoFileNames        = []
+    all_image_data     = []
+    acquisition_file_names = []
+    info_file_names        = []
 
-    for i in range(3,len(fileContent)):
+    for i in range(3,len(file_content)):
 
-        currentLine = fileContent[i]
+        current_line = file_content[i]
 
 
         # if the line is not empty (there might be empty lines at the end of the file)
-        if len(currentLine) != 0:
+        if len(current_line) != 0:
 
             # get image type (reference or moving)
-            imageType = currentLine[0:2]
+            image_type = current_line[0:2]
 
 
-            #if imageType != "i1" and imageType != "i2" and imageType != "i3" and imageType != "i4" and imageType != "bm" and imageType != "cm":
-            if imageType not in acquisitionID and imageType != "bm" and imageType != "cm":
+            #if image_type != "i1" and image_type != "i2" and image_type != "i3" and image_type != "i4" and image_type != "bm" and image_type != "cm":
+            if image_type not in acquisition_ID and image_type != "bm" and image_type != "cm":
                 print("----------------------------------------------------------------------------------------")
                 print("ERROR: Image type must be 'i1' or 'i2' or 'i3' or 'i4' or 'bm' or 'cm' ")
                 print("----------------------------------------------------------------------------------------")
                 return {}
 
             # if the current image is an acquisition
-            if imageType in acquisitionID:
-            #if imageType == "i1":
+            if image_type in acquisition_ID:
+            #if image_type == "i1":
                 # get image name
-                #i1fileName = currentLine[3:len(currentLine)]
-                acquisitionFileNames.append(currentLine[3:len(currentLine)])
+                #i1_file_name = current_line[3:len(current_line)]
+                acquisition_file_names.append(current_line[3:len(current_line)])
                 # check that the preprocessed image exists
-                if not os.path.isfile(preprocessedFolder + acquisitionFileNames[-1]):
+                if not os.path.isfile(preprocessed_folder + acquisition_file_names[-1]):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (preprocessedFolder + acquisitionFileNames[-1]) )
+                    print("ERROR: The file %s does not exist" % (preprocessed_folder + acquisition_file_names[-1]) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
                 # check that the info file exists
-                imageNameRoot, imageExt         = os.path.splitext(acquisitionFileNames[-1])
-                infoFileNames.append(imageNameRoot + ".txt")
-                if not os.path.isfile(preprocessedFolder + infoFileNames[-1]):
+                image_name_root, image_ext         = os.path.splitext(acquisition_file_names[-1])
+                info_file_names.append(image_name_root + ".txt")
+                if not os.path.isfile(preprocessed_folder + info_file_names[-1]):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (preprocessedFolder + infoFileNames[-1]) )
+                    print("ERROR: The file %s does not exist" % (preprocessed_folder + info_file_names[-1]) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
             # if the current image is the bone mask
-            if imageType == "bm":
+            if image_type == "bm":
                 # get image name
-                boneMaskFileName = currentLine[3:len(currentLine)]
+                bone_mask_file_name = current_line[3:len(current_line)]
                 # check that the segmented image exists
-                if not os.path.isfile(segmentedFolder + boneMaskFileName):
+                if not os.path.isfile(segmented_folder + bone_mask_file_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (segmentedFolder + boneMaskFileName) )
+                    print("ERROR: The file %s does not exist" % (segmented_folder + bone_mask_file_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
             # if the current image is the cartilage mask
-            if imageType == "cm":
+            if image_type == "cm":
                 # get image name
-                cartMaskFileName = currentLine[3:len(currentLine)]
+                cart_mask_file_name = current_line[3:len(current_line)]
                 # check that the segmented image exists
-                if not os.path.isfile(segmentedFolder + cartMaskFileName):
+                if not os.path.isfile(segmented_folder + cart_mask_file_name):
                     print("----------------------------------------------------------------------------------------")
-                    print("ERROR: The file %s does not exist" % (segmentedFolder + cartMaskFileName) )
+                    print("ERROR: The file %s does not exist" % (segmented_folder + cart_mask_file_name) )
                     print("----------------------------------------------------------------------------------------")
                     return {}
 
 
                 # create the dictionary
-                imageData = {}
+                image_data = {}
 
                 # folders
-                imageData["preprocessedFolder"]    = preprocessedFolder
-                imageData["segmentedFolder"]       = segmentedFolder
-                imageData["relaxometryFolder"]     = relaxometryFolder
+                image_data["preprocessed_folder"]    = preprocessed_folder
+                image_data["segmented_folder"]       = segmented_folder
+                image_data["relaxometry_folder"]     = relaxometry_folder
 
                 # input file names
-                imageData["acquisitionFileNames"]  = acquisitionFileNames
-                imageData["infoFileNames"]         = infoFileNames
-                imageData["boneMaskFileName"]      = boneMaskFileName
-                imageData["cartMaskFileName"]      = cartMaskFileName
+                image_data["acquisition_file_names"] = acquisition_file_names
+                image_data["info_file_names"]        = info_file_names
+                image_data["bone_mask_file_name"]    = bone_mask_file_name
+                image_data["cart_mask_file_name"]    = cart_mask_file_name
 
                 # fitting type
-                imageData["methodFlag"]            = methodFlag
+                image_data["method_flag"]            = method_flag
 
                 # output file names
-                imageNameRoot, imageExt      = os.path.splitext(acquisitionFileNames[0])
+                image_name_root, image_ext           = os.path.splitext(acquisition_file_names[0])
                 if registrationFlag == 1:
-                    if methodFlag == 0: # linear fitting
-                        imageData["mapFileName"] = imageNameRoot + "_map_lin_aligned.mha"
-                    elif methodFlag == 1: # exponential fitting
-                        imageData["mapFileName"] = imageNameRoot + "_map_exp_aligned.mha"
+                    if method_flag == 0: # linear fitting
+                        image_data["map_file_name"] = image_name_root + "_map_lin_aligned.mha"
+                    elif method_flag == 1: # exponential fitting
+                        image_data["map_file_name"] = image_name_root + "_map_exp_aligned.mha"
                 else:
-                    if methodFlag == 0: # linear fitting
-                        imageData["mapFileName"] = imageNameRoot + "_map_lin.mha"
-                    elif methodFlag == 1: # exponential fitting
-                        imageData["mapFileName"] = imageNameRoot + "_map_exp.mha"
+                    if method_flag == 0: # linear fitting
+                        image_data["map_file_name"] = image_name_root + "_map_lin.mha"
+                    elif method_flag == 1: # exponential fitting
+                        image_data["map_file_name"] = image_name_root + "_map_exp.mha"
 
                 # alignment: fixed variables for elastix_transformix.py
-                imageData["currentAnatomy"]        = 'femurCart' #### to be parametrized in a later release
+                image_data["current_anatomy"]        = 'femurCart' #### to be parametrized in a later release
                 bone                               = "f"         #### to be parametrized in a later release
-                imageData["bone"]                  = bone
-                imageData["dilateRadius"]          = 15
-                registeredFolder = os.path.split(preprocessedFolder)[0] # remove the slash or backslash
-                registeredFolder = os.path.split(registeredFolder)[0] # remove "original"
-                registeredFolder = registeredFolder + folderDiv + "registered" + folderDiv
-                imageData["registeredFolder"]      = registeredFolder
-                imageData["parameterFolder"]       = pkg_resources.resource_filename('pykneer','parameterFiles') + folderDiv
-                imageData["paramFileRigid"]        = "MR_param_rigid.txt"
-                
+                image_data["bone"]                  = bone
+                image_data["dilate_radius"]          = 15
+                registered_folder = os.path.split(preprocessed_folder)[0] # remove the slash or backslash
+                registered_folder = os.path.split(registered_folder)[0] # remove "original"
+                registered_folder = registered_folder + folder_div + "registered" + folder_div
+                image_data["registered_folder"]      = registered_folder
+                image_data["parameter_folder"]       = pkg_resources.resource_filename('pykneer','parameterFiles') + folder_div
+                image_data["param_file_rigid"]        = "MR_param_rigid.txt"
+
                 # elastix path (from binaries in pykneer package)
                 sys = platform.system()
                 if sys == "Linux":
@@ -1075,59 +1135,60 @@ def load_image_data_fitting(inputFileName, methodFlag, registrationFlag):
                     dirpath = pkg_resources.resource_filename('pykneer','elastix/Windows/')
                 elif sys == "Darwin":
                     dirpath = pkg_resources.resource_filename('pykneer','elastix/Darwin/')
-                imageData["elastixFolder"]           = dirpath
-                imageData["completeElastixPath"]     = dirpath + "elastix"
+                image_data["elastix_folder"]           = dirpath
+                image_data["complete_elastix_path"]     = dirpath + "elastix"
                 # alignment: image-dependent variables for elastix_transformix.py
-                imageData["referenceName"]                = imageData["acquisitionFileNames"][0]
-                referenceRoot, imageExt                   = os.path.splitext(imageData["referenceName"] )
-                imageData["referenceRoot"]                = referenceRoot
-                imageData["maskFileName"]                 = imageData["boneMaskFileName"]
-                imageData[bone + "maskFileName"]          = imageData["boneMaskFileName"]
-                imageData[bone + "dilMaskFileName"]       = imageData["referenceRoot"] + "_" + bone + "_" + str(imageData["dilateRadius"]) + ".mha"
-                imageData[bone + "levelSetsMaskFileName"] = imageData["referenceRoot"] + "_" + bone + "_levelSet.mha"
-                imageData["movingFolder"]                 = imageData["preprocessedFolder"]
+                image_data["reference_name"]                = image_data["acquisition_file_names"][0]
+                reference_root, image_ext                   = os.path.splitext(image_data["reference_name"] )
+                image_data["reference_root"]                = reference_root
+                image_data["mask_file_name"]                 = image_data["bone_mask_file_name"]
+                image_data[bone + "mask_file_name"]          = image_data["bone_mask_file_name"]
+                image_data[bone + "dil_mask_file_name"]       = image_data["reference_root"] + "_" + bone + "_" + str(image_data["dilate_radius"]) + ".mha"
+                image_data[bone + "levelset_mask_file_name"] = image_data["reference_root"] + "_" + bone + "_levelSet.mha"
+                image_data["moving_folder"]                 = image_data["preprocessed_folder"]
 
                 # send to the data dictionary
-                allImageData.append(imageData)
+                all_image_data.append(image_data)
 
                 # get variables ready for the next subject
-                acquisitionFileNames = []
-                infoFileNames        = []
+                acquisition_file_names = []
+                info_file_names        = []
 
 
-    print ("-> information loaded for " + str(len(allImageData)) + " subjects")
-    print ("-> for each subjects there are " + str(nOfAcquisitions) + " acquisitions")
+    print ("-> information loaded for " + str(len(all_image_data)) + " subjects")
+    print ("-> for each subjects there are " + str(n_of_acquisitions) + " acquisitions")
 
     # return the image info
-    return allImageData
-
-
-
+    return all_image_data
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
 # .TXT FILES  ---------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
-def read_txt_to_np_array(fileName):
+def read_txt_to_np_array(file_name):
+
+    """
+    Reads .txt files and saves in a numpy array
+    """
 
 
     # read the file rows
-    fileContent=[]
-    for line in open(fileName):
-        fileContent.append(line.rstrip("\n"))
+    file_content=[]
+    for line in open(file_name):
+        file_content.append(line.rstrip("\n"))
 
     # allocate the array width
-    firstRow = re.findall('\d+\.\d+', fileContent[0])
+    firstRow = re.findall('\d+\.\d+', file_content[0])
     array = np.ndarray((len(firstRow)))
 
     # fill array
-    for i in range(0,len(fileContent)):
+    for i in range(0,len(file_content)):
     #for i in range(0,2):
-        if fileContent[i] != []: # if the string is not empty
+        if file_content[i] != []: # if the string is not empty
 
             # get the numbers in the string
-            value_str = re.findall(r"[-+]?\d*\.\d+|\d+", fileContent[i])
+            value_str = re.findall(r"[-+]?\d*\.\d+|\d+", file_content[i])
 
             # transform strings to float
             value_float = []
@@ -1144,9 +1205,13 @@ def read_txt_to_np_array(fileName):
     return array
 
 
-def write_np_array_to_txt(array, filename):
+def write_np_array_to_txt(array, file_name):
 
-    file = open(filename, "w")
+    """
+    Writes numpy array to .txt file
+    """
+
+    file = open(file_name, "w")
 
     # array is a matrix
     if len(array.shape) > 1:

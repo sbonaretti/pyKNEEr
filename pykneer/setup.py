@@ -9,11 +9,12 @@ setuptools.setup(
     name="pykneer",
     version="0.0.4",
     author="Serena Bonaretti",
-    author_email="serena.bonaretti@stanford.edu",
+    author_email="serena.bonaretti.research@gmail.edu",
     description="pyKNEEr: An image analysis workflow for open and reproducible research on femoral knee cartilage",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://sbonaretti.github.io/pyKNEEr/",
+    license="GNU General Public License v3 (GPLv3)",
     # including requirements (dependencies)
     install_requires=[
         l.strip() for l in

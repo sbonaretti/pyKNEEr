@@ -26,20 +26,20 @@ def folder_divider():
     return folderDiv
 
 
-def prepare_reference(allImageData, referenceNames, iterationNo):
+def prepare_reference(allImageData, reference_names, iterationNo):
 
 #    anatomy = allImageData[0]["currentAnatomy"] # it is "f" for femur (assigned in loadImageDataFindReference)
 #    refID   = iterationNo
 #    # get new reference ID in allImageData
-#    referenceName = referenceNames[iterationNo]
+#    reference_name = reference_names[iterationNo]
 #    for i in range (0, len(allImageData)):
-#        if allImageData[i]["movingName"] == referenceName:
+#        if allImageData[i]["movingName"] == reference_name:
 #            refID = i
 #            break
 
     # variables
-    standardReferenceName          = "reference.mha"
-    standardReferenceRoot          = "reference"
+    standardreference_name          = "reference.mha"
+    standardreference_root          = "reference"
     standardMaskName               = "reference_f.mha"
     standardFdilMaskFileName       = "reference_f_15.mha"
     standardFlevelSetsMaskFileName = "reference_f_levelSet.mha"
@@ -54,15 +54,15 @@ def prepare_reference(allImageData, referenceNames, iterationNo):
         # create global output folder for this reference
         #if not os.path.isdir(allImageData[0]["registeredSubFolder"]):
         #    os.makedirs(allImageData[0]["registeredSubFolder"])
-        outputFolder = allImageData[0]["parentFolder"] + allImageData[0]["referenceRoot"] + folderDiv
-        if not os.path.isdir (outputFolder): # automatically created by addNamesToImageData in pyKNEErIO
-            os.makedirs(outputFolder)
+        output_folder = allImageData[0]["parent_folder"] + allImageData[0]["reference_root"] + folderDiv
+        if not os.path.isdir (output_folder): # automatically created by addNamesToImageData in pyKNEErIO
+            os.makedirs(output_folder)
 
         # assign output folder to all cells of allImageData (adapting to requests of elastixTransformix class)
         for i in range(0,len(allImageData)):
-            allImageData[i]["outputFolder"]           = outputFolder
-            allImageData[i]["referenceName"]          = standardReferenceName
-            allImageData[i]["referenceRoot"]          = standardReferenceRoot
+            allImageData[i]["output_folder"]           = output_folder
+            allImageData[i]["reference_name"]          = standardreference_name
+            allImageData[i]["reference_root"]          = standardreference_root
             allImageData[i]["fmaskFileName"]          = standardMaskName
             allImageData[i]["fdilMaskFileName"]       = standardFdilMaskFileName
             allImageData[i]["flevelSetsMaskFileName"] = standardFlevelSetsMaskFileName
@@ -70,8 +70,8 @@ def prepare_reference(allImageData, referenceNames, iterationNo):
 
 
     # 1. create new reference image folder and it to every image in the dictionary
-    currentReferenceRoot, referenceExt = os.path.splitext(referenceNames[iterationNo])
-    newReferenceFolder = allImageData[0]["outputFolder"] + str(iterationNo) + "_" + currentReferenceRoot + folderDiv
+    currentreference_root, referenceExt = os.path.splitext(reference_names[iterationNo])
+    newReferenceFolder = allImageData[0]["output_folder"] + str(iterationNo) + "_" + currentreference_root + folderDiv
     if not os.path.isdir(newReferenceFolder):
         os.makedirs(newReferenceFolder)
     for i in range(0,len(allImageData)):
@@ -79,17 +79,17 @@ def prepare_reference(allImageData, referenceNames, iterationNo):
 
     # 2. create new file names for reference image and mask (using dictionary of image 0 of allImageData)
     # image
-    oldRefImageName = allImageData[0]["parentFolder"]  + referenceNames[iterationNo]
-    newRefImageName = newReferenceFolder               + referenceNames[iterationNo]
+    oldRefImageName = allImageData[0]["parent_folder"]  + reference_names[iterationNo]
+    newRefImageName = newReferenceFolder               + reference_names[iterationNo]
     # mask
-    maskName        = referenceNames[iterationNo].replace(standardReferenceSuffix, standardMaskSuffix) # this is hardcoded and determines the way file names are
-    oldRefMaskName  = allImageData[0]["parentFolder"]  + maskName
+    maskName        = reference_names[iterationNo].replace(standardReferenceSuffix, standardMaskSuffix) # this is hardcoded and determines the way file names are
+    oldRefMaskName  = allImageData[0]["parent_folder"]  + maskName
     newRefMaskName  = newReferenceFolder               + maskName
 
     # 3. move reference image and mask to the new folder and change names
     shutil.copy(oldRefImageName, newRefImageName)
     shutil.copy(oldRefMaskName , newRefMaskName)
-    os.rename(newRefImageName, newReferenceFolder + standardReferenceName)
+    os.rename(newRefImageName, newReferenceFolder + standardreference_name)
     os.rename(newRefMaskName , newReferenceFolder + standardMaskName)
 
     # 4. dilate mask and convert to level set (use folder and image names of first cell in allImageData)
@@ -126,7 +126,7 @@ def calculate_vector_fields(allImageData, nOfProcesses):
 
 
 
-def find_reference_as_minimum_distance_to_average(allImageData, referenceNames, minDistance, iterationNo):
+def find_reference_as_minimum_distance_to_average(allImageData, reference_names, minDistance, iterationNo):
 
     fieldFolder = allImageData[0]["referenceFolder"]
 
@@ -199,11 +199,11 @@ def find_reference_as_minimum_distance_to_average(allImageData, referenceNames, 
     print ("   -> Minimum distance is %.8f" % minNorm)
 
     # pick corresponding image as new reference
-    newReferenceName = allImageData[minNormID]["movingName"]
+    newreference_name = allImageData[minNormID]["movingName"]
     print ("   -> Reference of next iteration is " + allImageData[minNormID]["movingName"])
 
     # add values to allImageData
-    referenceNames[iterationNo+1] = newReferenceName
+    reference_names[iterationNo+1] = newreference_name
     minDistance   [iterationNo]   = minNorm
 
-    return referenceNames, minDistance #refID?
+    return reference_names, minDistance #refID?

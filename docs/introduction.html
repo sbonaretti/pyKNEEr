@@ -1,12 +1,10 @@
 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
@@ -34,6 +32,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation" href="installation.html" />
@@ -93,9 +92,9 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#workflow">Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#code">Code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#jupyter-notebook-structure">Jupyter notebook structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#file-formats">File formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#jupyter-notebooks">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-structure">Data structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-file-formats">Data file formats</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -103,6 +102,7 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 <li class="toctree-l1"><a class="reference internal" href="segmentation.html">Segmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="morphology.html">Morphology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="relaxometry.html">Relaxometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 
@@ -127,14 +127,14 @@ The figure has to be in the folder "build" (not in the subfolder "html")
   <div class="section" id="introduction">
 <span id="id1"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p><em>pyKNEEr</em> is an image analysis workflow for <strong>open</strong> and <strong>reproducible</strong> research on femoral knee cartilage
-Characteristics of <em>pyKNEEr</em> are exensively covered in <a class="reference internal" href="faq.html#citation"><span class="std std-ref">our paper</span></a>. Find below a concise summary</p>
+Characteristics of <em>pyKNEEr</em> are exensively covered in <a class="reference internal" href="faq.html#citation"><span class="std std-ref">our paper</span></a>. Find below a concise summary.</p>
 <div class="section" id="workflow">
 <h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
 <p><em>pyKNEEr</em> workflow is composed of three <strong>modules</strong>:</p>
 <ol class="arabic simple">
-<li><strong>Preprocessing</strong> to homogenize spatial characteristics and enhance intensities</li>
-<li><strong>Segmentation</strong> of femoral knee cartilage using an atlas-based method</li>
-<li><strong>Analysis</strong> of cartilage morphometry (thickness and volume) and relaxometry (fitting and EPG modeling)</li>
+<li><p><strong>Preprocessing</strong> to homogenize spatial characteristics and enhance intensities</p></li>
+<li><p><strong>Segmentation</strong> of femoral knee cartilage using an atlas-based method</p></li>
+<li><p><strong>Analysis</strong> of cartilage morphometry (thickness and volume) and relaxometry (fitting and EPG modeling)</p></li>
 </ol>
 </div>
 <div class="section" id="code">
@@ -151,29 +151,17 @@ Characteristics of <em>pyKNEEr</em> are exensively covered in <a class="referenc
   <li> Calls <a href="http://elastix.isi.uu.nl" target="_blank">elastix</a>, a toolbox for image registration used for atlas-based segmentation
 
 </ul></div>
-<div class="section" id="jupyter-notebook-structure">
-<h2>Jupyter notebook structure<a class="headerlink" href="#jupyter-notebook-structure" title="Permalink to this headline">¶</a></h2>
-<p>For each module of <em>pyKNEEr</em> there are one or more Jupyter notebooks. All notebooks have a similar structure:</p>
-<ul class="simple">
-<li>Link to GitHub repository</li>
-<li>Link to documentation (this website)</li>
-<li>Introduction, about the algorithms in the notebook</li>
-<li>User input, i.e. input text files containing lists of images</li>
-<li>Commands</li>
-<li>Visualization of outputs, i.e. figures and graphs</li>
-<li>References, of the used algorithms</li>
-<li>Dependencies, for reproducibility of the computational environment</li>
-</ul>
+<div class="section" id="jupyter-notebooks">
+<h2>Jupyter Notebooks<a class="headerlink" href="#jupyter-notebooks" title="Permalink to this headline">¶</a></h2>
+<p>Jupyter notebooks are the user-interface of <em>pyKNEEr</em>. Once run, you can attached them directly to your paper for computational reproducibility of the results.</p>
+<p>For each module of <em>pyKNEEr</em> there are several Jupyter notebooks (<code class="docutils literal notranslate"><span class="pre">*.ipynb</span></code>), independent from each other:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/moduleNotebooks.png"><img alt="_images/moduleNotebooks.png" src="_images/moduleNotebooks.png" style="width: 829.5px; height: 256.75px;" /></a>
 </div>
-<div class="section" id="file-formats">
-<h2>File formats<a class="headerlink" href="#file-formats" title="Permalink to this headline">¶</a></h2>
-<p>Inputs and output files are in:</p>
-<ul class="simple">
-<li><strong>dicom (.dcm)</strong>: Format of original images to be processed</li>
-<li><strong>metafile (.mha)</strong>: Format of images throughout the workflow</li>
-<li><strong>text (.txt)</strong>: Format of image list inputs and morphology outputs</li>
-<li><strong>tabular (.csv)</strong>: Format of output descriptive statistics in morphology and relaxometry analysis</li>
-</ul>
+<p>All notebooks have a similar structure:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/notebookStructure.png"><img alt="_images/notebookStructure.png" src="_images/notebookStructure.png" style="width: 610.2px; height: 650.7px;" /></a>
+</div>
 </div>
 <div class="section" id="data-structure">
 <h2>Data structure<a class="headerlink" href="#data-structure" title="Permalink to this headline">¶</a></h2>
@@ -182,15 +170,24 @@ Characteristics of <em>pyKNEEr</em> are exensively covered in <a class="referenc
 <a class="reference internal image-reference" href="_images/folderStructure.png"><img alt="_images/folderStructure.png" src="_images/folderStructure.png" style="width: 603.2px; height: 252.0px;" /></a>
 </div>
 <ul class="simple">
-<li><strong>reference</strong>: contains the reference (or target) image for the atlas-based segmentation</li>
-<li><strong>original</strong>: contains dicom folders of the images to analyze</li>
-<li><strong>preprocessed</strong>: contains images after preprocessing</li>
-<li><strong>registered</strong>: contains by-products of registration and it can be deleted after computations</li>
-<li><strong>segmented</strong>: contains segmentation masks</li>
-<li><strong>morphology</strong>: contains cartilage surfaces, thickness, and volume</li>
-<li><strong>relaxometry</strong>: contains masked relaxometry maps</li>
+<li><p><strong>reference</strong>: contains the reference (or target) image for the atlas-based segmentation</p></li>
+<li><p><strong>original</strong>: contains dicom folders of the images to analyze</p></li>
+<li><p><strong>preprocessed</strong>: contains images after preprocessing</p></li>
+<li><p><strong>registered</strong>: contains by-products of registration and it can be deleted after computations</p></li>
+<li><p><strong>segmented</strong>: contains segmentation masks</p></li>
+<li><p><strong>morphology</strong>: contains cartilage surfaces, thickness, and volume</p></li>
+<li><p><strong>relaxometry</strong>: contains masked relaxometry maps</p></li>
 </ul>
-<p>When analyzing your own data, create only the folders <code class="docutils literal notranslate"><span class="pre">reference</span></code> and <code class="docutils literal notranslate"><span class="pre">original</span></code>. <em>pyKNEEr</em> will automatically create the other folders</p>
+</div>
+<div class="section" id="data-file-formats">
+<h2>Data file formats<a class="headerlink" href="#data-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>Inputs and output files are in open formats:</p>
+<ul class="simple">
+<li><p><strong>dicom (.dcm)</strong>: Format of original images to be processed</p></li>
+<li><p><strong>metafile (.mha)</strong>: Format of images throughout the workflow</p></li>
+<li><p><strong>text (.txt)</strong>: Format of image list inputs and morphology outputs</p></li>
+<li><p><strong>tabular (.csv)</strong>: Format of output descriptive statistics in morphology and relaxometry analysis</p></li>
+</ul>
 </div>
 </div>
 

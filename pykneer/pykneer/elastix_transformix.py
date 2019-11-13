@@ -1,15 +1,37 @@
 # Serena Bonaretti, 2018
 
+"""
+Module with the class registration. There are two instances: bone and cartilage. 
+For each instance, the common methods are :
+    - rigid, similarity, and spline register the moving to the reference
+    - i_rigid, i_similarity, and i_spline invert the transformations 
+    - t_rigid, t_similarity, and t_spline warp the reference mask to the moving image using the inverted tranformation
+Other functions in the abstract class are: 
+    - prepare_reference 
+    - modify_transformation 
+The instance bone also has the function: 
+    - vf_spline used to find the reference bone (see find_reference.py)
+    
+"""
+
 from abc import ABC, abstractmethod
 import os
 import subprocess
-import SimpleITK       as sitk
+import SimpleITK as sitk
 
-from . import sitk_functions  as sitkf
+# pyKNEER imports 
+# ugly way to use relative vs. absolute imports when developing vs. when using package - cannot find a better way
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+    import sitk_functions  as sitkf
+else:
+    # uses current package visibility
+    from . import sitk_functions  as sitkf
 
 
-# ----------------------------------------------------------------------------------------------------------------------------------------
-# abstract class for registration
+# ---------------------------------------------------------------------------------------------------------------------------
+# ABSTRACT CLASS FOR REGISTRATION -------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 class registration(ABC):
 
     @abstractmethod
@@ -25,69 +47,76 @@ class registration(ABC):
         pass
 
     @abstractmethod
-    def irigid(self):
+    def i_rigid(self):
         pass
 
     @abstractmethod
-    def isimilarity(self):
+    def i_similarity(self):
         pass
 
     @abstractmethod
-    def ispline(self):
+    def i_spline(self):
         pass
 
     @abstractmethod
-    def trigid(self):
+    def t_rigid(self):
         pass
 
     @abstractmethod
-    def tsimilarity(self):
+    def t_similarity(self):
         pass
 
     @abstractmethod
-    def tspline(self):
+    def t_spline(self):
         pass
 
     @abstractmethod
-    def vfspline(self):
+    def vf_spline(self):
         pass
 
 
-    def prepare_reference(self, imageData):
+    def prepare_reference(self, image_data):
 
-        anatomy                   = imageData["currentAnatomy"]
-        referenceMaskName         = imageData["referenceFolder"] + imageData[anatomy + "maskFileName"]
-        referenceMaskDilName      = imageData["referenceFolder"] + imageData[anatomy + "dilMaskFileName"]
-        referenceMaskLevelSetName = imageData["referenceFolder"] + imageData[anatomy + "levelSetsMaskFileName"]
-        radius                    = imageData["dilateRadius"]
+        anatomy                      = image_data["current_anatomy"]
+        reference_mask_name          = image_data["reference_folder"] + image_data[anatomy + "mask_file_name"]
+        reference_mask_dil_name      = image_data["reference_folder"] + image_data[anatomy + "dil_mask_file_name"]
+        reference_mask_levelset_name = image_data["reference_folder"] + image_data[anatomy + "levelset_mask_file_name"]
+        radius                       = image_data["dilate_radius"]
 
         # dilate mask
-        if not os.path.isfile(referenceMaskDilName):
-            mask    = sitk.ReadImage(referenceMaskName)
+        if not os.path.isfile(reference_mask_dil_name):
+            mask    = sitk.ReadImage(reference_mask_name)
             maskDil = sitkf.dilate_mask(mask, radius)
-            sitk.WriteImage(maskDil, referenceMaskDilName)
+            sitk.WriteImage(maskDil, reference_mask_dil_name)
 
         # convert mask from binary to levelset for warping
-        if not os.path.isfile(referenceMaskLevelSetName):
-            mask   = sitk.ReadImage(referenceMaskName)
+        if not os.path.isfile(reference_mask_levelset_name):
+            mask   = sitk.ReadImage(reference_mask_name)
             maskLS = sitkf.binary2levelset(mask)
-            sitk.WriteImage(maskLS, referenceMaskLevelSetName)
+            sitk.WriteImage(maskLS, reference_mask_levelset_name)
 
 
-    def modify_transformation(self, imageData, transformation):
+    def modify_transformation(self, image_data, transformation): 
+        """
+        It creates a new parameter file to calculate the inverted transformation
+        Input: 
+            parameter file used for registration of moving to reference
+        Output: 
+            modifided parameter files used to calculate the inverted transformation
+        """
 
-        anatomy = imageData["currentAnatomy"]
+        anatomy = image_data["current_anatomy"]
 
         # transformation file name
         if transformation   == "rigid":
-            inputFileName  = imageData["iregisteredSubFolder"] + imageData[anatomy + "iRigidTransfName"]
-            outputFileName = imageData["iregisteredSubFolder"] + imageData[anatomy + "mRigidTransfName"]
+            input_file_name  = image_data["i_registered_sub_folder"] + image_data[anatomy + "i_rigid_transf_name"]
+            output_file_name = image_data["i_registered_sub_folder"] + image_data[anatomy + "m_rigid_transf_name"]
         elif transformation == "similarity":
-            inputFileName  = imageData["iregisteredSubFolder"] + imageData[anatomy + "iSimilarityTransfName"]
-            outputFileName = imageData["iregisteredSubFolder"] + imageData[anatomy + "mSimilarityTransfName"]
+            input_file_name  = image_data["i_registered_sub_folder"] + image_data[anatomy + "i_similarity_transf_name"]
+            output_file_name = image_data["i_registered_sub_folder"] + image_data[anatomy + "m_similarity_transf_name"]
         elif transformation == "spline":
-            inputFileName  = imageData["iregisteredSubFolder"] + imageData[anatomy + "iSplineTransfName"]
-            outputFileName = imageData["iregisteredSubFolder"] + imageData[anatomy + "mSplineTransfName"]
+            input_file_name  = image_data["i_registered_sub_folder"] + image_data[anatomy + "i_spline_transf_name"]
+            output_file_name = image_data["i_registered_sub_folder"] + image_data[anatomy + "m_spline_transf_name"]
         else:
             print("----------------------------------------------------------------------------------------")
             print("ERROR: This transformation is not supported. Use 'rigid', 'similarity', or 'spline'")
@@ -95,608 +124,608 @@ class registration(ABC):
             return
 
         # check if transformation file exists
-        if not os.path.exists(inputFileName):
+        if not os.path.exists(input_file_name):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: The file  %s does not exist" % (inputFileName) )
+            print("ERROR: The file  %s does not exist" % (input_file_name) )
             print("----------------------------------------------------------------------------------------")
             return
 
         # read the file and modify the needed lines
-        fileContent=[]
+        file_content=[]
         i = 0
-        for line in open(inputFileName):
-            fileContent.append(line)
-            if "InitialTransformParametersFileName" in fileContent[i]:
-                fileContent[i] = "(InitialTransformParametersFileName \"NoInitialTransform\")\n"
-            if "DefaultPixelValue" in fileContent[i]:
-                fileContent[i] = "(DefaultPixelValue -4)\n"
-            if "Size" in fileContent[i] and transformation == "rigid":
-                fileContent[i] = "(Size %s %s %s)\n" % (imageData["imageSize"][0], imageData["imageSize"][1], imageData["imageSize"][2])
-            if "Spacing" in fileContent[i] and transformation == "rigid":
-                fileContent[i] = "(Spacing %s %s %s)\n" % (imageData["imageSpacing"][0], imageData["imageSpacing"][1], imageData["imageSpacing"][2])
+        for line in open(input_file_name):
+            file_content.append(line)
+            if "InitialTransformParametersFileName" in file_content[i]:
+                file_content[i] = "(InitialTransformParametersFileName \"NoInitialTransform\")\n"
+            if "DefaultPixelValue" in file_content[i]:
+                file_content[i] = "(DefaultPixelValue -4)\n"
+            if "Size" in file_content[i] and transformation == "rigid":
+                file_content[i] = "(Size %s %s %s)\n" % (image_data["image_size"][0], image_data["image_size"][1], image_data["image_size"][2])
+            if "Spacing" in file_content[i] and transformation == "rigid":
+                file_content[i] = "(Spacing %s %s %s)\n" % (image_data["image_spacing"][0], image_data["image_spacing"][1], image_data["image_spacing"][2])
             i = i+1
 
         # write the file
-        f = open(outputFileName,"w")
-        for i in range(0,len(fileContent)):
-            f.write(fileContent[i])
+        f = open(output_file_name,"w")
+        for i in range(0,len(file_content)):
+            f.write(file_content[i])
         f.close()
 
 
 
+# ---------------------------------------------------------------------------------------------------------------------------
+# BONE INSTANCE -------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
 
-
-
-
-# ----------------------------------------------------------------------------------------------------------------------------------------
-# registration class to segment bone
 class bone (registration):
 
     # This function is specific for each bone
-    def rigid(self, imageData):
+    def rigid(self, image_data):
 
         # anatomy
-        anatomy                      = imageData["currentAnatomy"]
+        anatomy                          = image_data["current_anatomy"]
         # input image names
-        completeReferenceName        = imageData["referenceFolder"] + imageData["referenceName"]
-        completeReferenceMaskDilName = imageData["referenceFolder"] + imageData[anatomy + "dilMaskFileName"]
-        completeMovingName           = imageData["movingFolder"]    + imageData["movingName"]
+        complete_reference_name          = image_data["reference_folder"] + image_data["reference_name"]
+        complete_reference_mask_dil_name = image_data["reference_folder"] + image_data[anatomy + "dil_mask_file_name"]
+        complete_moving_name             = image_data["moving_folder"]    + image_data["moving_name"]
         # parameters
-        params                       = imageData["paramFileRigid"]
+        params                           = image_data["param_file_rigid"]
         # output folder
-        outputFolder                 = imageData["registeredSubFolder"]
+        output_folder                    = image_data["registered_sub_folder"]
         # elastix path
-        elastixPath                  = imageData["elastixFolder"]
-        completeElastixPath          = imageData["completeElastixPath"]
+        elastix_path                     = image_data["elastix_folder"]
+        complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
         # print ("     Rigid registration")
         # os.path.abspath because working directory is where elastix is in pykneer, so images need whole path, not only relative
-        cmd = [completeElastixPath, "-f",     os.path.abspath(completeReferenceName),
-                                    "-fMask", os.path.abspath(completeReferenceMaskDilName),
-                                    "-m",     os.path.abspath(completeMovingName),
-                                    "-p",     os.path.abspath(params),
-                                    "-out",   os.path.abspath(outputFolder)]
+        cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
+                                      "-fMask", os.path.abspath(complete_reference_mask_dil_name),
+                                      "-m",     os.path.abspath(complete_moving_name),
+                                      "-p",     os.path.abspath(params),
+                                      "-out",   os.path.abspath(output_folder)]
 
-        subprocess.run(cmd, cwd=elastixPath)
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["registeredSubFolder"] + "result.0.mha"):
+        if not os.path.exists(image_data["registered_sub_folder"] + "result.0.mha"):
             print("-------------------------------------------------------------------------------------------")
             print("ERROR: No output created in bone.rigid()")
             print("-------------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["registeredSubFolder"] + "result.0.mha",
-                      imageData["registeredSubFolder"] + imageData[anatomy + "rigidName"])
-            os.rename(imageData["registeredSubFolder"] + "TransformParameters.0.txt",
-                      imageData["registeredSubFolder"] + imageData[anatomy + "rigidTransfName"])
+            os.rename(image_data["registered_sub_folder"] + "result.0.mha",
+                      image_data["registered_sub_folder"] + image_data[anatomy + "rigid_name"])
+            os.rename(image_data["registered_sub_folder"] + "TransformParameters.0.txt",
+                      image_data["registered_sub_folder"] + image_data[anatomy + "rigid_transf_name"])
 
 
-    def similarity(self, imageData):
+    def similarity(self, image_data):
 
         # anatomy
-        anatomy                      = imageData["currentAnatomy"]
+        anatomy                          = image_data["current_anatomy"]
         # input image names
-        completeReferenceName        = imageData["referenceFolder"] + imageData["referenceName"]
-        completeReferenceMaskDilName = imageData["referenceFolder"] + imageData[anatomy + "dilMaskFileName"]
-        completeMovingName           = imageData["registeredSubFolder"] + imageData[anatomy + "rigidName"]
+        complete_reference_name          = image_data["reference_folder"]      + image_data["reference_name"]
+        complete_reference_mask_dil_name = image_data["reference_folder"]      + image_data[anatomy + "dil_mask_file_name"]
+        complete_moving_name             = image_data["registered_sub_folder"] + image_data[anatomy + "rigid_name"]
         # parameters
-        params                       = imageData["paramFileSimilarity"]
+        params                           = image_data["param_file_similarity"]
         # output folder
-        outputFolder                 = imageData["registeredSubFolder"]
+        output_folder                    = image_data["registered_sub_folder"]
         # elastix path
-        elastixPath                  = imageData["elastixFolder"]
-        completeElastixPath          = imageData["completeElastixPath"]
+        elastix_path                     = image_data["elastix_folder"]
+        complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
         #print ("     Similarity registration")
-        cmd = [completeElastixPath, "-f",     os.path.abspath(completeReferenceName),
-                                    "-fMask", os.path.abspath(completeReferenceMaskDilName),
-                                    "-m",     os.path.abspath(completeMovingName),
-                                    "-p",     os.path.abspath(params),
-                                    "-out",   os.path.abspath(outputFolder)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
+                                      "-fMask", os.path.abspath(complete_reference_mask_dil_name),
+                                      "-m",     os.path.abspath(complete_moving_name),
+                                      "-p",     os.path.abspath(params),
+                                      "-out",   os.path.abspath(output_folder)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["registeredSubFolder"] + "result.0.mha"):
+        if not os.path.exists(image_data["registered_sub_folder"] + "result.0.mha"):
             print("----------------------------------------------------------------------------------------")
             print("ERROR: No output created in bone.similarity()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["registeredSubFolder"] + "result.0.mha",
-                      imageData["registeredSubFolder"] + imageData[anatomy + "similarityName"])
-            os.rename(imageData["registeredSubFolder"] + "TransformParameters.0.txt",
-                      imageData["registeredSubFolder"] + imageData[anatomy + "similarityTransfName"])
+            os.rename(image_data["registered_sub_folder"] + "result.0.mha",
+                      image_data["registered_sub_folder"] + image_data[anatomy + "similarity_name"])
+            os.rename(image_data["registered_sub_folder"] + "TransformParameters.0.txt",
+                      image_data["registered_sub_folder"] + image_data[anatomy + "similarity_transf_name"])
 
 
-    def spline(self, imageData):
+    def spline(self, image_data):
 
         # anatomy
-        anatomy                      = imageData["currentAnatomy"]
+        anatomy                          = image_data["current_anatomy"]
         # input image names
-        completeReferenceName        = imageData["referenceFolder"] + imageData["referenceName"]
-        completeReferenceMaskDilName = imageData["referenceFolder"] + imageData[anatomy + "dilMaskFileName"]
-        if imageData["registrationType"] == "newsubject" or imageData["registrationType"] == "multimodal":
-            completeMovingName       = imageData["registeredSubFolder"] + imageData[anatomy + "similarityName"]
-        elif imageData["registrationType"] == "longitudinal":
-            completeMovingName       = imageData["registeredSubFolder"] + imageData[anatomy + "rigidName"]
+        complete_reference_name          = image_data["reference_folder"] + image_data["reference_name"]
+        complete_reference_mask_dil_name = image_data["reference_folder"] + image_data[anatomy + "dil_mask_file_name"]
+        if image_data["registration_type"] == "newsubject" or image_data["registration_type"] == "multimodal":
+            complete_moving_name         = image_data["registered_sub_folder"] + image_data[anatomy + "similarity_name"]
+        elif image_data["registration_type"] == "longitudinal":
+            complete_moving_name         = image_data["registered_sub_folder"] + image_data[anatomy + "rigid_name"]
         # parameters
-        params                       = imageData["paramFileSpline"]
+        params                           = image_data["param_file_spline"]
         # output folder
-        outputFolder                 = imageData["registeredSubFolder"]
+        output_folder                    = image_data["registered_sub_folder"]
         # elastix path
-        elastixPath                  = imageData["elastixFolder"]
-        completeElastixPath          = imageData["completeElastixPath"]
+        elastix_path                     = image_data["elastix_folder"]
+        complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
         #print ("     Spline registration")
-        cmd = [completeElastixPath, "-f",     os.path.abspath(completeReferenceName),
-                                    "-fMask", os.path.abspath(completeReferenceMaskDilName),
-                                    "-m",     os.path.abspath(completeMovingName),
-                                    "-p",     os.path.abspath(params),
-                                    "-out",   os.path.abspath(outputFolder)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
+                                      "-fMask", os.path.abspath(complete_reference_mask_dil_name),
+                                      "-m",     os.path.abspath(complete_moving_name),
+                                      "-p",     os.path.abspath(params),
+                                      "-out",   os.path.abspath(output_folder)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["registeredSubFolder"] + "result.0.mha"):
+        if not os.path.exists(image_data["registered_sub_folder"] + "result.0.mha"):
             print("----------------------------------------------------------------------------------------")
             print("ERROR: No output created in bone.spline()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["registeredSubFolder"] + "result.0.mha",
-                      imageData["registeredSubFolder"] + imageData[anatomy + "splineName"])
-            os.rename(imageData["registeredSubFolder"] + "TransformParameters.0.txt",
-                      imageData["registeredSubFolder"] + imageData[anatomy + "splineTransfName"])
+            os.rename(image_data["registered_sub_folder"] + "result.0.mha",
+                      image_data["registered_sub_folder"] + image_data[anatomy + "spline_name"])
+            os.rename(image_data["registered_sub_folder"] + "TransformParameters.0.txt",
+                      image_data["registered_sub_folder"] + image_data[anatomy + "spline_transf_name"])
 
 
-    def irigid(self, imageData):
+    def i_rigid(self, image_data):
 
         # anatomy
-        anatomy                      = imageData["currentAnatomy"]
+        anatomy                          = image_data["current_anatomy"]
         # input image names
-        completeReferenceName        = imageData["referenceFolder"] + imageData["referenceName"]
-        completeReferenceMaskDilName = imageData["referenceFolder"] + imageData[anatomy + "dilMaskFileName"]
+        complete_reference_name          = image_data["reference_folder"] + image_data["reference_name"]
+        complete_reference_mask_dil_name = image_data["reference_folder"] + image_data[anatomy + "dil_mask_file_name"]
         # parameters
-        params                       = imageData["iparamFileRigid"]
+        params                           = image_data["i_param_file_rigid"]
         # tranformation
-        transformation               = imageData["registeredSubFolder"] + imageData[anatomy + "rigidTransfName"]
-        # output folder
-        outputFolder                 = imageData["iregisteredSubFolder"]
+        transformation                   = image_data["registered_sub_folder"] + image_data[anatomy + "rigid_transf_name"]
+        # output folder   
+        output_folder                    = image_data["i_registered_sub_folder"]
         # elastix path
-        elastixPath                  = imageData["elastixFolder"]
-        completeElastixPath          = imageData["completeElastixPath"]
+        elastix_path                     = image_data["elastix_folder"]
+        complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
         #print ("     Inverting rigid transformation")
-        cmd = [completeElastixPath, "-f",     os.path.abspath(completeReferenceName),
-                                    "-fMask", os.path.abspath(completeReferenceMaskDilName),
-                                    "-m",     os.path.abspath(completeReferenceName),
-                                    "-p",     os.path.abspath(params),
-                                    "-out",   os.path.abspath(outputFolder),
-                                    "-t0",    os.path.abspath(transformation)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
+                                      "-fMask", os.path.abspath(complete_reference_mask_dil_name),
+                                      "-m",     os.path.abspath(complete_reference_name),
+                                      "-p",     os.path.abspath(params),
+                                      "-out",   os.path.abspath(output_folder),
+                                      "-t0",    os.path.abspath(transformation)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["iregisteredSubFolder"] + "TransformParameters.0.txt"):
+        if not os.path.exists(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.irigid()")
+            print("ERROR: No output created in bone.i_rigid()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["iregisteredSubFolder"] + "TransformParameters.0.txt",
-                  imageData["iregisteredSubFolder"] + imageData[anatomy + "iRigidTransfName"])
+            os.rename(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt",
+                      image_data["i_registered_sub_folder"] + image_data[anatomy + "i_rigid_transf_name"])
 
 
-    def isimilarity(self, imageData):
+    def i_similarity(self, image_data):
 
         # anatomy
-        anatomy                      = imageData["currentAnatomy"]
+        anatomy                          = image_data["current_anatomy"]
         # input image names
-        completeReferenceName        = imageData["referenceFolder"] + imageData["referenceName"]
-        completeReferenceMaskDilName = imageData["referenceFolder"] + imageData[anatomy + "dilMaskFileName"]
+        complete_reference_name          = image_data["reference_folder"] + image_data["reference_name"]
+        complete_reference_mask_dil_name = image_data["reference_folder"] + image_data[anatomy + "dil_mask_file_name"]
         # parameters
-        params                       = imageData["iparamFileSimilarity"]
+        params                           = image_data["i_param_file_similarity"]
          # tranformation
-        transformation               = imageData["registeredSubFolder"] + imageData[anatomy + "similarityTransfName"]
+        transformation                   = image_data["registered_sub_folder"] + image_data[anatomy + "similarity_transf_name"]
         # output folder
-        outputFolder                 = imageData["iregisteredSubFolder"]
+        output_folder                    = image_data["i_registered_sub_folder"]
         # elastix path
-        elastixPath                  = imageData["elastixFolder"]
-        completeElastixPath          = imageData["completeElastixPath"]
+        elastix_path                     = image_data["elastix_folder"]
+        complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
         #print ("     Inverting similarity transformation")
-        cmd = [completeElastixPath, "-f",     os.path.abspath(completeReferenceName),
-                                    "-fMask", os.path.abspath(completeReferenceMaskDilName),
-                                    "-m",     os.path.abspath(completeReferenceName),
-                                    "-p",     os.path.abspath(params),
-                                    "-out",   os.path.abspath(outputFolder),
-                                    "-t0",    os.path.abspath(transformation)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
+                                      "-fMask", os.path.abspath(complete_reference_mask_dil_name),
+                                      "-m",     os.path.abspath(complete_reference_name),
+                                      "-p",     os.path.abspath(params),
+                                      "-out",   os.path.abspath(output_folder),
+                                      "-t0",    os.path.abspath(transformation)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["iregisteredSubFolder"] + "TransformParameters.0.txt"):
+        if not os.path.exists(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.isimilarity()")
+            print("ERROR: No output created in bone.i_similarity()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["iregisteredSubFolder"] + "TransformParameters.0.txt",
-                      imageData["iregisteredSubFolder"] + imageData[anatomy + "iSimilarityTransfName"])
+            os.rename(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt",
+                      image_data["i_registered_sub_folder"] + image_data[anatomy + "i_similarity_transf_name"])
 
 
-    def ispline(self, imageData):
+    def i_spline(self, image_data):
 
         # anatomy
-        anatomy                      = imageData["currentAnatomy"]
+        anatomy                          = image_data["current_anatomy"]
         # input image names
-        completeReferenceName        = imageData["referenceFolder"] + imageData["referenceName"]
-        completeReferenceMaskDilName = imageData["referenceFolder"] + imageData[anatomy + "dilMaskFileName"]
+        complete_reference_name          = image_data["reference_folder"] + image_data["reference_name"]
+        complete_reference_mask_dil_name = image_data["reference_folder"] + image_data[anatomy + "dil_mask_file_name"]
         # parameters
-        params                       = imageData["iparamFileSpline"]
+        params                           = image_data["i_param_file_spline"]
         # tranformation
-        transformation               = imageData["registeredSubFolder"] + imageData[anatomy + "splineTransfName"]
+        transformation                   = image_data["registered_sub_folder"] + image_data[anatomy + "spline_transf_name"]
         # output folder
-        outputFolder                 = imageData["iregisteredSubFolder"]
+        output_folder                    = image_data["i_registered_sub_folder"]
         # elastix path
-        elastixPath                  = imageData["elastixFolder"]
-        completeElastixPath          = imageData["completeElastixPath"]
+        elastix_path                     = image_data["elastix_folder"]
+        complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
         #print ("     Inverting spline transformation")
-        cmd = [completeElastixPath, "-f",     os.path.abspath(completeReferenceName),
-                                    "-fMask", os.path.abspath(completeReferenceMaskDilName),
-                                    "-m",     os.path.abspath(completeReferenceName),
-                                    "-p",     os.path.abspath(params),
-                                    "-out",   os.path.abspath(outputFolder),
-                                    "-t0",    os.path.abspath(transformation)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
+                                      "-fMask", os.path.abspath(complete_reference_mask_dil_name),
+                                      "-m",     os.path.abspath(complete_reference_name),
+                                      "-p",     os.path.abspath(params),
+                                      "-out",   os.path.abspath(output_folder),
+                                      "-t0",    os.path.abspath(transformation)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["iregisteredSubFolder"] + "TransformParameters.0.txt"):
+        if not os.path.exists(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.ispline()")
+            print("ERROR: No output created in bone.i_spline()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["iregisteredSubFolder"] + "TransformParameters.0.txt",
-                      imageData["iregisteredSubFolder"] + imageData[anatomy + "iSplineTransfName"])
+            os.rename(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt",
+                      image_data["i_registered_sub_folder"] + image_data[anatomy + "i_spline_transf_name"])
 
 
-    def trigid(self, imageData):
+    def t_rigid(self, image_data):
 
         # anatomy
-        anatomy                 = imageData["currentAnatomy"]
+        anatomy                   = image_data["current_anatomy"]
         # input mask name
-        if imageData["registrationType"] == "newsubject":
-            maskToWarp          = imageData["iregisteredSubFolder"] + imageData[anatomy+"mSimilarityName"]
-        elif imageData["registrationType"] == "multimodal":
-            maskToWarp          = imageData["referenceFolder"] + imageData[anatomy + "levelSetsMaskFileName"]
-        elif imageData["registrationType"] == "longitudinal":
-            maskToWarp          = imageData["iregisteredSubFolder"] + imageData[anatomy+"mSplineName"]
+        if image_data["registration_type"] == "newsubject":
+            mask_to_warp          = image_data["i_registered_sub_folder"] + image_data[anatomy+"m_similarity_name"]
+        elif image_data["registration_type"] == "multimodal":
+            mask_to_warp          = image_data["reference_folder"]        + image_data[anatomy+"levelset_mask_file_name"]
+        elif image_data["registration_type"] == "longitudinal":
+            mask_to_warp          = image_data["i_registered_sub_folder"] + image_data[anatomy+"m_spline_name"]
 
         # tranformation
-        transformation          = imageData["iregisteredSubFolder"] + imageData[anatomy + "mRigidTransfName"]
+        transformation            = image_data["i_registered_sub_folder"] + image_data[anatomy + "m_rigid_transf_name"]
         # output folder
-        outputFolder            = imageData["iregisteredSubFolder"]
+        output_folder             = image_data["i_registered_sub_folder"]
         # transformix path
-        completeTransformixPath = imageData["completeTransformixPath"]
+        complete_transformix_path = image_data["complete_transformix_path"]
 
         # execute transformation
         #print ("     Rigid warping")
-        cmd = [completeTransformixPath, "-in",  os.path.abspath(maskToWarp),
-                                        "-tp",  os.path.abspath(transformation),
-                                        "-out", os.path.abspath(outputFolder)]
-        elastixPath                  = imageData["elastixFolder"]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_transformix_path, "-in",  os.path.abspath(mask_to_warp),
+                                          "-tp",  os.path.abspath(transformation),
+                                          "-out", os.path.abspath(output_folder)]
+        elastix_path              = image_data["elastix_folder"]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["iregisteredSubFolder"] + "result.mha"):
+        if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.trigid()")
+            print("ERROR: No output created in bone.t_rigid()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["iregisteredSubFolder"] + "result.mha",
-                      imageData["iregisteredSubFolder"] + imageData[anatomy + "mRigidName"])
+            os.rename(image_data["i_registered_sub_folder"] + "result.mha",
+                      image_data["i_registered_sub_folder"] + image_data[anatomy + "m_rigid_name"])
 
 
-    def tsimilarity(self, imageData):
+    def t_similarity(self, image_data):
 
         # anatomy
-        anatomy                 = imageData["currentAnatomy"]
+        anatomy                   = image_data["current_anatomy"]
         # input mask name
-        maskToWarp              = imageData["iregisteredSubFolder"] + imageData[anatomy+"mSplineName"]
+        mask_to_warp              = image_data["i_registered_sub_folder"] + image_data[anatomy+"m_spline_name"]
         # tranformation
-        transformation          = imageData["iregisteredSubFolder"] + imageData[anatomy + "mSimilarityTransfName"]
+        transformation            = image_data["i_registered_sub_folder"] + image_data[anatomy+"m_similarity_transf_name"]
         # output folder
-        outputFolder            = imageData["iregisteredSubFolder"]
+        output_folder             = image_data["i_registered_sub_folder"]
         # transformix path
-        elastixPath             = imageData["elastixFolder"]
-        completeTransformixPath = imageData["completeTransformixPath"]
+        elastix_path              = image_data["elastix_folder"]
+        complete_transformix_path = image_data["complete_transformix_path"]
 
         # execute transformation
         #print ("     Similarity warping")
-        cmd = [completeTransformixPath, "-in",  os.path.abspath(maskToWarp),
-                                        "-tp",  os.path.abspath(transformation),
-                                        "-out", os.path.abspath(outputFolder)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_transformix_path, "-in",  os.path.abspath(mask_to_warp),
+                                          "-tp",  os.path.abspath(transformation),
+                                          "-out", os.path.abspath(output_folder)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["iregisteredSubFolder"] + "result.mha"):
+        if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.tsimilarity()")
+            print("ERROR: No output created in bone.t_similarity()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["iregisteredSubFolder"] + "result.mha",
-                      imageData["iregisteredSubFolder"] + imageData[anatomy+"mSimilarityName"])
+            os.rename(image_data["i_registered_sub_folder"] + "result.mha",
+                      image_data["i_registered_sub_folder"] + image_data[anatomy+"m_similarity_name"])
 
 
-    def tspline(self, imageData):
+    def t_spline(self, image_data):
 
         # anatomy
-        anatomy                 = imageData["currentAnatomy"]
+        anatomy                   = image_data["current_anatomy"]
         # input mask name
-        maskToWarp              = imageData["referenceFolder"] + imageData[anatomy + "levelSetsMaskFileName"]
+        mask_to_warp              = image_data["reference_folder"] + image_data[anatomy + "levelset_mask_file_name"]
         # tranformation
-        transformation          = imageData["iregisteredSubFolder"] + imageData[anatomy + "mSplineTransfName"]
+        transformation            = image_data["i_registered_sub_folder"] + image_data[anatomy + "m_spline_transf_name"]
         # output folder
-        outputFolder            = imageData["iregisteredSubFolder"]
+        output_folder             = image_data["i_registered_sub_folder"]
         # transformix path
-        elastixPath             = imageData["elastixFolder"]
-        completeTransformixPath = imageData["completeTransformixPath"]
+        elastix_path              = image_data["elastix_folder"]
+        complete_transformix_path = image_data["complete_transformix_path"]
 
         # execute transformation
         #print ("     Spline warping")
-        cmd = [completeTransformixPath, "-in",  os.path.abspath(maskToWarp),
-                                        "-tp",  os.path.abspath(transformation),
-                                        "-out", os.path.abspath(outputFolder)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_transformix_path, "-in",  os.path.abspath(mask_to_warp),
+                                          "-tp",  os.path.abspath(transformation),
+                                          "-out", os.path.abspath(output_folder)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output name
-        if not os.path.exists(imageData["iregisteredSubFolder"] + "result.mha"):
+        if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.tspline()")
+            print("ERROR: No output created in bone.t_spline()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["iregisteredSubFolder"] + "result.mha",
-                  imageData["iregisteredSubFolder"] + imageData[anatomy+"mSplineName"])
+            os.rename(image_data["i_registered_sub_folder"] + "result.mha",
+                      image_data["i_registered_sub_folder"] + image_data[anatomy+"m_spline_name"])
 
 
-    def vfspline(self, imageData):
+    def vf_spline(self, image_data):
 
         # transformation
-        bone                    = imageData["bone"]
-        transformation          = imageData["registeredSubFolder"] + imageData[bone + "similarityTransfName"]
-        # output folder for  "deformationField.mha" (different from folder for "vectorFieldName")
+        bone                      = image_data["bone"]
+        transformation            = image_data["registered_sub_folder"] + image_data[bone + "similarity_transf_name"]
+        # output folder for  "deformationField.mha" (different from folder for "vector_field_name")
         # (needing 2 folders for //isation. "deformationField.mha" gets overwritten when more produced by parallel processes)
-        outputFolder            = imageData["registeredSubFolder"]
+        output_folder             = image_data["registered_sub_folder"]
         # transformix path
-        elastixPath             = imageData["elastixFolder"]
-        completeTransformixPath = imageData["completeTransformixPath"]
+        elastix_path              = image_data["elastix_folder"]
+        complete_transformix_path = image_data["complete_transformix_path"]
 
         # get vector field
-        cmd = [completeTransformixPath, "-def", "all",
-                                        "-tp",  os.path.abspath(transformation),
-                                        "-out", os.path.abspath(outputFolder)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_transformix_path, "-def", "all",
+                                          "-tp",  os.path.abspath(transformation),
+                                          "-out", os.path.abspath(output_folder)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output name
-        if not os.path.exists(imageData["registeredSubFolder"] + "deformationField.mha"):
+        if not os.path.exists(image_data["registered_sub_folder"] + "deformationField.mha"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.vfspline()")
+            print("ERROR: No output created in bone.vf_spline()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["registeredSubFolder"] + "deformationField.mha",
-                      imageData["registeredFolder"]    + imageData["vectorFieldName"])
+            os.rename(image_data["registered_sub_folder"] + "deformationField.mha",
+                      image_data["registered_folder"]    + image_data["vector_field_name"])
 
 
 
 
-# ----------------------------------------------------------------------------------------------------------------------------------------
-# registration class to segment cartilage
+# ---------------------------------------------------------------------------------------------------------------------------
+# CARTILAGE INSTANCE --------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
+
 class cartilage (registration):
 
-    def rigid(self, imageData):
+    def rigid(self, image_data):
         pass
 
-    def similarity(self, imageData):
+    def similarity(self, image_data):
         pass
 
-    def spline(self, imageData):
+    def spline(self, image_data):
 
         # anatomy
-        anatomy                      = imageData["currentAnatomy"]
-        bone                         = imageData["bone"]
+        anatomy                        = image_data["current_anatomy"]
+        bone                           = image_data["bone"]
         # input image names
-        completeReferenceName        = imageData["referenceFolder"]     + imageData["referenceName"]
-        completeReferenceMaskDilName = imageData["referenceFolder"]     + imageData[anatomy + "dilMaskFileName"]
-        if imageData["registrationType"] == "newsubject" or imageData["registrationType"] == "multimodal":
-            completeMovingName       = imageData["registeredSubFolder"] + imageData[bone + "similarityName"]
-        elif imageData["registrationType"] == "longitudinal":
-            completeMovingName       = imageData["registeredSubFolder"] + imageData[bone + "rigidName"]
+        complete_reference_name        = image_data["reference_folder"]     + image_data["reference_name"]
+        complete_reference_mask_dil_name = image_data["reference_folder"]     + image_data[anatomy + "dil_mask_file_name"]
+        if image_data["registration_type"] == "newsubject" or image_data["registration_type"] == "multimodal":
+            complete_moving_name       = image_data["registered_sub_folder"] + image_data[bone + "similarity_name"]
+        elif image_data["registration_type"] == "longitudinal":
+            complete_moving_name       = image_data["registered_sub_folder"] + image_data[bone + "rigid_name"]
         # parameters
-        params                       = imageData["paramFileSpline"]
+        params                         = image_data["param_file_spline"]
         # output folder
-        outputFolder                 = imageData["registeredSubFolder"]
+        output_folder                  = image_data["registered_sub_folder"]
         # elastix path
-        elastixPath                  = imageData["elastixFolder"]
-        completeElastixPath          = imageData["completeElastixPath"]
+        elastix_path                   = image_data["elastix_folder"]
+        complete_elastix_path          = image_data["complete_elastix_path"]
 
         # execute registration
         #print ("     Spline registration")
-        cmd = [completeElastixPath, "-f",     os.path.abspath(completeReferenceName),
-                                    "-fMask", os.path.abspath(completeReferenceMaskDilName),
-                                    "-m",     os.path.abspath(completeMovingName),
-                                    "-p",     os.path.abspath(params),
-                                    "-out",   os.path.abspath(outputFolder)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
+                                      "-fMask", os.path.abspath(complete_reference_mask_dil_name),
+                                      "-m",     os.path.abspath(complete_moving_name),
+                                      "-p",     os.path.abspath(params),
+                                      "-out",   os.path.abspath(output_folder)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["registeredSubFolder"] + "result.0.mha"):
+        if not os.path.exists(image_data["registered_sub_folder"] + "result.0.mha"):
             print("----------------------------------------------------------------------------------------")
             print("ERROR: No output created in cartilage.spline()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["registeredSubFolder"] + "result.0.mha",
-                      imageData["registeredSubFolder"] + imageData[anatomy + "splineName"])
-            os.rename(imageData["registeredSubFolder"] + "TransformParameters.0.txt",
-                      imageData["registeredSubFolder"] + imageData[anatomy + "splineTransfName"])
+            os.rename(image_data["registered_sub_folder"] + "result.0.mha",
+                      image_data["registered_sub_folder"] + image_data[anatomy + "spline_name"])
+            os.rename(image_data["registered_sub_folder"] + "TransformParameters.0.txt",
+                      image_data["registered_sub_folder"] + image_data[anatomy + "spline_transf_name"])
 
 
-    def irigid(self, imageData):
+    def i_rigid(self, image_data):
         pass
 
-    def isimilarity(self, imageData):
+    def i_similarity(self, image_data):
         pass
 
-    def ispline(self, imageData):
+    def i_spline(self, image_data):
 
         # anatomy
-        anatomy                      = imageData["currentAnatomy"]
+        anatomy                          = image_data["current_anatomy"]
         # input image names
-        completeReferenceName        = imageData["referenceFolder"] + imageData["referenceName"]
-        completeReferenceMaskDilName = imageData["referenceFolder"] + imageData[anatomy + "dilMaskFileName"]
+        complete_reference_name          = image_data["reference_folder"] + image_data["reference_name"]
+        complete_reference_mask_dil_name = image_data["reference_folder"] + image_data[anatomy + "dil_mask_file_name"]
         # parameters
-        params                       = imageData["iparamFileSpline"]
+        params                           = image_data["i_param_file_spline"]
         # tranformation
-        transformation               = imageData["registeredSubFolder"] + imageData[anatomy + "splineTransfName"]
+        transformation                   = image_data["registered_sub_folder"] + image_data[anatomy + "spline_transf_name"]
         # output folder
-        outputFolder                 = imageData["iregisteredSubFolder"]
+        output_folder                    = image_data["i_registered_sub_folder"]
         # elastix path
-        elastixPath                  = imageData["elastixFolder"]
-        completeElastixPath          = imageData["completeElastixPath"]
+        elastix_path                     = image_data["elastix_folder"]
+        complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
         #print ("     Inverting spline transformation")
-        cmd = [completeElastixPath, "-f",     os.path.abspath(completeReferenceName),
-                                    "-fMask", os.path.abspath(completeReferenceMaskDilName),
-                                    "-m",     os.path.abspath(completeReferenceName),
-                                    "-p",     os.path.abspath(params),
-                                    "-out",   os.path.abspath(outputFolder),
-                                    "-t0",    os.path.abspath(transformation)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
+                                      "-fMask", os.path.abspath(complete_reference_mask_dil_name),
+                                      "-m",     os.path.abspath(complete_reference_name),
+                                      "-p",     os.path.abspath(params),
+                                      "-out",   os.path.abspath(output_folder),
+                                      "-t0",    os.path.abspath(transformation)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["iregisteredSubFolder"] + "TransformParameters.0.txt"):
+        if not os.path.exists(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in cartilage.ispline()")
+            print("ERROR: No output created in cartilage.i_spline()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["iregisteredSubFolder"] + "TransformParameters.0.txt",
-                      imageData["iregisteredSubFolder"] + imageData[anatomy + "iSplineTransfName"])
+            os.rename(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt",
+                      image_data["i_registered_sub_folder"] + image_data[anatomy + "i_spline_transf_name"])
 
 
-    def trigid(self, imageData):
+    def t_rigid(self, image_data):
 
         # anatomy
-        anatomy                 = imageData["currentAnatomy"]
-        bone                    = imageData["bone"]
+        anatomy                   = image_data["current_anatomy"]
+        bone                      = image_data["bone"]
         # input mask name
-        if imageData["registrationType"] == "newsubject":
-            maskToWarp          = imageData["iregisteredSubFolder"] + imageData[anatomy+"mSimilarityName"]
-        elif imageData["registrationType"] == "multimodal":
-            maskToWarp          = imageData["referenceFolder"]      + imageData[anatomy + "levelSetsMaskFileName"]
-        elif imageData["registrationType"] == "longitudinal":
-            maskToWarp          = imageData["iregisteredSubFolder"] + imageData[anatomy+"mSplineName"]
+        if image_data["registration_type"] == "newsubject":
+            mask_to_warp          = image_data["i_registered_sub_folder"] + image_data[anatomy+"m_similarity_name"]
+        elif image_data["registration_type"] == "multimodal":
+            mask_to_warp          = image_data["reference_folder"]        + image_data[anatomy+"levelset_mask_file_name"]
+        elif image_data["registration_type"] == "longitudinal":
+            mask_to_warp          = image_data["i_registered_sub_folder"] + image_data[anatomy+"m_spline_name"]
         # tranformation
-        transformation          = imageData["iregisteredSubFolder"] + imageData[bone + "mRigidTransfName"]
+        transformation            = image_data["i_registered_sub_folder"] + image_data[bone+"m_rigid_transf_name"]
         # output folder
-        outputFolder            = imageData["iregisteredSubFolder"]
+        output_folder             = image_data["i_registered_sub_folder"]
         # transformix path
-        elastixPath             = imageData["elastixFolder"]
-        completeTransformixPath = imageData["completeTransformixPath"]
+        elastix_path              = image_data["elastix_folder"]
+        complete_transformix_path = image_data["complete_transformix_path"]
 
         # execute transformation
         #print ("     Rigid warping")
-        cmd = [completeTransformixPath, "-in",  os.path.abspath(maskToWarp),
-                                        "-tp",  os.path.abspath(transformation),
-                                        "-out", os.path.abspath(outputFolder)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_transformix_path, "-in",  os.path.abspath(mask_to_warp),
+                                          "-tp",  os.path.abspath(transformation),
+                                          "-out", os.path.abspath(output_folder)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["iregisteredSubFolder"] + "result.mha"):
+        if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in cartilage.trigid()")
+            print("ERROR: No output created in cartilage.t_rigid()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["iregisteredSubFolder"] + "result.mha",
-                      imageData["iregisteredSubFolder"] + imageData[anatomy + "mRigidName"])
+            os.rename(image_data["i_registered_sub_folder"] + "result.mha",
+                      image_data["i_registered_sub_folder"] + image_data[anatomy + "m_rigid_name"])
 
 
-    def tsimilarity(self, imageData):
+    def t_similarity(self, image_data):
 
         # anatomy
-        anatomy                 = imageData["currentAnatomy"]
-        bone                    = imageData["bone"]
+        anatomy                   = image_data["current_anatomy"]
+        bone                      = image_data["bone"]
         # input mask name
-        maskToWarp              = imageData["iregisteredSubFolder"] + imageData[anatomy+"mSplineName"]
+        mask_to_warp              = image_data["i_registered_sub_folder"] + image_data[anatomy+"m_spline_name"]
         # tranformation
-        transformation          = imageData["iregisteredSubFolder"] + imageData[bone + "mSimilarityTransfName"]
+        transformation            = image_data["i_registered_sub_folder"] + image_data[bone+"m_similarity_transf_name"]
         # output folder
-        outputFolder            = imageData["iregisteredSubFolder"]
+        output_folder             = image_data["i_registered_sub_folder"]
         # transformix path
-        elastixPath             = imageData["elastixFolder"]
-        completeTransformixPath = imageData["completeTransformixPath"]
+        elastix_path              = image_data["elastix_folder"]
+        complete_transformix_path = image_data["complete_transformix_path"]
 
         # execute transformation
         #print ("     Similarity warping")
-        cmd = [completeTransformixPath, "-in",  os.path.abspath(maskToWarp),
-                                        "-tp",  os.path.abspath(transformation),
-                                        "-out", os.path.abspath(outputFolder)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_transformix_path, "-in",  os.path.abspath(mask_to_warp),
+                                          "-tp",  os.path.abspath(transformation),
+                                          "-out", os.path.abspath(output_folder)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["iregisteredSubFolder"] + "result.mha"):
+        if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in cartilage.tsimilarity()")
+            print("ERROR: No output created in cartilage.t_similarity()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["iregisteredSubFolder"] + "result.mha",
-                  imageData["iregisteredSubFolder"] + imageData[anatomy+"mSimilarityName"])
+            os.rename(image_data["i_registered_sub_folder"] + "result.mha",
+                      image_data["i_registered_sub_folder"] + image_data[anatomy+"m_similarity_name"])
 
 
-    def tspline(self, imageData):
+    def t_spline(self, image_data):
 
         # anatomy
-        anatomy                 = imageData["currentAnatomy"]
+        anatomy                   = image_data["current_anatomy"]
         # input mask name
-        maskToWarp              = imageData["referenceFolder"] + imageData[anatomy + "levelSetsMaskFileName"]
+        mask_to_warp              = image_data["reference_folder"]        + image_data[anatomy+"levelset_mask_file_name"]
         # tranformation
-        transformation          = imageData["iregisteredSubFolder"] + imageData[anatomy + "mSplineTransfName"]
+        transformation            = image_data["i_registered_sub_folder"] + image_data[anatomy+"m_spline_transf_name"]
         # output folder
-        outputFolder            = imageData["iregisteredSubFolder"]
+        output_folder             = image_data["i_registered_sub_folder"]
         # transformix path
-        elastixPath             = imageData["elastixFolder"]
-        completeTransformixPath = imageData["completeTransformixPath"]
+        elastix_path              = image_data["elastix_folder"]
+        complete_transformix_path = image_data["complete_transformix_path"]
 
         # execute transformation
         #print ("     Spline warping")
-        cmd = [completeTransformixPath, "-in",  os.path.abspath(maskToWarp),
-                                        "-tp",  os.path.abspath(transformation),
-                                        "-out", os.path.abspath(outputFolder)]
-        subprocess.run(cmd, cwd=elastixPath)
+        cmd = [complete_transformix_path, "-in",  os.path.abspath(mask_to_warp),
+                                          "-tp",  os.path.abspath(transformation),
+                                          "-out", os.path.abspath(output_folder)]
+        subprocess.run(cmd, cwd=elastix_path)
 
         # change output names
-        if not os.path.exists(imageData["iregisteredSubFolder"] + "result.mha"):
+        if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
             print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in cartilage.tspline()")
+            print("ERROR: No output created in cartilage.t_spline()")
             print("----------------------------------------------------------------------------------------")
             return
         else:
-            os.rename(imageData["iregisteredSubFolder"] + "result.mha",
-                  imageData["iregisteredSubFolder"] + imageData[anatomy+"mSplineName"])
+            os.rename(image_data["i_registered_sub_folder"] + "result.mha",
+                      image_data["i_registered_sub_folder"] + image_data[anatomy+"m_spline_name"])
 
 
-    def vfspline(self):
+    def vf_spline(self):
         pass
