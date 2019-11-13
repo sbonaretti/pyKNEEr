@@ -7,6 +7,8 @@ FAQ
 
 :ref:`Which terminal? <terminal>`
 
+:ref:`How do I set the environmental variables for elastix? <elastix>`
+
 :ref:`How do I choose the number of cores? <cores>`
 
 :ref:`How do I determine knee laterality? <faqLaterality>`
@@ -22,6 +24,8 @@ FAQ
 :ref:`What is a virtual environment? <virtualenv_what>`
 
 :ref:`How do I create a virtual environment? <virtualenv_how>`
+
+:ref:`How do I update pyKNEEr? <update>`
 
 :ref:`What is ITK-SNAP? <itksnap>`
 
@@ -43,6 +47,8 @@ FAQ
 
   ``py`` is for python, ``KNEE`` is for femoral knee cartilage, and ``r`` is for reproducibility
 
+  It is pronounced like *pioneer* without the *o*
+
 
 .. _terminal:
 
@@ -53,6 +59,50 @@ FAQ
 
   Windows:
     Open the Anaconda prompt: Start Menu :math:`\rightarrow` Anaconda :math:`\rightarrow` Anaconda Prompt
+
+
+.. _elastix:
+
+**How do I set the environmental variables for elastix?**
+
+  The instructions below are modified from the *elastix* `manual <https://blog.yuwu.me/wp-content/uploads/2017/10/elastix_manual_v4.8.pdf>`_ (pag. 18).
+
+  - Look for the location of *pyKNEEr* on your computer. Open your :ref:`terminal <terminal>` and type:
+    ``pip show pykneer``.
+
+    Look for the path in *Location*. In the following, we will call this path ``<location>`` (e.g. ``<location> = /anaconda3/lib/python3.7/site-packages``)
+
+  Linux:
+    *elastix* is in the folder ``<location>/Linux/``
+
+    To add *elastix* to the environmental variables of your computer, in :ref:`terminal <terminal>` type:
+
+    - ``cd`` to go to your home directory
+    - ``nano .bash_profile`` to create (or open if already existing) your profile file
+    - ``export PATH=<location>/Linux/:$PATH``
+      ``export LD_LIBRARY_PATH=<location>/Linux/:$LD_LIBRARY_PATH``
+
+      substituting <location> with **your** ``<location>/Linux/`` to both commands. These two lines add the *elastix* path to the environmental variables of your computer
+    - Save changes and close file by pressing:
+
+      - ``ctrl`` + ``o``
+      - ``enter``
+      - ``ctrl`` + ``x``
+    - Activate changes by typing:
+
+      ``source .bash_profile``
+
+  Windows:
+    *elastix* is in the folder ``<location>/Windows/``
+
+    To add *elastix* to the environmental variables of your computer:
+
+    - Go to the control panel
+    - Go to ``System``
+    - Go to ``Advanced system settings``
+    - Click ``Environmental variables``
+    - Add the folder ``<location>/Windows/`` (using **your** own location ) to the variable ``path``
+
 
 
 .. _cores:
@@ -166,6 +216,18 @@ FAQ
         - double-click on activate.bat
 
 
+.. _update:
+
+    **How do I update pyKNEEr?**
+
+      To update to the latest version of *pyKNEEr*, go to :ref:`terminal <terminal>` and type:
+      ``pip install pykneer --upgrade``
+
+      To check the new version number, type:
+
+      ``pip show pykneer``
+
+
 .. _itksnap:
 
 **What is ITK-SNAP?**
@@ -187,7 +249,6 @@ FAQ
   To visualize the two images next to each other, toggle to tiled layout by clicking the middle icon in the top-right side of the viewer.
 
 
-
 .. _itksnapMask:
 
 **How do I visualize a segmentation in ITK-SNAP?**
@@ -196,6 +257,7 @@ FAQ
 
   - The original image: Go to ``File`` :math:`\rightarrow` ``Open Main Image``, and select ``*_prep.mha`` (you can also drag and drop the image)
   - The cartilage mask: Go to ``Segmentation`` :math:`\rightarrow` ``Open Segmentation``, and select ``*_prep_fc.mha`` (you can also drag and drop the image, and click ``Load as segmentation``).
+
 
 .. _analysis:
 
@@ -213,6 +275,9 @@ FAQ
     Ask your questions  <a href="https://github.com/sbonaretti/pyKNEEr/issues" target="_blank">here</a>
 
 
+
+
+
 .. _citation:
 
 **How do I cite pyKNEEr?**
@@ -221,19 +286,19 @@ FAQ
 
   .. raw:: html
 
-     Paper: <br>
+     <i>Paper</i>: <br>
      Bonaretti S., Gold G., Beaupre G. <i>pyKNEEr: An image analysis workflow for open and reproducible research on femoral knee cartilage</i>.
      <a href="https://doi.org/10.1101/556423" target="_blank">bioRxiv 10.1101/556423 2019</a> <br />
 
      <br>
 
-     Code:
+     <i>Code</i>:
      <br>
      Bonaretti S. "pyKNEEr" (v0.0.1). Zenodo. 2019. 10.5281/zenodo.2574172
      <a href="https://zenodo.org/badge/latestdoi/155445441"><img src="https://zenodo.org/badge/155445441.svg" alt="DOI"></a> <br>
 
      <br>
 
-     Data: <br>
+     <i>Data</i>: <br>
      Dataset in (Bonaretti S. et al. 2019). Zenodo. 10.5281/zenodo.2530609
      <a href="https://doi.org/10.5281/zenodo.2530609"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.2530609.svg" alt="DOI"></a>

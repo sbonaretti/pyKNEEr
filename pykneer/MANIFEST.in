@@ -1,0 +1,4 @@
+include pykneer/parameterFiles/*.txt
+include pykneer/elastix/Darwin/*
+include pykneer/elastix/Linux/*
+include pykneer/elastix/Windows/*  

@@ -1,4 +1,4 @@
-Subjects,DiceCoeff,JaccardCoeff,VolumeSimilarity
+subjects,dice_coeff,jaccard_coeff,volume_similarity
 001_FU_prep_fc,0.7,0.53,-0.08
 002_FU_prep_fc,0.76,0.61,-0.08
 003_FU_prep_fc,0.75,0.6,-0.26

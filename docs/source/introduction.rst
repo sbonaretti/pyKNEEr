@@ -4,7 +4,7 @@ Introduction
 ================================================================================
 
 *pyKNEEr* is an image analysis workflow for **open** and **reproducible** research on femoral knee cartilage
-Characteristics of *pyKNEEr* are exensively covered in :ref:`our paper<citation>`. Find below a concise summary
+Characteristics of *pyKNEEr* are exensively covered in :ref:`our paper<citation>`. Find below a concise summary.
 
 Workflow
 --------------------------------------------------------------------------------
@@ -37,29 +37,24 @@ Code
 
 
 
-Jupyter notebook structure
---------------------------------------------------------------------------------
-For each module of *pyKNEEr* there are one or more Jupyter notebooks. All notebooks have a similar structure:
-
-- Link to GitHub repository
-- Link to documentation (this website)
-- Introduction, about the algorithms in the notebook
-- User input, i.e. input text files containing lists of images
-- Commands
-- Visualization of outputs, i.e. figures and graphs
-- References, of the used algorithms
-- Dependencies, for reproducibility of the computational environment
-
-
-File formats
+Jupyter Notebooks
 --------------------------------------------------------------------------------
 
-Inputs and output files are in:
+Jupyter notebooks are the user-interface of *pyKNEEr*. Once run, you can attached them directly to your paper for computational reproducibility of the results.
 
-- **dicom (.dcm)**: Format of original images to be processed
-- **metafile (.mha)**: Format of images throughout the workflow
-- **text (.txt)**: Format of image list inputs and morphology outputs
-- **tabular (.csv)**: Format of output descriptive statistics in morphology and relaxometry analysis
+For each module of *pyKNEEr* there are several Jupyter notebooks (``*.ipynb``), independent from each other:
+
+.. figure:: _figures/moduleNotebooks.png
+   :align: center
+   :scale: 25%
+
+
+All notebooks have a similar structure:
+
+.. figure:: _figures/notebookStructure.png
+   :align: center
+   :scale: 45%
+
 
 Data structure
 --------------------------------------------------------------------------------
@@ -80,4 +75,13 @@ Data structure
 - **morphology**: contains cartilage surfaces, thickness, and volume
 - **relaxometry**: contains masked relaxometry maps
 
-When analyzing your own data, create only the folders ``reference`` and ``original``. *pyKNEEr* will automatically create the other folders
+
+Data file formats
+--------------------------------------------------------------------------------
+
+Inputs and output files are in open formats:
+
+- **dicom (.dcm)**: Format of original images to be processed
+- **metafile (.mha)**: Format of images throughout the workflow
+- **text (.txt)**: Format of image list inputs and morphology outputs
+- **tabular (.csv)**: Format of output descriptive statistics in morphology and relaxometry analysis

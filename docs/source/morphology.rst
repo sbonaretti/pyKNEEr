@@ -18,12 +18,6 @@ Morphology
 
 |
 
- .. raw:: html
-
-   The Jupyter notebook to quantify cartilage morphology is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/morphology.ipynb" target="_blank">morphology.ipynb</a>
-
-
-
 Input: Image folder list
 --------------------------------------------------------------------------------
 

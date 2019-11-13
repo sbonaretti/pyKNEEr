@@ -3,12 +3,20 @@
 Installation
 ================================================================================
 
+
+.. raw:: html
+
+  An overview of <i>pyKNEEr</i>, its installation, and its demo are presented in a <a href="https://www.youtube.com/watch?v=7WPf5KFtYi8" target="_blank">youtube video</a>, which we recommend watching as a comprehensive introduction.
+  The current and following pages provide more details.
+  <br>
+
+
 .. note::
 
-   The following commands are for Mac OS. If you work on Windows:
+   The commands in this documentation are for Mac OS. If you work on Windows:
 
    - Substitute ``/`` with ``\``
-   - Use the python terminal provided in the Anaconda distribution
+   - Use the python :ref:`terminal <terminal>` provided in the Anaconda distribution
 
 
 
@@ -35,9 +43,10 @@ Go to :ref:`terminal <terminal>`, copy/paste each line and press ``enter``:
   pip install itk==4.13.1.post1
   pip install pykneer
 
-The installation contains *elastix v4.8* for atlas-based segmentation
+The installation contains *elastix v4.8* for atlas-based segmentation. If you work on a Windows or a Linux computer,
+you might need to :ref:`set the environment variables for elastix <elastix>`
 
-Note: We recommend to install *pyKNEEr* in a python :ref:`virtual environment <virtualenv_what>`
+Note: We recommend to install *pyKNEEr* in a python :ref:`virtual environment <virtualenv_what>`, although it is not necessary
 
 
 
@@ -51,7 +60,7 @@ To become familiar with *pyKNEEr*, we provide a demo that you can replicate foll
 
 - .. raw:: html
 
-    Download the demo images <a href="https://www.doi.org/10.5281/zenodo.3262307" target="_blank">here</a>
+    Download the newest version of the demo images <a href="https://www.doi.org/10.5281/zenodo.3262307" target="_blank">here</a> (2.1 GB)
 
 - Unzip the file and open it. It contains two folders:
 
@@ -64,7 +73,7 @@ To become familiar with *pyKNEEr*, we provide a demo that you can replicate foll
     The folder ``original`` contains images of subjects ``01``, which contains:
 
     - ``DESS`` images to get familiar with atlas-based segmentation and :math:`T_2` mapping
-    -  ``cubeQuant`` images to get familiar with multimodal segmentation and :math:`T_{1 \rho}` mapping
+    - ``cubeQuant`` images to get familiar with multimodal segmentation and :math:`T_{1 \rho}` mapping
 
     Both acquisitions will be used to get familiar with preprocessing and morphology analysis
 
@@ -74,13 +83,21 @@ To become familiar with *pyKNEEr*, we provide a demo that you can replicate foll
     - ``reference_f.mha``: Femur mask of the reference image
     - ``reference_fc.mha``: Femoral cartilage mask of the reference image
 
-    You can use this reference image and its masks also when you segment your **own** data
+    *Note*: You can use this reference image and its masks also when segmenting your **own** data
 
-    In the folder you will also find Jupyter notebooks (``.ipynb``) and input files (``.txt``) to run *pyKNEEr* workflow
+    In the folder you will also find input files (``.txt``) to run *pyKNEEr* workflow and a subset of Jupyter notebooks (``.ipynb``):
+
+    .. figure:: _figures/demoNotebooks.png
+       :align: center
+       :scale: 23%
+
+    For the demo, the notebook ``segmentation_sa.ipynb`` is duplicated in
+    ``segmentation_sa_ns.ipynb`` to segment a new subject (ns), and
+    ``segmentation_sa_mm.ipynb`` to segment a multimodal (mm) acquisition of the same subject
 
     .. note::
 
-       In the following instructions we will assume that ``input`` is your working directory
+       In the following instructions we will assume that ``input`` is our working directory
 
 
   - ``output``: It contains the outputs of the demo, so you can compare your findings with ours

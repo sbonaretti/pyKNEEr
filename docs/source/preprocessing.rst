@@ -18,11 +18,6 @@ In *pyKNEEr* preprocessing acts on:
 
 |
 
-  .. raw:: html
-
-    The Jupyter notebook to perform image preprocessing is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/preprocessing.ipynb" target="_blank">preprocessing.ipynb</a>
-
-
 
 Input: Image folder list
 --------------------------------------------------------------------------------
