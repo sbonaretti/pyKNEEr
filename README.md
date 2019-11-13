@@ -2,6 +2,7 @@
 
 ### An image analysis workflow for **open** and **reproducible** research on **femoral knee cartilage**
 
+See the video on [Youtube](https://www.youtube.com/embed/7WPf5KFtYi8)
 
 Try *pyKNEEr* on Binder:   
 - Example #1: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example%2Fpykneer_example.ipynb)
@@ -32,6 +33,17 @@ User feedbacks and suggestions for improvements:
 ---  
 
 ### Changelog 
-*v 0.0.3*: Reduced mask file size, added check to end of string in input .txt files, fixing ITK version to download for image orientation in preprocessing, added demo to Zenodo   
+*v 0.0.4*:  
+- Added relative and absolute imports within pyKNEEr package for easier debug, code extension, and testing
+- Changed all variable names to python convention (e.g. from ``fileName`` to ``file_name``)  
+- Improved dependences print outs in notebooks (added pyKNEEr, watermark itself, and date)
+- Added demo_v2 to Zenodo (minor changes, listed in Zenodo)
+
+*v 0.0.3*: 
+- Reduced mask file size  
+- Added check to end of string in input .txt files  
+- Fixing issue with ITK version to download for image orientation in preprocessing  
+- Added demo_v1 to Zenodo  
+
 *v 0.0.2*: Minor   
 *v 0.0.1*: First release   
