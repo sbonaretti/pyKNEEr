@@ -17,8 +17,8 @@ Release on Zenodo: [![DOI](https://zenodo.org/badge/155445441.svg)](https://zeno
 
 ### Contributors
 
-New code:
-- Serena Bonaretti  
+Project and new code:
+- [Serena Bonaretti](https://sbonaretti.github.io/)  
 
 Open source code included in pyKNEEr:  
 - [intensity preprocessing](https://bitbucket.org/marcniethammer/ksrt/src) by Liang Shan and [Marc Niethammer](http://wwwx.cs.unc.edu/~mn/?q=content/overview) 
