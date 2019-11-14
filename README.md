@@ -2,6 +2,8 @@
 
 ### An image analysis workflow for **open** and **reproducible** research on **femoral knee cartilage**
 
+[![Video] (https://img.youtube.com/vi/7WPf5KFtYi8/0.jpg)]()
+
 See the video on [Youtube](https://www.youtube.com/embed/7WPf5KFtYi8)
 
 Try *pyKNEEr* on Binder:   
