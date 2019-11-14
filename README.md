@@ -37,7 +37,8 @@ User feedbacks and suggestions for improvements:
 - Added relative and absolute imports within pyKNEEr package for easier debug, code extension, and testing
 - Changed all variable names to python convention (e.g. from ``fileName`` to ``file_name``)  
 - Improved dependences print outs in notebooks (added pyKNEEr, watermark itself, and date)
-- Added demo_v2 to Zenodo (minor changes, listed in Zenodo)
+- Added demo_v2 to Zenodo (minor changes, listed in Zenodo)  
+- Added page `Development` in the website
 
 *v 0.0.3*: 
 - Reduced mask file size  
