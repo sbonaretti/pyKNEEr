@@ -1,0 +1,70 @@
+
+# -> current work in progress ---------------------
+pykneer/pykneer/pykneer_dicom_folders.py
+pykneer/notebooks/prep_dicom_folder.ipynb
+pykneer/pykneer/tests/test_folder_prep.py
+docs/source/_figures/demoNotebooks_v005.png
+docs/source/_figures/moduleNotebooks_v005.png
+
+
+# -> this file ------------------------------------
+# .gitignore
+
+
+# -> notebooks ------------------------------------ 
+pykneer/notebooks/.ipynb_checkpoints/*
+
+
+# -> virtual environment --------------------------
+/bin/*
+/include/*
+/lib/*
+
+
+# -> deployment -----------------------------------  
+pykneer/.eggs/*
+pykneer/pykneer.egg-info/*
+pykneer/dist/*
+pykneer/build/*
+
+
+# -> demo -----------------------------------------  
+pykneer/demo/*  
+
+
+# -> documentation --------------------------------
+docs/build/*
+docs/extra/*
+docs/logo/*
+docs/Makefile
+docs/source/_figures/Jupyter_logo*
+docs/source/_figures/vertical_figures.pptx
+docs/source/_static/css/.Rhistory
+docs/source/_templates/extract_colors.ipynb
+
+
+# -> tests ----------------------------------------
+pykneer/pykneer/tests/test_data/*
+
+
+# -> publication ----------------------------------
+publication/data/.ipynb_checkpoints/*
+
+
+# -> cache ----------------------------------------
+pykneer/pykneer/__pycache__/*
+pykneer/pykneer/cylinder_fitting/__pycache__/*
+
+
+# -> apple files-----------------------------------
+*.DS_Store
+
+
+# -> some mess ------------------------------------
+rpy2/*
+pykneer/pykneer/z_extra_code
+z_folder_info.txt
+z_toDo.txt
+
+
+

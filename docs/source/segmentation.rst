@@ -308,7 +308,7 @@ In this convergence study, the new reference is the image of the dataset whose v
 
    .. raw:: html
 
-     The Jupyter notebook to find a reference image is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/find_reference.ipynb" target="_blank">find_reference.ipynb</a>
+     The Jupyter notebook to find a reference image is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/pykneer/notebooks/find_reference.ipynb" target="_blank">find_reference.ipynb</a>
 
 
 Picking random seeds
@@ -318,7 +318,7 @@ Picking random seeds
 
    To determine the image that you are going to use as reference, we recommend a random generator function with a fixed seed to make the reference selection reproducible.
    The code is
-   <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/pykneer/find_reference_random_gen.py" target="_blank">here</a>.
+   <a href="https://github.com/sbonaretti/pyKNEEr/tree/master/pykneer/pykneer/find_reference_random_gen.py" target="_blank">here</a>.
    <p> </p>
    You can run several convergence study in parallel to confirm you find the same reference image independently from the starting seed
 
@@ -394,9 +394,11 @@ The metrics we use to evaluate segmentation quality are:
 
 - Measure of surface distance: Average of the Euclidean distances between ground truth segmentations and *pyKNEEr* segmentations
 
-  .. raw:: html
+|
 
-    The Jupyter notebook to evaluate segmentation is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/segmentation_quality.ipynb" target="_blank">segmentation_quality.ipynb</a>
+   .. raw:: html
+
+      The Jupyter notebook to evaluate segmentation is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/pykneer/notebooks/segmentation_quality.ipynb" target="_blank">segmentation_quality.ipynb</a>
 
 
 Input: Image list

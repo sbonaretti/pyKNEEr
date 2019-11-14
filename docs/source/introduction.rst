@@ -46,7 +46,7 @@ For each module of *pyKNEEr* there are several Jupyter notebooks (``*.ipynb``), 
 
 .. figure:: _figures/moduleNotebooks.png
    :align: center
-   :scale: 25%
+   :scale: 24%
 
 
 All notebooks have a similar structure:

@@ -395,12 +395,12 @@ The femur alignment is used to guide cartilage segmentation, and femur segmentat
 <div class="line"><br /></div>
 </div>
 <blockquote>
-<div>The Jupyter notebook to find a reference image is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/find_reference.ipynb" target="_blank">find_reference.ipynb</a></div></blockquote>
+<div>The Jupyter notebook to find a reference image is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/pykneer/notebooks/find_reference.ipynb" target="_blank">find_reference.ipynb</a></div></blockquote>
 <div class="section" id="picking-random-seeds">
 <h3>Picking random seeds<a class="headerlink" href="#picking-random-seeds" title="Permalink to this headline">¶</a></h3>
 To determine the image that you are going to use as reference, we recommend a random generator function with a fixed seed to make the reference selection reproducible.
 The code is
-<a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/pykneer/find_reference_random_gen.py" target="_blank">here</a>.
+<a href="https://github.com/sbonaretti/pyKNEEr/tree/master/pykneer/pykneer/find_reference_random_gen.py" target="_blank">here</a>.
 <p> </p>
 You can run several convergence study in parallel to confirm you find the same reference image independently from the starting seed</div>
 <div class="section" id="id5">
@@ -456,11 +456,15 @@ You can run several convergence study in parallel to confirm you find the same r
 <span id="segmentationquality"></span><h2>Segmentation quality<a class="headerlink" href="#segmentation-quality" title="Permalink to this headline">¶</a></h2>
 <p>You can quantify segmentation quality when a <strong>ground truth</strong> segmentation is present, whereas you can  evaluate segmentation quality only visually when a ground truth segmentation is not available</p>
 <p>The metrics we use to evaluate segmentation quality are:</p>
-<ul>
+<ul class="simple">
 <li><p>Measures of overlap agreement: Dice coefficient, Jaccard coefficient, and volume similarity, which quantify the overlap between ground truth segmentations and <em>pyKNEEr</em> segmentations</p></li>
-<li><p>Measure of surface distance: Average of the Euclidean distances between ground truth segmentations and <em>pyKNEEr</em> segmentations</p>
-The Jupyter notebook to evaluate segmentation is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/code/segmentation_quality.ipynb" target="_blank">segmentation_quality.ipynb</a></li>
+<li><p>Measure of surface distance: Average of the Euclidean distances between ground truth segmentations and <em>pyKNEEr</em> segmentations</p></li>
 </ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div>The Jupyter notebook to evaluate segmentation is <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/pykneer/notebooks/segmentation_quality.ipynb" target="_blank">segmentation_quality.ipynb</a></div></blockquote>
 <div class="section" id="id6">
 <h3>Input: Image list<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>Create the input file:</p>

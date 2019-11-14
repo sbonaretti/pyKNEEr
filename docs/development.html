@@ -130,14 +130,13 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 <p><em>pyKNEEr</em> is written in a modular way to favor modifications and extensions. There are three levels of files associated with each step of the workflow:</p>
 <ol class="arabic simple">
 <li><p>Jupyter notebooks (<code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>) representing both a user-interface and a record of the method and results obtained, to be attached to publications</p></li>
-<li><p>Python scripts for notebooks (<code class="docutils literal notranslate"><span class="pre">for_nb.py</span></code>) containing functions called by the notebook and used to process images and visualize outputs, using parallel computing</p></li>
-<li><p>Basic python scripts (<code class="docutils literal notranslate"><span class="pre">.py</span></code>) containing core algorithms and classes</p></li>
+<li><p>Python scripts for notebooks (<code class="docutils literal notranslate"><span class="pre">for_nb.py</span></code>) containing functions called by the notebook and used to process images and visualize outputs</p></li>
+<li><p>Basic python scripts (<code class="docutils literal notranslate"><span class="pre">.py</span></code>) containing core functions and classes</p></li>
 </ol>
-<p>The figure below depicts the code scheme (arrows = “uses functions from”):</p>
 <div class="figure align-center">
-<a class="reference internal image-reference" href="_images/codeScheme.png"><img alt="_images/codeScheme.png" src="_images/codeScheme.png" style="width: 839.8000000000001px; height: 404.04px;" /></a>
+<a class="reference internal image-reference" href="_images/codeScheme.png"><img alt="_images/codeScheme.png" src="_images/codeScheme.png" style="width: 837.2px; height: 394.16px;" /></a>
 </div>
-<p>For example, to evaluate morphology of femoral knee cartilage, the code structure is:</p>
+<p>The figure above shows the code structure. For example, to compute morphology of femoral knee cartilage, the scheme is:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">morphology.ipynb</span></code>: Jupyter notebook used to run computations and visualize results. It uses functions from:</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">morphology_for_nb.py</span></code>: python module that contains functions to calculate knee cartilage morphology and visualize results. It uses functions from:</p></li>
@@ -147,14 +146,13 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 <div class="section" id="variable-names">
 <h2>Variable names<a class="headerlink" href="#variable-names" title="Permalink to this headline">¶</a></h2>
 <p>When reading the <code class="docutils literal notranslate"><span class="pre">.txt</span></code> file at the beginning of each notebook, <em>pyKNEEr</em> creates a dictionary (i.e. a struct) called <code class="docutils literal notranslate"><span class="pre">image_data</span></code>.
-In <code class="docutils literal notranslate"><span class="pre">image_data</span></code>, each cell contains all the variables associated with one image and that will be used throughout the whole notebook.
-Specifically, each cell contains an array of strings, representing paths, input and output file names, and other information needed to perform the computations in the notebook.</p>
-<p>As an example, for the demo images, the content of the first cell of <code class="docutils literal notranslate"><span class="pre">image_data</span></code> in  the <code class="docutils literal notranslate"><span class="pre">preprocessing.ipynb</span></code> notebook can be printed out using :</p>
+In <code class="docutils literal notranslate"><span class="pre">image_data</span></code>, each cell corresponds to an image and contains an array of strings representing paths, input and output file names, and other information that will be used throughout the whole notebook.</p>
+<p>For example, for the <a class="reference internal" href="installation.html#demo"><span class="std std-ref">demo</span></a>  images the content of the first cell of <code class="docutils literal notranslate"><span class="pre">image_data</span></code> in  the <code class="docutils literal notranslate"><span class="pre">preprocessing.ipynb</span></code> notebook can be printed out using the commands:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">image_data</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">load_image_data_preprocessing</span><span class="p">(</span><span class="n">input_file_name</span><span class="p">)</span>
 <span class="n">image_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># 0 is the ID of the first image</span>
 </pre></div>
 </div>
-<p>And the variables associated with the first image are:</p>
+<p>obtaining the following output:</p>
 <table class="colwidths-given docutils align-default">
 <colgroup>
 <col style="width: 33%" />
@@ -202,14 +200,14 @@ Specifically, each cell contains an array of strings, representing paths, input 
 </div>
 <div class="section" id="changelog">
 <h2>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-Changelog with the changes in new <i>pyKNEEr</i> versions are in the <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/README.md" target="_blank">readMe</a> file of the GitHub repository</div>
+Changes in <i>pyKNEEr</i> are described in the <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/README.md" target="_blank">readMe</a> file of the GitHub repository</div>
 <div class="section" id="contributing">
 <h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
 Thanks so much for contributing!
 <br>
 The easiest way is to fork the repository from <a href="https://github.com/sbonaretti/pyKNEEr" target="_blank">GitHub</a> and then send a pull request.
 <br>
-If you want to coordinate or need any information, do not hesitate to write at serena dot bonaretti dot research at gmail dot com</div>
+If you want to coordinate or need any information, do not hesitate to write me at serena dot bonaretti dot research at gmail dot com</div>
 </div>
 
 

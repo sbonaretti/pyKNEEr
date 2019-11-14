@@ -89,7 +89,7 @@ To become familiar with *pyKNEEr*, we provide a demo that you can replicate foll
 
     .. figure:: _figures/demoNotebooks.png
        :align: center
-       :scale: 23%
+       :scale: 22%
 
     For the demo, the notebook ``segmentation_sa.ipynb`` is duplicated in
     ``segmentation_sa_ns.ipynb`` to segment a new subject (ns), and
