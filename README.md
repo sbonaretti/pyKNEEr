@@ -37,6 +37,7 @@ User feedbacks and suggestions for improvements:
 
 ### Changelog 
 *v 0.0.4*:  
+- Added test functions
 - Added relative and absolute imports within pyKNEEr package for easier debug, code extension, and testing
 - Changed all variable names to python convention (e.g. from ``fileName`` to ``file_name``)  
 - Improved dependences print outs in notebooks (added pyKNEEr, watermark itself, and date)
