@@ -42,7 +42,7 @@ User feedbacks and suggestions for improvements:
 - Changed all variable names to python convention (e.g. from ``fileName`` to ``file_name``)  
 - Improved dependences print outs in notebooks (added pyKNEEr, watermark itself, and date)
 - Added demo_v2 to Zenodo (minor changes, listed in Zenodo)  
-- Added page `Development` in the website
+- Added page Development.html in the website
 
 *v 0.0.3*: 
 - Reduced mask file size  
