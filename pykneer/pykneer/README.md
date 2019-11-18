@@ -1,7 +1,6 @@
 ## *pyKNEEr* source code
 
-
-
+The code is modular and built in three layers:   
 ![code_scheme](https://sbonaretti.github.io/pyKNEEr/_images/codeScheme.png)
 
 Modules called by notebooks:  
