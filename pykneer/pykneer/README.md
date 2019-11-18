@@ -30,4 +30,5 @@ Additional folders:
 Package file:  
 - `__init__.py`: with `pyKNEEr` includes
 
-Find additional information in the [documentation](https://sbonaretti.github.io/pyKNEEr/development.html)
+Additional information in the documentation:
+- [development](https://sbonaretti.github.io/pyKNEEr/development.html)
