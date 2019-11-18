@@ -7,7 +7,7 @@
 Modules called by notebooks:  
 - `preprocessing_for_nb.py`, called by `preprocessing.ipynb`  
 - `find_reference_for_nb.py`, called by `find_reference.ipynb`
-- `segmentation_for_nb.py`, called by `segmentation_sa.ipynb` 
+- `segmentation_sa_for_nb.py`, called by `segmentation_sa.ipynb` 
 - `segmentation_quality_for_nb.py`, called by `segmentation_quality.ipynb` 
 - `morphology_for_nb.py`, called by `morphology.ipynb`
 - `relaxometry_for_nb.py`, called by `relaxometry_fitting.ipynb` and `relaxometry_EPG.ipynb` 
