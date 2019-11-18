@@ -1,5 +1,7 @@
 ## `pyKNEEr` source code
 
+
+
 ![code_scheme](https://sbonaretti.github.io/pyKNEEr/_images/codeScheme.png)
 
 Modules called by notebooks:  
@@ -28,3 +30,4 @@ Additional folders:
 Package file:  
 - `__init__.py`: with `pyKNEEr` includes
 
+Find additional information in the [documentation](https://sbonaretti.github.io/pyKNEEr/development.html)
