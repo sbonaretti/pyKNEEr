@@ -3,6 +3,11 @@
 Development
 ================================================================================
 
+.. note::
+
+    .. raw:: html
+
+        The source code is on  <a href="https://github.com/sbonaretti/pyKNEEr/tree/master/pykneer" target="_blank">GitHub</a>
 
 
 Code structure
@@ -25,6 +30,29 @@ The figure above shows the code structure. For example, to compute morphology of
 1. ``morphology.ipynb``: Jupyter notebook used to run computations and visualize results. It uses functions from:
 2. ``morphology_for_nb.py``: python module that contains functions to calculate knee cartilage morphology and visualize results. It uses functions from:
 3. ``morphology_functions.py``: python module that contains the actual algorithms to compute cartilage thickness and volume
+
+
+Additional packages
+++++++++++++++++++++++
+
+*pyKNEEr* uses:
+
+.. raw:: html
+
+   <ul>
+    <li><a href="https://github.com/SuperElastix/elastix/wiki" target="_blank">Elastix 4.8</a> for single-atlas segmentation</li>
+    <li><a href="https://github.com/xingjiepan/cylinder_fitting" target="_blank">Cylinder fitting</a> to flatten cartilage for visualization</li>
+   </ul>
+
+
+
+
+
+
+
+
+
+
 
 
 Variable names

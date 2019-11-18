@@ -125,6 +125,9 @@ The figure has to be in the folder "build" (not in the subfolder "html")
             
   <div class="section" id="development">
 <span id="developmnet"></span><h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+The source code is on  <a href="https://github.com/sbonaretti/pyKNEEr/tree/master/pykneer" target="_blank">GitHub</a></div>
 <div class="section" id="code-structure">
 <h2>Code structure<a class="headerlink" href="#code-structure" title="Permalink to this headline">¶</a></h2>
 <p><em>pyKNEEr</em> is written in a modular way to favor modifications and extensions. There are three levels of files associated with each step of the workflow:</p>
@@ -142,6 +145,13 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 <li><p><code class="docutils literal notranslate"><span class="pre">morphology_for_nb.py</span></code>: python module that contains functions to calculate knee cartilage morphology and visualize results. It uses functions from:</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">morphology_functions.py</span></code>: python module that contains the actual algorithms to compute cartilage thickness and volume</p></li>
 </ol>
+<div class="section" id="additional-packages">
+<h3>Additional packages<a class="headerlink" href="#additional-packages" title="Permalink to this headline">¶</a></h3>
+<p><em>pyKNEEr</em> uses:</p>
+<ul>
+ <li><a href="https://github.com/SuperElastix/elastix/wiki" target="_blank">Elastix 4.8</a> for single-atlas segmentation</li>
+ <li><a href="https://github.com/xingjiepan/cylinder_fitting" target="_blank">Cylinder fitting</a> to flatten cartilage for visualization</li>
+</ul></div>
 </div>
 <div class="section" id="variable-names">
 <h2>Variable names<a class="headerlink" href="#variable-names" title="Permalink to this headline">¶</a></h2>
