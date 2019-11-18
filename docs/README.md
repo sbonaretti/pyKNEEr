@@ -8,7 +8,8 @@ HTML files:
 - `preprocessing.html`  
 - `segmentation.html`
 - `morphology.html`
-- `relaxometry.html`  
+- `relaxometry.html`   
+- `development.html`
 - `FAQ.html`  
 
 Folders:  
