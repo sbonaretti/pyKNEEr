@@ -1,4 +1,3 @@
-![](https://sbonaretti.github.io/pyKNEEr/pykneer_logo_for_website.png)
 # *pyKNEEr*
 
 ### An image analysis workflow for **open** and **reproducible** research on **femoral knee cartilage**
