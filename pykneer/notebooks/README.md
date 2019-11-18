@@ -1,4 +1,4 @@
-## *pyKNEEr* - Jupyter notebooks used as a user-interface:  
+## *pyKNEEr* - Jupyter notebooks used as a user-interface  
 
 The notebooks with an asterisk are also included in the demo, downloadable [here](https://www.doi.org/10.5281/zenodo.3262307):
 - `preprocessing.ipynb`*
