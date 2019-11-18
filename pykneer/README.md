@@ -1,4 +1,4 @@
-## *pyKNEEr* code:
+## *pyKNEEr* code
 
 This folder contains: 
 
