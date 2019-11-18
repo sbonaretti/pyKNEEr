@@ -1,4 +1,6 @@
-## *pyKNEEr* - code folder containing:
+## *pyKNEEr* code:
+
+This folder contains: 
 
 - `notebooks`: collections of Jupyter notebooks used as a user-interface:   
 - `pykneer`: source code
