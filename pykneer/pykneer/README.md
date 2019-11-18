@@ -1,4 +1,4 @@
-## `pyKNEEr` source code
+## *pyKNEEr* source code
 
 
 
