@@ -1,6 +1,6 @@
 ## `pyKNEEr` source code
 
-[!Figure](https://sbonaretti.github.io/pyKNEEr/_images/codeScheme.png)
+![code_scheme](https://sbonaretti.github.io/pyKNEEr/_images/codeScheme.png)
 
 Modules called by notebooks:  
 - `preprocessing_for_nb.py`, called by `preprocessing.ipynb`  
