@@ -62,6 +62,9 @@ To become familiar with *pyKNEEr*, we provide a demo that you can replicate foll
 
     Download the newest version of the demo images <a href="https://www.doi.org/10.5281/zenodo.3262307" target="_blank">here</a> (2.1 GB)
 
+  *Note*: Make sure that all the folder names that constitute the path to the demo images have **no spaces**.
+  E.g. ``/home/learning_pykneer/demo/`` and **not** ``/home/learning pykneer/demo/``
+
 - Unzip the file and open it. It contains two folders:
 
   - ``input``: It is the basic folder to work with *pyKNEEr*:
