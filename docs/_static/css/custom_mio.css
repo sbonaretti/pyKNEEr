@@ -1,0 +1,39 @@
+/*main title of the page*/
+h1 {
+    color            : rgba(48,113,169);
+    background-color : white;/* rgba(130,169,203);*/
+    margin-top       : 0px;
+    padding-top      : 5px;
+    padding-bottom   : 20px;
+    font-size        : 60px /*with background: 42; original: 36*/
+    /*color: rgba(48,113,169);
+    background-color: rgba(224,224,224,0.4)
+    /*background-color: #e0e0e0;*/
+}
+
+/*table was rendered as default html*/
+table{
+    border-top    : none;
+    border-left   : none;
+    border-right  : none;
+}
+th, td {
+    border        : none;
+    padding       : 6px;
+    text-align    : left;
+    font-size     : 14px;
+    border-bottom : 1px solid #ddd;
+
+}
+
+/*render the whole page centrally in the screen and not on the left side*/
+.container-wrapper {
+    margin: auto;
+    max-width: 1500px;
+}
+
+/*pyKNEEr at the top of the nav bar (top left)*/
+/*.text-logo{
+  color            : white;
+  background-color : rgba(48,113,169);
+}*/
