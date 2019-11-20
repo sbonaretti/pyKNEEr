@@ -3,7 +3,7 @@
 Relaxometry
 ================================================================================
 
-*pyKNEEr* computes:
+*pyKNEEr* computes:  
 
 * Exponential or linear fitting [1,2]. Images with shortest TE or TSL can be rigidly registered to the image with longest TE or TSL
 * :math:`T_2` maps from DESS acquisitions using Extended Phase Graph (EPG) modeling [3]

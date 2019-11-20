@@ -1,6 +1,6 @@
 .. _morphology:
 
-Morphology
+Morphology   
 ================================================================================
 
 *pyKNEEr* computes two quantitative parameters to characterize femoral cartilage morphology:

@@ -32,6 +32,20 @@ th, td {
     max-width: 1500px;
 }
 
+
+/**
+ * These class styles override the Guzzle defaults, which use #009999 (a light
+ * teal) for math elements. - provided by Guzzle's author in this GitHub issue: https://github.com/guzzle/guzzle_sphinx_theme/issues/36#issuecomment-555249568
+ */
+.m { color: #333333 } /* Literal.Number */
+.mf { color: #333333 } /* Literal.Number.Float */
+.mh { color: #333333 } /* Literal.Number.Hex */
+.mi { color: #333333 } /* Literal.Number.Integer */
+.mo { color: #333333 } /* Literal.Number.Oct */
+.mn { color: #333333 } /* Literal.Number.Number */
+.mrow { color: #333333 } /* Literal.Number.Row */
+
+
 /*pyKNEEr at the top of the nav bar (top left)*/
 /*.text-logo{
   color            : white;
