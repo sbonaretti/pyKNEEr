@@ -36,6 +36,11 @@ User feedbacks and suggestions for improvements:
 ---  
 
 ### Changelog 
+
+*v 0.0.5*:  
+- Solved ITK bug about the Orient function in preprocessing - different way to set direction in ITK4.13  
+- Added option to show images with slider in notebooks  
+
 *v 0.0.4*:  
 - Added test functions
 - Added relative and absolute imports within pyKNEEr package for easier debug, code extension, and testing
