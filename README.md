@@ -40,6 +40,7 @@ User feedbacks and suggestions for improvements:
 *v 0.0.5*:  
 - Solved ITK bug about the Orient function in preprocessing - different way to set direction in ITK4.13  
 - Added option to show images with slider in notebooks  
+- Added demo_v3 to Zenodo (added sliders to notebooks)
 
 *v 0.0.4*:  
 - Added test functions
