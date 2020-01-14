@@ -21,8 +21,24 @@ from skimage.measure import find_contours
 from scipy import optimize
 from scipy import ndimage as ndi
 
-from .cylinder_fitting import fit
 import time
+
+
+# pyKNEER imports 
+# ugly way to use relative vs. absolute imports when developing vs. when using package - cannot find a better way
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+    #cyl_fitting_dir = os.path.dirname(os.path.realpath(__file__)) + "cylinder_fitting"
+    from cylinder_fitting import fit
+
+else:
+    # uses current package visibility
+    from .cylinder_fitting import fit
+
+
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
@@ -422,7 +438,6 @@ def flatten_surface(pts):
     y = y - np.mean(y)
 
     pts_out = np.vstack((x,y))
-    print (pts_out[0:10])
 
     return pts_out, phi #, color_out
 

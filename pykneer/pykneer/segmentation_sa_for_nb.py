@@ -1,4 +1,4 @@
-# Serena Bonaretti, 2018
+# Serena Bonaretti, 2018-
 
 """
 Module with the functions called by the notebook segmentation.ipynb
@@ -24,11 +24,15 @@ pool.map() takes care of sending one single element of the list all_image_data (
 import matplotlib.pyplot as plt
 import multiprocessing
 import numpy as np
-import pkg_resources
-import platform
 import SimpleITK      as sitk
-import subprocess
 import time
+
+from ipywidgets import * # for display
+from ipywidgets import HBox, VBox
+from ipywidgets import interactive
+from ipywidgets import Layout
+from ipywidgets import widgets as widgets
+
 
 # pyKNEER imports 
 # ugly way to use relative vs. absolute imports when developing vs. when using package - cannot find a better way
@@ -41,39 +45,6 @@ else:
     # uses current package visibility
     from . import elastix_transformix
     from . import sitk_functions  as sitkf
-
-
-
-# ---------------------------------------------------------------------------------------------------------------------------
-# TESTING ELASTIX -----------------------------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------------------------------------------
-def test_elastix():
-
-    sys = platform.system()
-    
-    # get the folder depending on the OS
-    if sys == "Darwin":
-        dirpath = pkg_resources.resource_filename('pykneer','elastix/Darwin/')
-    elif sys == "Linux":
-        dirpath = pkg_resources.resource_filename('pykneer','elastix/Linux/')
-    elif sys == "Windows":
-        dirpath = pkg_resources.resource_filename('pykneer','elastix\\Windows\\')
-    
-    # create the full path
-    if sys == "Darwin" or sys == "Linux": 
-        completeElastixPath     = dirpath + "elastix"
-    elif sys == "Windows": 
-        completeElastixPath     = dirpath + "elastix.exe"
-    
-    # call elastix to see if it reponds
-    cmd = [completeElastixPath]
-    output = subprocess.call(cmd, cwd=dirpath)
-    if output == 0:
-        print ("-> elastix correctly installed")
-    else: 
-        print ("-> elastix not installed")
-    
-
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
@@ -366,7 +337,21 @@ def warp_cartilage_mask(all_image_data, n_of_processes):
 # VISUALIZING SEGMENTED CARTILAGE -------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
-def show_segmented_images(all_image_data):
+def show_segmented_images (image_data, view_modality):
+    
+    if view_modality == 0:
+        show_segmented_images_static(image_data)
+        trick = 'Figure'
+        return trick  # need a return for the interactive function when view_modality == 1. Done to avoid if/else on notebook 
+    elif view_modality == 1:
+        fig = show_segmented_images_interactive(image_data)
+        return fig
+    else:
+        print("view_modality has to be 0 for static visualization or 1 for interactive visualization")
+        
+
+
+def show_segmented_images_static(all_image_data): 
 
     n_of_images  = len(all_image_data)
     img_LW       = 4
@@ -380,9 +365,7 @@ def show_segmented_images(all_image_data):
     n_of_rows    = n_of_images
     axis_index   = 1
 
-
     for i in range(0, n_of_images):
-
 
         # get paths and file names of the current image
         image_data                    = all_image_data[i]
@@ -392,7 +375,6 @@ def show_segmented_images(all_image_data):
         mask_file_name                = image_data["segmented_folder"] + image_data[anatomy + "mask"]
         moving_root                   = image_data["moving_root"]
 
-
         # read the images
         moving = sitk.ReadImage(moving_file_name)
         mask   = sitk.ReadImage(mask_file_name)
@@ -400,7 +382,6 @@ def show_segmented_images(all_image_data):
         # images from simpleitk to numpy
         moving_py = sitk.GetArrayFromImage(moving)
         mask_py   = sitk.GetArrayFromImage(mask)
-
 
         # extract slices at 2/5, 3/5, and 4/5 of the image size
         size = np.size(mask_py,2)
@@ -437,3 +418,131 @@ def show_segmented_images(all_image_data):
             ax1.axis('off')
 
             axis_index = axis_index + 1
+
+
+
+def browse_images(moving_py, mask_py, ax_i, fig, moving_root, last_value, sliceID):
+    
+    # The code in this function has to be separate. If code directly into show_segmented_images, when using widgets, they update the last image
+    
+    # function for slider
+    def view_image(slider):
+        
+        # get slice of moving image
+        slice_moving_py   = moving_py[:,:,slider]
+        # get slice in mask
+        slice_mask_py     = mask_py[:,:,slider]
+        slice_mask_masked = np.ma.masked_where(slice_mask_py == 0, slice_mask_py)
+        # show both
+        ax_i.imshow(slice_moving_py, cmap=plt.cm.gray, origin='lower',interpolation=None) 
+        ax_i.imshow(slice_mask_masked, 'hsv' , interpolation=None, origin='lower', alpha=1, vmin=0, vmax=100)
+        ax_i.set_title(moving_root)
+        ax_i.axis('off')
+        display(fig)
+        
+    # link sliders and its function
+    slider_image = interactive(view_image, 
+                         slider = widgets.IntSlider(min=0, 
+                                                      max=last_value, 
+                                                      value=sliceID[1],
+                                                      step=1,
+                                                      continuous_update=False, # avoids intermediate image display
+                                                      readout=False,
+                                                      layout=Layout(width='180px'),
+                                                      description='Slice n.'))        
+    # show figures before start interacting
+    slider_image.update()  
+    
+    # slice number scrolling
+    text = widgets.BoundedIntText(description="", # BoundedIntText to avoid that displayed text goes outside of the range
+                           min=0, 
+                           max=last_value, 
+                           value=sliceID[1],
+                           step=1,
+                           continuous_update=False,
+                           layout=Layout(width='50px'))
+    
+    # link slider and text 
+    widgets.jslink((slider_image.children[:-1][0], 'value'), (text, 'value'))
+    
+    # layout
+    slider_box   = HBox(slider_image.children[:-1])
+    widget_box   = HBox([slider_box, text])
+    whole_box    = VBox([widget_box, slider_image.children[-1] ]) 
+        
+    return whole_box
+
+def show_segmented_images_interactive(all_image_data):
+    
+    # for each image
+    for i in range(0, len(all_image_data)):
+
+        # get paths and file names of the current image
+        image_data                    = all_image_data[i]
+        image_data["current_anatomy"] = image_data["cartilage"]
+        anatomy                       = image_data["current_anatomy"]
+        moving_file_name              = image_data["moving_folder"]    + image_data["moving_name"]
+        mask_file_name                = image_data["segmented_folder"] + image_data[anatomy + "mask"]
+        moving_root                   = image_data["moving_root"]
+
+        # read the images
+        moving = sitk.ReadImage(moving_file_name)
+        mask   = sitk.ReadImage(mask_file_name)
+
+        # images from simpleitk to numpy
+        moving_py = sitk.GetArrayFromImage(moving)
+        mask_py   = sitk.GetArrayFromImage(mask)
+
+        # extract slices at 2/5, 3/5, and 4/5 of the image size
+        size = np.size(mask_py,2)
+        # get the first slice of the mask in the sagittal direction
+        for b in range(0,int(size/2)):
+            slice = mask_py[:,:,b]
+            if np.sum(slice) != 0:
+                first_value = b
+                break
+        # get the last slice of the mask in the sagittal direction
+        for b in range(size-1,int(size/2),-1):
+            slice = mask_py[:,:,b]
+            if np.sum(slice) != 0:
+                last_value = b
+                break
+
+        slice_step = int ((last_value-first_value)/4)
+        sliceID = (first_value + slice_step, first_value + 2*slice_step, first_value + 3*slice_step)
+
+        # create figure
+        plt.rcParams['figure.figsize'] = [20, 15]  
+        fig, ax = plt.subplots(nrows=1, ncols=4) 
+        
+        
+         # static images
+        for a in range (0,len(sliceID)):
+
+            # create subplot
+            ax1 = ax[a+1]
+
+            # get slices
+            slice_moving_py   = moving_py[:,:,sliceID[a]]
+            slice_mask_py     = mask_py[:,:,sliceID[a]]
+            slice_mask_masked = np.ma.masked_where(slice_mask_py == 0, slice_mask_py)
+
+            # show image
+            ax1.imshow(slice_moving_py,   'gray', interpolation=None, origin='lower')
+            ax1.imshow(slice_mask_masked, 'hsv' , interpolation=None, origin='lower', alpha=1, vmin=0, vmax=100)
+            ax1.set_title("Slice: " + str(sliceID[a]))
+            ax1.axis('off')
+            plt.close(fig) # avoid to show them several times in notebook
+            
+        # interactive image
+        ax_i = ax[0]
+        if i == 0:
+            final_box = browse_images(moving_py, mask_py, ax_i, fig, moving_root, last_value, sliceID)
+        else:
+            new_box = browse_images(moving_py, mask_py, ax_i, fig, moving_root, last_value, sliceID)
+            final_box = VBox([final_box,new_box]);   
+            
+    return final_box
+        
+        
+

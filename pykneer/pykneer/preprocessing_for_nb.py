@@ -1,4 +1,4 @@
-# Serena Bonaretti, 2018
+# Serena Bonaretti, 2018-
 
 """
 Module with the functions called by the notebook preprocessing.ipynb
@@ -14,8 +14,24 @@ import matplotlib.pyplot as plt
 import time
 import multiprocessing
 
+from ipywidgets import * # for displays
+from ipywidgets import HBox, VBox
+from ipywidgets import interactive
+from ipywidgets import Layout
+from ipywidgets import widgets as widgets
+
+
 import SimpleITK      as sitk
-from . import sitk_functions  as sitkf
+
+# pyKNEER imports 
+# ugly way to use relative vs. absolute imports when developing vs. when using package - cannot find a better way
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+    import sitk_functions  as sitkf
+
+else:
+    # uses current package visibility
+    from . import sitk_functions  as sitkf
 
 
 
@@ -227,8 +243,22 @@ def edge_preserving_smoothing(all_image_data, n_of_processes):
 # ---------------------------------------------------------------------------------------------------------------------------
 # VISUALIZING PREPROCESSED IMAGES -------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
+    
+def show_preprocessed_images (image_data, intensity_standardization, view_modality):
+    
+    if view_modality == 0:
+        show_preprocessed_images_static(image_data,intensity_standardization)
+        trick = 'Figure'
+        return trick  # need a return for the interactive function when view_modality == 1. Done to avoid if/else on notebook 
+    elif view_modality == 1:
+        fig = show_preprocessed_images_interactive(image_data,intensity_standardization)
+        return fig
+    else:
+        print("view_modality has to be 0 for static visualization or 1 for interactive visualization")
+    
+    
 
-def show_preprocessed_images(all_image_data,intensity_standardization):
+def show_preprocessed_images_static(all_image_data,intensity_standardization):
 
     n_of_images   = len(all_image_data)
     img_LW        = 4
@@ -300,3 +330,161 @@ def show_preprocessed_images(all_image_data,intensity_standardization):
             else:
                 ax2 = ax[i,1]
             ax2.axis('off')
+            
+            
+
+def browse_images_orig_only(img_orig_py, size, slice_ID, fig, ax1, image_data):
+    
+    # function for slider 1
+    def view_image_1(slider_1):
+        ax1.imshow(img_orig_py[:,:,slider_1], cmap=plt.cm.gray, origin='lower',interpolation=None)
+        ax1.set_title(image_data["image_name_root"] + "_orig.mha")
+        ax1.axis('off')
+        display(fig)
+        
+    # link sliders and functions
+    slider = interactive(view_image_1, 
+                         slider_1 = widgets.IntSlider(min=0, 
+                                                      max=size[2]-1, 
+                                                      value=slice_ID,
+                                                      step=1,
+                                                      continuous_update=False, # avoids intermediate image display
+                                                      readout=False,
+                                                      layout=Layout(width='450px'),
+                                                      description='Slice n.'))        
+    
+    # show figures before start interacting
+    slider.update()  
+    
+    # slice number scrolling
+    text = widgets.BoundedIntText(description="", # BoundedIntText to avoid that displayed text goes outside of the range
+                           min=0, 
+                           max=size[2]-1, 
+                           value=slice_ID, 
+                           step=1,
+                           continuous_update=False,
+                           layout=Layout(width='50px'))
+    
+    # link slider and text 
+    widgets.jslink((slider.children[:-1][0], 'value'), (text, 'value'))
+    
+    # layout
+    slider_box = HBox(slider.children[:-1])
+    widget_box = HBox([slider_box, text])
+    whole_box    = VBox([widget_box, slider.children[-1] ])
+        
+    return whole_box
+
+
+
+def browse_images_orig_prep(img_orig_py, img_prep_py, size, slice_ID, fig, ax1, ax2, image_data):
+    
+    # function for slider 
+    def view_image_1(slider_1):
+ 
+        ax1.imshow(img_orig_py[:,:,slider_1], cmap=plt.cm.gray, origin='lower',interpolation=None)
+        ax1.set_title(image_data["image_name_root"] + "_orig.mha")
+        ax1.axis('off')
+        #display(fig)
+      
+        ax2.imshow(img_prep_py[:,:,slider_1], cmap=plt.cm.gray, origin='lower',interpolation=None)
+        ax2.set_title(image_data["image_name_root"] + "_prep.mha")
+        ax2.axis('off')
+        display(fig)
+        
+    # link function and sliders (created inside the interactive command)
+    slider = interactive(view_image_1, 
+                         slider_1 = widgets.IntSlider(min=0, 
+                                                      max=size[2]-1, 
+                                                      value=slice_ID, 
+                                                      step=1,
+                                                      continuous_update=False, # avoids intermediate image display
+                                                      readout=False,
+                                                      layout=Layout(width='450px'),
+                                                      description='Slice n.')
+                                                      )    
+    # show images before start interacting
+    slider.update() 
+
+    # slice number scrolling
+    text = widgets.BoundedIntText(description="", # BoundedIntText to avoid that displayed text goes outside of the range
+                           min=0, 
+                           max=size[2]-1, 
+                           value=slice_ID, 
+                           step=1,
+                           continuous_update=False,
+                           layout=Layout(width='50px'))
+    
+    # link slider and text 
+    widgets.jslink((slider.children[:-1][0], 'value'), (text, 'value'))
+    
+    # layout
+    slider_box = HBox(slider.children[:-1])
+    widget_box = HBox([slider_box, text])
+    whole_box    = VBox([widget_box, slider.children[-1] ])
+        
+    return whole_box
+
+def show_preprocessed_images_interactive(all_image_data,intensity_standardization):   
+    
+     # display all images
+     for i in range(0, len(all_image_data)):
+               
+         # --- for both cases ---    
+         # get paths and file names of the current image
+         orig_file_name = all_image_data[i]["original_file_name"]
+    
+         # read the image
+         img_orig = sitk.ReadImage(orig_file_name)
+    
+         # convert image to numpy array
+         img_orig_py = sitk.GetArrayFromImage(img_orig)
+        
+         # get slice id at 2/3 of the image size
+         size       = img_orig_py.shape
+         slice_ID   = round(size[2] / 2)
+           
+         # --- if only spatial preprocessing ---
+         if intensity_standardization == 0:
+             
+             # figure size
+             plt.rcParams['figure.figsize'] = [5, 7]     
+             fig, ax = plt.subplots(nrows=1, ncols=1) 
+             plt.close() # do not show plots below this cell
+             
+             # show the image
+             if i == 0:
+                 finalBox = browse_images_orig_only(img_orig_py, size, slice_ID, fig, ax, all_image_data[i])
+             else:
+                 vBox = browse_images_orig_only(img_orig_py, size, slice_ID, fig, ax, all_image_data[i])
+                 finalBox = VBox([finalBox,vBox]);
+        
+         # --- if also intensity preprocessing ---
+         elif intensity_standardization == 1:
+             
+             plt.rcParams['figure.figsize'] = [10, 14]  
+             fig, ax = plt.subplots(nrows=1, ncols=2) 
+             ax1 = ax[0]
+             plt.close() # do not show plots below this cell
+            
+             # figure for *_prep.mha
+             ax2 = ax[1]
+             plt.close() # do not show plots below this cell
+    
+             # get paths and file names of the current image
+             prep_file_name = all_image_data[i]["preprocessed_file_name"]
+            
+             # read the images
+             img_prep = sitk.ReadImage(prep_file_name)
+    
+             # convert image to numpy array
+             img_prep_py = sitk.GetArrayFromImage(img_prep)
+             
+             # show the image
+             if i == 0:
+                 finalBox = browse_images_orig_prep(img_orig_py, img_prep_py, size, slice_ID, fig, ax1, ax2, all_image_data[i])
+             else:
+                 vBox = browse_images_orig_prep(img_orig_py, img_prep_py, size, slice_ID, fig, ax1, ax2, all_image_data[i])
+                 finalBox = VBox([finalBox,vBox]);
+                 
+     return finalBox

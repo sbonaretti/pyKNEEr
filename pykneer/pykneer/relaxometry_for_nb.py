@@ -28,9 +28,24 @@ import SimpleITK as sitk
 import shutil
 import time
 
-from . import relaxometry_functions as rf
-from . import elastix_transformix
-#from . import pykneer_io as io
+from ipywidgets import * # for display
+from ipywidgets import HBox, VBox
+from ipywidgets import interactive
+from ipywidgets import Layout
+from ipywidgets import widgets as widgets
+
+
+# pyKNEER imports 
+# ugly way to use relative vs. absolute imports when developing vs. when using package - cannot find a better way
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+    import relaxometry_functions as rf
+    import elastix_transformix
+
+else:
+    # uses current package visibility
+    from . import relaxometry_functions as rf
+    from . import elastix_transformix
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
@@ -260,7 +275,22 @@ def calculate_fitting_maps(all_image_data, n_of_processes):
     print ("-> The total time was %.2f seconds (about %d min)" % ((time.time() - start_time), (time.time() - start_time)/60))
 
 
-def show_fitting_maps(all_image_data):
+
+# --- VISUALIZE FITTING -----------------------------------------------------------------------------------------------------
+def show_fitting_maps (image_data, view_modality):
+    
+    if view_modality == 0:
+        show_fitting_maps_static(image_data)
+        trick = 'Figure'
+        return trick  # need a return for the interactive function when view_modality == 1. Done to avoid if/else on notebook 
+    elif view_modality == 1:
+        fig = show_fitting_maps_interactive(image_data)
+        return fig
+    else:
+        print("view_modality has to be 0 for static visualization or 1 for interactive visualization")
+        
+
+def show_fitting_maps_static(all_image_data):
 
     n_of_images  = len(all_image_data)
     img_LW       = 6
@@ -273,7 +303,6 @@ def show_fitting_maps(all_image_data):
     n_of_columns = 3
     n_of_rows    = n_of_images
     axis_index   = 1;
-
 
     for i in range(0, n_of_images):
 
@@ -330,6 +359,142 @@ def show_fitting_maps(all_image_data):
             ax1.axis('off')
 
             axis_index = axis_index + 1
+
+
+
+def browse_images(moving_py, mask_py, ax_i, fig, moving_root, last_value, sliceID):
+    
+    # The code in this function has to be separate. If code directly into show_segmented_images, when using widgets, they update the last image
+    
+    # function for slider
+    def view_image(slider):
+                
+        # get slice of moving image
+        slice_moving_py   = moving_py[:,:,slider]
+        # get slice in mask
+        slice_mask_py     = mask_py[:,:,slider]
+        slice_mask_masked = np.ma.masked_where(slice_mask_py == 0, slice_mask_py)
+        # show both
+        ax_i.imshow(slice_moving_py, cmap=plt.cm.gray, origin='lower',interpolation=None) 
+        ren = ax_i.imshow(slice_mask_masked, 'jet' , interpolation=None, origin='lower', alpha=1, vmin=0, vmax=100)
+        ax_i.set_title(moving_root)
+        ax_i.axis('off')
+        # colorbar        
+        cbar_ax = fig.add_axes([0.08, 0.4, 0.01, 0.2]) #[left, bottom, width, height] 
+        fig.colorbar(ren, cax=cbar_ax, orientation='vertical', shrink=0.60, ticks=[0, 20, 40, 60, 80, 100])
+        cbar_ax.set_title('[ms]')
+        # The following two lines are to avoid this warning in the notebook: 
+        # Adding an axes using the same arguments as a previous axes currently reuses the earlier instance.  In a future version, a new instance will always be created and returned.  Meanwhile, this warning can be suppressed, and the future behavior ensured, by passing a unique label to each axes instance.
+        # To be fixed in following releases 
+        import warnings
+        warnings.filterwarnings("ignore")
+        
+        # display
+        display(fig)
+        
+    # link sliders and its function
+    slider_image = interactive(view_image, 
+                         slider = widgets.IntSlider(min=0, 
+                                                      max=last_value, 
+                                                      value=sliceID[1],
+                                                      step=1,
+                                                      continuous_update=False, # avoids intermediate image display
+                                                      readout=False,
+                                                      layout=Layout(width='250px'),
+                                                      description='Slice n.'))        
+    # show figures before start interacting
+    slider_image.update()  
+    
+    # slice number scrolling
+    text = widgets.BoundedIntText(description="", # BoundedIntText to avoid that displayed text goes outside of the range
+                           min=0, 
+                           max=last_value, 
+                           value=sliceID[1],
+                           step=1,
+                           continuous_update=False,
+                           layout=Layout(width='50px'))
+    
+    
+    
+    # link slider and text 
+    widgets.jslink((slider_image.children[:-1][0], 'value'), (text, 'value'))
+    
+    # layout
+    slider_box   = HBox(slider_image.children[:-1])
+    widget_box   = HBox([slider_box, text])
+    whole_box    = VBox([widget_box, slider_image.children[-1] ]) 
+        
+    return whole_box
+
+def show_fitting_maps_interactive(all_image_data):
+
+    for i in range(0, len(all_image_data)):
+
+        # get paths and file names of the current image
+        preprocessed_folder = all_image_data[i]["preprocessed_folder"]
+        i1_file_name        = all_image_data[i]["acquisition_file_names"][0]
+        map_folder          = all_image_data[i]["relaxometry_folder"]
+        map_file_name       = all_image_data[i]["map_file_name"]
+        image_name_root, image_ext = os.path.splitext(i1_file_name)
+
+        # read images
+        img  = sitk.ReadImage(preprocessed_folder + i1_file_name)
+        map_ = sitk.ReadImage(map_folder + map_file_name)
+
+        # images from simpleitk to numpy
+        img_py = sitk.GetArrayFromImage(img)
+        map_py = sitk.GetArrayFromImage(map_)
+
+
+        # extract slices at 2/5, 3/5 and 4/3 of the image size
+        size = np.size(map_py,2)
+        # get the first slice of the mask in the sagittal direction
+        for b in range(0,int(size/2)):
+            slice = map_py[:,:,b]
+            if np.sum(slice) != 0:
+                first_value = b
+                break
+        # get the last slice of the mask in the sagittal direction
+        for b in range(size-1,int(size/2),-1):
+            slice = map_py[:,:,b]
+            if np.sum(slice) != 0:
+                last_value = b
+                break
+        slice_step = int ((last_value-first_value)/4)
+        slice_ID   = (first_value + slice_step, first_value + 2*slice_step, first_value + 3*slice_step)
+
+        # create figure
+        plt.rcParams['figure.figsize'] = [20, 15]  
+        fig, ax = plt.subplots(nrows=1, ncols=4) 
+        
+        # static images
+        for a in range (0,len(slice_ID)):
+
+            # create subplot
+            ax1 = ax[a+1]
+
+            # get slices
+            slice_img_py = img_py[:,:,slice_ID[a]]
+            slice_map_py = map_py[:,:,slice_ID[a]]
+            slice_map_masked = np.ma.masked_where(slice_map_py == 0, slice_map_py)
+
+            # show image
+            ax1.imshow(slice_img_py    , 'gray', interpolation=None, origin='lower')
+            ax1.imshow(slice_map_masked, 'jet' , interpolation=None, origin='lower', alpha=1, vmin=0, vmax=100)
+            ax1.set_title("Slice: " + str(slice_ID[a]))
+            ax1.axis('off')
+            plt.close(fig) # avoid to show them several times in notebook
+            
+        # interactive image
+        ax_i = ax[0]
+        if i == 0:
+            final_box = browse_images(img_py, map_py, ax_i, fig, image_name_root, last_value, slice_ID)
+        else:
+            new_box = browse_images(img_py, map_py, ax_i, fig, image_name_root, last_value, slice_ID)
+            final_box = VBox([final_box,new_box]);   
+            
+    return final_box
+
 
 
 def show_fitting_graph(all_image_data):
@@ -491,7 +656,21 @@ def calculate_t2_maps(all_image_data, n_of_processes):
 
 
 
-def show_t2_maps(all_image_data):
+def show_t2_maps (image_data, view_modality):
+    
+    if view_modality == 0:
+        show_t2_maps_static(image_data)
+        trick = 'Figure'
+        return trick  # need a return for the interactive function when view_modality == 1. Done to avoid if/else on notebook 
+    elif view_modality == 1:
+        fig = show_t2_maps_interactive(image_data)
+        return fig
+    else:
+        print("view_modality has to be 0 for static visualization or 1 for interactive visualization")
+        
+        
+
+def show_t2_maps_static(all_image_data):
 
     n_of_images   = len(all_image_data)
     img_LW        = 6
@@ -561,6 +740,78 @@ def show_t2_maps(all_image_data):
             ax1.axis('off')
 
             axis_index = axis_index + 1
+
+
+
+def show_t2_maps_interactive(all_image_data):
+
+    for i in range(0, len(all_image_data)):
+
+        # get paths and file names of the current image
+        preprocessed_folder   = all_image_data[i]["preprocessed_folder"]
+        i1_file_name          = all_image_data[i]["i1_file_name"]
+        relaxometry_folder    = all_image_data[i]["relaxometry_folder"]
+        t2_map_mask_file_name = all_image_data[i]["t2_map_mask_file_name"]
+        image_name_root       = all_image_data[i]["image_name_root"]
+
+        # read images
+        img = sitk.ReadImage(preprocessed_folder + i1_file_name)
+        map = sitk.ReadImage(relaxometry_folder  + t2_map_mask_file_name)
+
+        # images from simpleitk to numpy
+        img_py = sitk.GetArrayFromImage(img)
+        map_py = sitk.GetArrayFromImage(map)
+
+
+        # extract slices at 2/5, 3/5, and 4/5 of the image size
+        size = np.size(map_py,2)
+        # get the first slice of the mask in the sagittal direction
+        for b in range(0,int(size/2)):
+            slice = map_py[:,:,b]
+            if np.sum(slice) != 0:
+                first_value = b
+                break
+        # get the last slice of the mask in the sagittal direction
+        for b in range(size-1,int(size/2),-1):
+            slice = map_py[:,:,b]
+            if np.sum(slice) != 0:
+                last_value = b
+                break
+
+        slice_step = int ((last_value-first_value)/4)
+        slice_ID   = (first_value + slice_step, first_value + 2*slice_step, first_value + 3*slice_step)
+
+        # create figure
+        plt.rcParams['figure.figsize'] = [20, 15]  
+        fig, ax = plt.subplots(nrows=1, ncols=4) 
+        
+        # static images
+        for a in range (0,len(slice_ID)):
+
+            # create subplot
+            ax1 = ax[a+1]
+
+            # get slices
+            slice_img_py = img_py[:,:,slice_ID[a]]
+            slice_map_py = map_py[:,:,slice_ID[a]]
+            slice_map_masked = np.ma.masked_where(slice_map_py == 0, slice_map_py)
+
+            # show image
+            ax1.imshow(slice_img_py    , 'gray', interpolation=None, origin='lower')
+            ax1.imshow(slice_map_masked, 'jet' , interpolation=None, origin='lower', alpha=1, vmin=0, vmax=100)
+            ax1.set_title("Slice: " + str(slice_ID[a]))
+            ax1.axis('off')
+            plt.close(fig) # avoid to show them several times in notebook
+            
+        # interactive image
+        ax_i = ax[0]
+        if i == 0:
+            final_box = browse_images(img_py, map_py, ax_i, fig, image_name_root, last_value, slice_ID)
+        else:
+            new_box = browse_images(img_py, map_py, ax_i, fig, image_name_root, last_value, slice_ID)
+            final_box = VBox([final_box,new_box]);   
+            
+    return final_box
 
 
 def show_t2_graph(all_image_data):
@@ -661,3 +912,9 @@ def show_t2_table(all_image_data, output_file_name):
     print("Table saved as: " + output_file_name)
 
     return table
+
+
+
+
+
+    

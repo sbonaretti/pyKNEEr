@@ -12,12 +12,17 @@ Other functions in the abstract class are:
 The instance bone also has the function: 
     - vf_spline used to find the reference bone (see find_reference.py)
     
+Functions at the bottom are to test when elastix does not work - the output messages are in the function "rigid" of the class "bone" (the first function used in the pipeline)
 """
 
 from abc import ABC, abstractmethod
 import os
 import subprocess
 import SimpleITK as sitk
+
+import pkg_resources
+import platform
+import subprocess
 
 # pyKNEER imports 
 # ugly way to use relative vs. absolute imports when developing vs. when using package - cannot find a better way
@@ -187,12 +192,33 @@ class bone (registration):
 
         subprocess.run(cmd, cwd=elastix_path)
 
-        # change output names
+        # check if the registration worked
+        # if the registration did not work
         if not os.path.exists(image_data["registered_sub_folder"] + "result.0.mha"):
             print("-------------------------------------------------------------------------------------------")
             print("ERROR: No output created in bone.rigid()")
             print("-------------------------------------------------------------------------------------------")
+            
+            # print out possible errors
+            # elastix not in system
+            output = test_elastix()
+            if output == 0:
+                print ("-> elastix correctly installed")
+                print ("complete_elastix_path           : " + complete_elastix_path)
+                print ("complete_reference_name         : " + complete_reference_name)
+                print ("complete_reference_mask_dil_name: " + complete_reference_mask_dil_name)
+                print ("complete_moving_name            : " + complete_moving_name)
+                print ("params                          : " + params)
+                print ("output_folder                   : " + output_folder)
+            else: 
+                print ("-> elastix not installed. Error message is: " + output)
+                print ("   You might need to set Elastix environmental variables separately. To do so, go to pyKNEEr documentation here: https://sbonaretti.github.io/pyKNEEr/faq.html#elastix")
+            
+            
+            
+            
             return
+        # change output names
         else:
             os.rename(image_data["registered_sub_folder"] + "result.0.mha",
                       image_data["registered_sub_folder"] + image_data[anatomy + "rigid_name"])
@@ -729,3 +755,34 @@ class cartilage (registration):
 
     def vf_spline(self):
         pass
+
+
+# ---------------------------------------------------------------------------------------------------------------------------
+# TESTING POSSIBLE ERRORS ---------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------
+def test_elastix():
+
+    sys = platform.system()
+    
+    # get the folder depending on the OS
+    if sys == "Darwin":
+        dirpath = pkg_resources.resource_filename('pykneer','elastix/Darwin/')
+    elif sys == "Linux":
+        dirpath = pkg_resources.resource_filename('pykneer','elastix/Linux/')
+    elif sys == "Windows":
+        dirpath = pkg_resources.resource_filename('pykneer','elastix\\Windows\\')
+    
+    # create the full path
+    if sys == "Darwin" or sys == "Linux": 
+        completeElastixPath     = dirpath + "elastix"
+    elif sys == "Windows": 
+        completeElastixPath     = dirpath + "elastix.exe"
+    
+    # call elastix to see if it reponds
+    cmd = [completeElastixPath]
+    output = subprocess.call(cmd, cwd=dirpath)
+    
+    return output
+    
+
+    

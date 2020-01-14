@@ -14,10 +14,6 @@ import scipy as sp
 import scipy.optimize
 import SimpleITK as sitk
 
-from . import pykneer_io as io
-from . import morphology_functions as mf
-
-
 
 #    #small example for testing
 #    # linear fitting

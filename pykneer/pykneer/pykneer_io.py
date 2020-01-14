@@ -523,8 +523,14 @@ def add_names_to_image_data(image_data,folderFlag):
     image_data[cartilage + "i_spline_transf_name"] = "iTransformParameters." + cartilage + "_spline.txt"
     image_data[cartilage + "m_spline_transf_name"] = "mTransformParameters." + cartilage + "_spline.txt"
 
-    # parameter files
-    parameter_folder = pkg_resources.resource_filename('pykneer','parameterFiles') + folder_div
+    # parameter files 
+    # if during development
+    if __package__ is None or __package__ == '':
+        parameter_folder = os.path.dirname(os.path.realpath(__file__)) + "/parameterFiles"
+    # if using package
+    else:
+        parameter_folder = pkg_resources.resource_filename('pykneer','parameterFiles') + folder_div
+      
     if not parameter_folder.endswith(folder_div):
         parameter_folder = parameter_folder + folder_div
     if not os.path.isdir(parameter_folder):
@@ -582,9 +588,14 @@ def add_names_to_image_data(image_data,folderFlag):
     if sys == "Linux":
         dirpath = pkg_resources.resource_filename('pykneer','elastix/Linux/')
     elif sys == "Windows":
-        dirpath = pkg_resources.resource_filename('pykneer','elastix/Windows/')
+        dirpath = pkg_resources.resource_filename('pykneer','elastix\\Windows\\')
     elif sys == "Darwin":
-        dirpath = pkg_resources.resource_filename('pykneer','elastix/Darwin/')
+        # For debugging - I am working on a MacOS
+        if __package__ is None or __package__ == '':
+            dirpath = os.path.dirname(os.path.realpath(__file__)) + "/elastix/Darwin/"
+        # if using package
+        else:
+            dirpath = pkg_resources.resource_filename('pykneer','elastix/Darwin/')
     image_data["elastix_folder"]            = dirpath
     image_data["complete_elastix_path"]     = dirpath + "elastix"
     image_data["complete_transformix_path"] = dirpath + "transformix"
@@ -1124,17 +1135,29 @@ def load_image_data_fitting(input_file_name, method_flag, registrationFlag):
                 registered_folder = os.path.split(registered_folder)[0] # remove "original"
                 registered_folder = registered_folder + folder_div + "registered" + folder_div
                 image_data["registered_folder"]      = registered_folder
-                image_data["parameter_folder"]       = pkg_resources.resource_filename('pykneer','parameterFiles') + folder_div
-                image_data["param_file_rigid"]        = "MR_param_rigid.txt"
+                # parameter files 
+                # if during development
+                if __package__ is None or __package__ == '':
+                    parameter_folder = os.path.dirname(os.path.realpath(__file__)) + "/parameterFiles"
+                # if using package
+                else:
+                    parameter_folder = pkg_resources.resource_filename('pykneer','parameterFiles') + folder_div
+                image_data["parameter_folder"]       = parameter_folder
+                image_data["param_file_rigid"]       = "MR_param_rigid.txt"
 
                 # elastix path (from binaries in pykneer package)
                 sys = platform.system()
                 if sys == "Linux":
                     dirpath = pkg_resources.resource_filename('pykneer','elastix/Linux/')
                 elif sys == "Windows":
-                    dirpath = pkg_resources.resource_filename('pykneer','elastix/Windows/')
+                    dirpath = pkg_resources.resource_filename('pykneer','elastix\\Windows\\')
                 elif sys == "Darwin":
-                    dirpath = pkg_resources.resource_filename('pykneer','elastix/Darwin/')
+                    # For debugging - I am working on a MacOS
+                    if __package__ is None or __package__ == '':
+                        dirpath = os.path.dirname(os.path.realpath(__file__)) + "/elastix/Darwin/"
+                    # if using package
+                    else:
+                        dirpath = pkg_resources.resource_filename('pykneer','elastix/Darwin/')
                 image_data["elastix_folder"]           = dirpath
                 image_data["complete_elastix_path"]     = dirpath + "elastix"
                 # alignment: image-dependent variables for elastix_transformix.py

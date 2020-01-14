@@ -127,16 +127,29 @@ def orientation_to_rai(img):
         origin_in_itk[i]  = origin_in_sitk[i]
     img_itk.SetOrigin(origin_in_itk)
 
-    direction_in_itk = itk.Matrix[itk.F,3,3]()
-    direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(0,0,direction_in_sitk[0]) # r,c,value
-    direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(0,1,direction_in_sitk[1])
-    direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(0,2,direction_in_sitk[2])
-    direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(1,0,direction_in_sitk[3]) # r,c,value
-    direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(1,1,direction_in_sitk[4])
-    direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(1,2,direction_in_sitk[5])
-    direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(2,0,direction_in_sitk[6]) # r,c,value
-    direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(2,1,direction_in_sitk[7])
-    direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(2,2,direction_in_sitk[8])
+    # old way of assigning direction (until ITK 4.13)
+#     direction_in_itk = itk.Matrix[itk.F,3,3]()
+#     direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(0,0,direction_in_sitk[0]) # r,c,value
+#     direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(0,1,direction_in_sitk[1])
+#     direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(0,2,direction_in_sitk[2])
+#     direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(1,0,direction_in_sitk[3]) # r,c,value
+#     direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(1,1,direction_in_sitk[4])
+#     direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(1,2,direction_in_sitk[5])
+#     direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(2,0,direction_in_sitk[6]) # r,c,value
+#     direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(2,1,direction_in_sitk[7])
+#     direction_in_itk = img_itk.GetDirection().GetVnlMatrix().set(2,2,direction_in_sitk[8])
+
+    direction_in_itk = np.eye(3)
+    direction_in_itk[0][0] = direction_in_sitk[0]
+    direction_in_itk[0][1] = direction_in_sitk[1]
+    direction_in_itk[0][2] = direction_in_sitk[2]
+    direction_in_itk[1][0] = direction_in_sitk[3]
+    direction_in_itk[1][1] = direction_in_sitk[4]
+    direction_in_itk[1][2] = direction_in_sitk[5]
+    direction_in_itk[2][0] = direction_in_sitk[6]
+    direction_in_itk[2][1] = direction_in_sitk[7]
+    direction_in_itk[2][2] = direction_in_sitk[8]
+    img_itk.SetDirection(itk.matrix_from_array(direction_in_itk))
 
     # make sure image is float for the orientation filter (GetImageViewFromArray sets it to unsigned char)
     ImageTypeIn_afterPy = type(img_itk)
@@ -170,7 +183,6 @@ def orientation_to_rai(img):
     filter.SetInput(img_itk)
     filter.Update()
     img_itk    = filter.GetOutput()
-
 
     # get characteristics of ITK image
     spacing_out_itk   = img_itk.GetSpacing()

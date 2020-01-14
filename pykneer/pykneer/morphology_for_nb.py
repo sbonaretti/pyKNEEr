@@ -32,8 +32,22 @@ import SimpleITK as sitk
 import time
 import math
 
-from . import pykneer_io as io
-from . import morphology_functions as mf
+# pyKNEER imports 
+# ugly way to use relative vs. absolute imports when developing vs. when using package - cannot find a better way
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+    import pykneer_io as io
+    import morphology_functions as mf
+
+else:
+    # uses current package visibility
+    from . import pykneer_io as io
+    from . import morphology_functions as mf
+
+
+
+
+
 #import vtk_pts_functions as vtkf # Installation of VTK downgrades some python packages causing issues - not used for now
 
 
