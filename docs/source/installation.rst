@@ -33,14 +33,10 @@ We recommend to install python through Anaconda, a platform providing a complete
 *pyKNEEr*
 --------------------------------------------------------------------------------
 
-Go to :ref:`terminal <terminal>`, copy/paste each line and press ``enter``:
-
-(in future versions the first two lines will not be necessary)
+Go to :ref:`terminal <terminal>`, copy/paste the following line and press ``enter``:
 
 .. code-block:: bash
 
-  pip install itk-core==4.13.1.post1 itk-numerics==4.13.1.post1 itk-filtering==4.13.1.post1 itk-io==4.13.1.post1 itk-segmentation==4.13.1.post1 itk-registration==4.13.1.post1 --force-reinstall --no-cache-dir
-  pip install itk==4.13.1.post1
   pip install pykneer
 
 The installation contains *elastix v4.8* for atlas-based segmentation. If you work on a Windows or a Linux computer,
