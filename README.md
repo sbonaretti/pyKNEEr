@@ -13,7 +13,7 @@
 
 
 - Documentation on [website](https://sbonaretti.github.io/pyKNEEr/)  
-- Peprint paper on [bioRxiv](https://www.biorxiv.org/content/10.1101/556423v1.article-info)
+- Paper: S. Bonaretti ,G.E. Gold, G.S. Beaupre [pyKNEEr: An image analysis workflow for open and reproducible research on femoral knee cartilage](https://journals.plos.org/plosone/article/metrics?id=10.1371/journal.pone.0226501) Plos one 15.1 (2020): e0226501.
 
 - Release on Zenodo (with DOI for citation): [![DOI](https://zenodo.org/badge/155445441.svg)](https://zenodo.org/badge/latestdoi/155445441)
 
