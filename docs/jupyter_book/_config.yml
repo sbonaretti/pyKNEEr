@@ -1,0 +1,7 @@
+title: " "
+logo: images/pykneer_logo.png
+author: Serena Bonaretti
+execute:
+  execute_notebooks: "off"
+html:
+  google_analytics_id: UA-135735296-1
