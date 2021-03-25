@@ -12,7 +12,7 @@
   - Example #2: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/sbonaretti/2019_QMSKI_Transparent_Research_WS/master?filepath=pykneer_example_2%2Fpykneer_example_2.ipynb)
 
 
-- Documentation on [website](https://sbonaretti.github.io/pyKNEEr/)  
+- Documentation at [sbonaretti.github.io/pykneer/](https://sbonaretti.github.io/pyKNEEr/)  
 - Paper: *S. Bonaretti ,G.E. Gold, G.S. Beaupre [pyKNEEr: An image analysis workflow for open and reproducible research on femoral knee cartilage](https://journals.plos.org/plosone/article/metrics?id=10.1371/journal.pone.0226501) Plos one 15.1 (2020): e0226501.*
 
 - Release on Zenodo (with DOI for citation): [![DOI](https://zenodo.org/badge/155445441.svg)](https://zenodo.org/badge/latestdoi/155445441)
