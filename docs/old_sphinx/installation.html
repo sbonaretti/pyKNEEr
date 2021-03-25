@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Installation &#8212; pyKNEEr 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Preprocessing" href="preprocessing.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" />
+  
+  
+  
+   
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="preprocessing.html" title="Preprocessing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyKNEEr 1.0.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><!--
+The following code is the original from the template
+It writes a text at the top of the side bar that links to the home page
+
+<a href="
+    index.html" class="text-logo">pyKNEEr</a>
+-->
+
+
+<!--
+This line add a figure at the top of the left side bar that links to the home page
+The figure has to be in the folder "build" (not in the subfolder "html")
+(I could not make the relative path to the folders "_figure" in "source" and "_images" in "build" work)
+-->
+
+<a href="index.html"><img src="pykneer_logo_for_website.png" style="width:253px;height:78px;"></a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <!--<h2>Table Of Contents</h2> --> <!-- Modified by S.Bonaretti -->
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#python">python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pykneer"><em>pyKNEEr</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#demo">Demo</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="morphology.html">Morphology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relaxometry.html">Relaxometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+</ul>
+
+    
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          <!-- # Commented out by S.Bonaretti - to avoid docs >> index etc.
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="index.html">Docs</a></li>
+              
+              <li>Installation</li>
+            </ol>
+          </div>
+          -->
+          <div class="document clearer body">
+            
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+An overview of <i>pyKNEEr</i>, its installation, and its demo are presented in a <a href="https://www.youtube.com/watch?v=7WPf5KFtYi8" target="_blank">youtube video</a>, which we recommend watching as a comprehensive introduction.
+The current and following pages provide more details.
+<br><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The commands in this documentation are for Mac OS. If you work on Windows:</p>
+<ul class="simple">
+<li><p>Substitute <code class="docutils literal notranslate"><span class="pre">/</span></code> with <code class="docutils literal notranslate"><span class="pre">\</span></code></p></li>
+<li><p>Use the python <a class="reference internal" href="faq.html#terminal"><span class="std std-ref">terminal</span></a> provided in the Anaconda distribution</p></li>
+</ul>
+</div>
+<div class="section" id="python">
+<h2>python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h2>
+<p>We recommend to install python through Anaconda, a platform providing a complete distribution</p>
+<ul class="simple">
+<li><p>Download the latest release of <a class="reference external" href="https://www.anaconda.com/download/">Anaconda</a> with Python version greater than 3</p></li>
+<li><p>Install Anaconda (<a class="reference external" href="https://docs.anaconda.com/anaconda/install/">official documentation</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="pykneer">
+<h2><em>pyKNEEr</em><a class="headerlink" href="#pykneer" title="Permalink to this headline">¶</a></h2>
+<p>Go to <a class="reference internal" href="faq.html#terminal"><span class="std std-ref">terminal</span></a>, copy/paste each line and press <code class="docutils literal notranslate"><span class="pre">enter</span></code>:</p>
+<p>(in future versions the first two lines will not be necessary)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install itk-core<span class="o">==</span><span class="m">4</span>.13.1.post1 itk-numerics<span class="o">==</span><span class="m">4</span>.13.1.post1 itk-filtering<span class="o">==</span><span class="m">4</span>.13.1.post1 itk-io<span class="o">==</span><span class="m">4</span>.13.1.post1 itk-segmentation<span class="o">==</span><span class="m">4</span>.13.1.post1 itk-registration<span class="o">==</span><span class="m">4</span>.13.1.post1 --force-reinstall --no-cache-dir
+pip install <span class="nv">itk</span><span class="o">==</span><span class="m">4</span>.13.1.post1
+pip install pykneer
+</pre></div>
+</div>
+<p>The installation contains <em>elastix v4.8</em> for atlas-based segmentation. If you work on a Windows or a Linux computer,
+you might need to <a class="reference internal" href="faq.html#elastix"><span class="std std-ref">set the environment variables for elastix</span></a></p>
+<p>Note: We recommend to install <em>pyKNEEr</em> in a python <a class="reference internal" href="faq.html#virtualenv-what"><span class="std std-ref">virtual environment</span></a>, although it is not necessary</p>
+</div>
+<div class="section" id="demo">
+<span id="id2"></span><h2>Demo<a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
+<p>To become familiar with <em>pyKNEEr</em>, we provide a demo that you can replicate following the step-by-step instructions in the following pages</p>
+<ul>
+<li>Download the newest version of the demo images <a href="https://www.doi.org/10.5281/zenodo.3262307" target="_blank">here</a> (2.1 GB)<p><em>Note</em>: Make sure that all the folder names that constitute the path to the demo images have <strong>no spaces</strong>.
+E.g. <code class="docutils literal notranslate"><span class="pre">/home/learning_pykneer/demo/</span></code> and <strong>not</strong> <code class="docutils literal notranslate"><span class="pre">/home/learning</span> <span class="pre">pykneer/demo/</span></code></p>
+</li>
+<li><p>Unzip the file and open it. It contains two folders:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">input</span></code>: It is the basic folder to work with <em>pyKNEEr</em>:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/demoFolders.png"><img alt="_images/demoFolders.png" src="_images/demoFolders.png" style="width: 625.8px; height: 253.2px;" /></a>
+</div>
+<p>The folder <code class="docutils literal notranslate"><span class="pre">original</span></code> contains images of subjects <code class="docutils literal notranslate"><span class="pre">01</span></code>, which contains:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">DESS</span></code> images to get familiar with atlas-based segmentation and <span class="math notranslate nohighlight">\(T_2\)</span> mapping</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cubeQuant</span></code> images to get familiar with multimodal segmentation and <span class="math notranslate nohighlight">\(T_{1 \rho}\)</span> mapping</p></li>
+</ul>
+<p>Both acquisitions will be used to get familiar with preprocessing and morphology analysis</p>
+<p>The folder <code class="docutils literal notranslate"><span class="pre">reference</span></code> contains the folder <code class="docutils literal notranslate"><span class="pre">newsubject</span></code>, which contains:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reference.mha</span></code>: Reference image for the atlas-based segmentation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_f.mha</span></code>: Femur mask of the reference image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_fc.mha</span></code>: Femoral cartilage mask of the reference image</p></li>
+</ul>
+<p><em>Note</em>: You can use this reference image and its masks also when segmenting your <strong>own</strong> data</p>
+<p>In the folder you will also find input files (<code class="docutils literal notranslate"><span class="pre">.txt</span></code>) to run <em>pyKNEEr</em> workflow and a subset of Jupyter notebooks (<code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>):</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/demoNotebooks.png"><img alt="_images/demoNotebooks.png" src="_images/demoNotebooks.png" style="width: 763.84px; height: 235.84px;" /></a>
+</div>
+<p>For the demo, the notebook <code class="docutils literal notranslate"><span class="pre">segmentation_sa.ipynb</span></code> is duplicated in
+<code class="docutils literal notranslate"><span class="pre">segmentation_sa_ns.ipynb</span></code> to segment a new subject (ns), and
+<code class="docutils literal notranslate"><span class="pre">segmentation_sa_mm.ipynb</span></code> to segment a multimodal (mm) acquisition of the same subject</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the following instructions we will assume that <code class="docutils literal notranslate"><span class="pre">input</span></code> is our working directory</p>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output</span></code>: It contains the outputs of the demo, so you can compare your findings with ours</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="introduction.html" title="previous chapter (use the left arrow)">Introduction</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="preprocessing.html" title="next chapter (use the right arrow)">Preprocessing</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="preprocessing.html" title="Preprocessing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyKNEEr 1.0.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2018, Serena Bonaretti. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-135735296-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

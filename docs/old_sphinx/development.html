@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Development &#8212; pyKNEEr 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="FAQ" href="faq.html" />
+    <link rel="prev" title="Relaxometry" href="relaxometry.html" />
+  
+  
+  
+   
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="faq.html" title="FAQ"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="relaxometry.html" title="Relaxometry"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyKNEEr 1.0.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><!--
+The following code is the original from the template
+It writes a text at the top of the side bar that links to the home page
+
+<a href="
+    index.html" class="text-logo">pyKNEEr</a>
+-->
+
+
+<!--
+This line add a figure at the top of the left side bar that links to the home page
+The figure has to be in the folder "build" (not in the subfolder "html")
+(I could not make the relative path to the folders "_figure" in "source" and "_images" in "build" work)
+-->
+
+<a href="index.html"><img src="pykneer_logo_for_website.png" style="width:253px;height:78px;"></a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <!--<h2>Table Of Contents</h2> --> <!-- Modified by S.Bonaretti -->
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="morphology.html">Morphology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relaxometry.html">Relaxometry</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#code-structure">Code structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#variable-names">Variable names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#changelog">Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+</ul>
+
+    
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          <!-- # Commented out by S.Bonaretti - to avoid docs >> index etc.
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="index.html">Docs</a></li>
+              
+              <li>Development</li>
+            </ol>
+          </div>
+          -->
+          <div class="document clearer body">
+            
+  <div class="section" id="development">
+<span id="developmnet"></span><h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+The source code is on  <a href="https://github.com/sbonaretti/pyKNEEr/tree/master/pykneer" target="_blank">GitHub</a></div>
+<div class="section" id="code-structure">
+<h2>Code structure<a class="headerlink" href="#code-structure" title="Permalink to this headline">¶</a></h2>
+<p><em>pyKNEEr</em> is written in a modular way to favor modifications and extensions. There are three levels of files associated with each step of the workflow:</p>
+<ol class="arabic simple">
+<li><p>Jupyter notebooks (<code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>) representing both a user-interface and a record of the method and results obtained, to be attached to publications</p></li>
+<li><p>Python scripts for notebooks (<code class="docutils literal notranslate"><span class="pre">for_nb.py</span></code>) containing functions called by the notebook and used to process images and visualize outputs</p></li>
+<li><p>Basic python scripts (<code class="docutils literal notranslate"><span class="pre">.py</span></code>) containing core functions and classes</p></li>
+</ol>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/codeScheme.png"><img alt="_images/codeScheme.png" src="_images/codeScheme.png" style="width: 837.2px; height: 394.16px;" /></a>
+</div>
+<p>The figure above shows the code structure. For example, to compute morphology of femoral knee cartilage, the scheme is:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">morphology.ipynb</span></code>: Jupyter notebook used to run computations and visualize results. It uses functions from:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">morphology_for_nb.py</span></code>: python module that contains functions to calculate knee cartilage morphology and visualize results. It uses functions from:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">morphology_functions.py</span></code>: python module that contains the actual algorithms to compute cartilage thickness and volume</p></li>
+</ol>
+<div class="section" id="additional-packages">
+<h3>Additional packages<a class="headerlink" href="#additional-packages" title="Permalink to this headline">¶</a></h3>
+<p><em>pyKNEEr</em> uses:</p>
+<ul>
+ <li><a href="https://github.com/SuperElastix/elastix/wiki" target="_blank">Elastix 4.8</a> for single-atlas segmentation</li>
+ <li><a href="https://github.com/xingjiepan/cylinder_fitting" target="_blank">Cylinder fitting</a> to flatten cartilage for visualization</li>
+</ul></div>
+</div>
+<div class="section" id="variable-names">
+<h2>Variable names<a class="headerlink" href="#variable-names" title="Permalink to this headline">¶</a></h2>
+<p>When reading the <code class="docutils literal notranslate"><span class="pre">.txt</span></code> file at the beginning of each notebook, <em>pyKNEEr</em> creates a dictionary (i.e. a struct) called <code class="docutils literal notranslate"><span class="pre">image_data</span></code>.
+In <code class="docutils literal notranslate"><span class="pre">image_data</span></code>, each cell corresponds to an image and contains an array of strings representing paths, input and output file names, and other information that will be used throughout the whole notebook.</p>
+<p>For example, for the <a class="reference internal" href="installation.html#demo"><span class="std std-ref">demo</span></a>  images the content of the first cell of <code class="docutils literal notranslate"><span class="pre">image_data</span></code> in  the <code class="docutils literal notranslate"><span class="pre">preprocessing.ipynb</span></code> notebook can be printed out using the commands:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">image_data</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">load_image_data_preprocessing</span><span class="p">(</span><span class="n">input_file_name</span><span class="p">)</span>
+<span class="n">image_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># 0 is the ID of the first image</span>
+</pre></div>
+</div>
+<p>obtaining the following output:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Folders</strong></p></td>
+<td><p><strong>Example</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>original_folder</p></td>
+<td><p>/.original/</p></td>
+</tr>
+<tr class="row-odd"><td><p>preprocessed_folder</p></td>
+<td><p>/.preprocessed/</p></td>
+</tr>
+<tr class="row-even"><td><p>image_folder_file_name</p></td>
+<td><p>01/DESS/01</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>File Names</strong></p></td>
+<td><p><strong>Example</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>original_file_name</p></td>
+<td><p>./preprocessed/01_DESS_01_orig.mha</p></td>
+</tr>
+<tr class="row-odd"><td><p>preprocessed_file_name</p></td>
+<td><p>./preprocessed/01_DESS_01_prep.mha</p></td>
+</tr>
+<tr class="row-even"><td><p>info_file_name</p></td>
+<td><p>./preprocessed/01_DESS_01_orig.txt</p></td>
+</tr>
+<tr class="row-odd"><td><p>temp_file_name</p></td>
+<td><p>./preprocessed/01_DESS_01_temp.mha</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Other Information</strong></p></td>
+<td><p><strong>Example</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>image_name_root</p></td>
+<td><p>subject1_DESS</p></td>
+</tr>
+<tr class="row-even"><td><p>laterality</p></td>
+<td><p>right</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="changelog">
+<h2>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+Changes in <i>pyKNEEr</i> are described in the <a href="https://github.com/sbonaretti/pyKNEEr/blob/master/README.md" target="_blank">readMe</a> file of the GitHub repository</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+Thanks so much for contributing!
+<br>
+The easiest way is to fork the repository from <a href="https://github.com/sbonaretti/pyKNEEr" target="_blank">GitHub</a> and then send a pull request.
+<br>
+If you want to coordinate or need any information, do not hesitate to write me at serena dot bonaretti dot research at gmail dot com</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="relaxometry.html" title="previous chapter (use the left arrow)">Relaxometry</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="faq.html" title="next chapter (use the right arrow)">FAQ</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="faq.html" title="FAQ"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="relaxometry.html" title="Relaxometry"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyKNEEr 1.0.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2018, Serena Bonaretti. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-135735296-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

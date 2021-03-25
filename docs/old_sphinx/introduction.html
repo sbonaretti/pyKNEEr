@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Introduction &#8212; pyKNEEr 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="pyKNEEr" href="index.html" />
+  
+  
+  
+   
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="pyKNEEr"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyKNEEr 1.0.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><!--
+The following code is the original from the template
+It writes a text at the top of the side bar that links to the home page
+
+<a href="
+    index.html" class="text-logo">pyKNEEr</a>
+-->
+
+
+<!--
+This line add a figure at the top of the left side bar that links to the home page
+The figure has to be in the folder "build" (not in the subfolder "html")
+(I could not make the relative path to the folders "_figure" in "source" and "_images" in "build" work)
+-->
+
+<a href="index.html"><img src="pykneer_logo_for_website.png" style="width:253px;height:78px;"></a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <!--<h2>Table Of Contents</h2> --> <!-- Modified by S.Bonaretti -->
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#workflow">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code">Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#jupyter-notebooks">Jupyter Notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-structure">Data structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-file-formats">Data file formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="morphology.html">Morphology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relaxometry.html">Relaxometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+</ul>
+
+    
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          <!-- # Commented out by S.Bonaretti - to avoid docs >> index etc.
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="index.html">Docs</a></li>
+              
+              <li>Introduction</li>
+            </ol>
+          </div>
+          -->
+          <div class="document clearer body">
+            
+  <div class="section" id="introduction">
+<span id="id1"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p><em>pyKNEEr</em> is an image analysis workflow for <strong>open</strong> and <strong>reproducible</strong> research on femoral knee cartilage
+Characteristics of <em>pyKNEEr</em> are exensively covered in <a class="reference internal" href="faq.html#citation"><span class="std std-ref">our paper</span></a>. Find below a concise summary.</p>
+<div class="section" id="workflow">
+<h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<p><em>pyKNEEr</em> workflow is composed of three <strong>modules</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Preprocessing</strong> to homogenize spatial characteristics and enhance intensities</p></li>
+<li><p><strong>Segmentation</strong> of femoral knee cartilage using an atlas-based method</p></li>
+<li><p><strong>Analysis</strong> of cartilage morphometry (thickness and volume) and relaxometry (fitting and EPG modeling)</p></li>
+</ol>
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+<p><em>pyKNEEr</em>:</p>
+<ul>
+  <li> Uses <a href="http://jupyter.org" target="_blank">Jupyter notebook</a> as a user-interface.
+       If you are not familiar with Jupyter notebook, find basic commands <a href="./faq.html">here</a>
+       and tutorials on <a href="https://www.youtube.com/results?search_query=jupyter+notebook+tutorial" target="_blank">YouTube</a> </li>
+
+  <li> Is written in <a href="https://www.python.org/" target="_blank">python</a>
+       with <a href="http://www.simpleitk.org" target="_blank">SimpleITK</a> to process images </li>
+
+  <li> Calls <a href="http://elastix.isi.uu.nl" target="_blank">elastix</a>, a toolbox for image registration used for atlas-based segmentation
+
+</ul></div>
+<div class="section" id="jupyter-notebooks">
+<h2>Jupyter Notebooks<a class="headerlink" href="#jupyter-notebooks" title="Permalink to this headline">¶</a></h2>
+<p>Jupyter notebooks are the user-interface of <em>pyKNEEr</em>. Once run, you can attached them directly to your paper for computational reproducibility of the results.</p>
+<p>For each module of <em>pyKNEEr</em> there are several Jupyter notebooks (<code class="docutils literal notranslate"><span class="pre">*.ipynb</span></code>), independent from each other:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/moduleNotebooks.png"><img alt="_images/moduleNotebooks.png" src="_images/moduleNotebooks.png" style="width: 832.8px; height: 256.8px;" /></a>
+</div>
+<p>All notebooks have a similar structure:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/notebookStructure.png"><img alt="_images/notebookStructure.png" src="_images/notebookStructure.png" style="width: 610.2px; height: 650.7px;" /></a>
+</div>
+</div>
+<div class="section" id="data-structure">
+<h2>Data structure<a class="headerlink" href="#data-structure" title="Permalink to this headline">¶</a></h2>
+<p><em>pyKNEEr</em> requires data folders to be structured as follows:</p>
+<div class="figure align-center" id="folderstructure">
+<a class="reference internal image-reference" href="_images/folderStructure.png"><img alt="_images/folderStructure.png" src="_images/folderStructure.png" style="width: 603.2px; height: 252.0px;" /></a>
+</div>
+<ul class="simple">
+<li><p><strong>reference</strong>: contains the reference (or target) image for the atlas-based segmentation</p></li>
+<li><p><strong>original</strong>: contains dicom folders of the images to analyze</p></li>
+<li><p><strong>preprocessed</strong>: contains images after preprocessing</p></li>
+<li><p><strong>registered</strong>: contains by-products of registration and it can be deleted after computations</p></li>
+<li><p><strong>segmented</strong>: contains segmentation masks</p></li>
+<li><p><strong>morphology</strong>: contains cartilage surfaces, thickness, and volume</p></li>
+<li><p><strong>relaxometry</strong>: contains masked relaxometry maps</p></li>
+</ul>
+</div>
+<div class="section" id="data-file-formats">
+<h2>Data file formats<a class="headerlink" href="#data-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>Inputs and output files are in open formats:</p>
+<ul class="simple">
+<li><p><strong>dicom (.dcm)</strong>: Format of original images to be processed</p></li>
+<li><p><strong>metafile (.mha)</strong>: Format of images throughout the workflow</p></li>
+<li><p><strong>text (.txt)</strong>: Format of image list inputs and morphology outputs</p></li>
+<li><p><strong>tabular (.csv)</strong>: Format of output descriptive statistics in morphology and relaxometry analysis</p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="index.html" title="previous chapter (use the left arrow)">pyKNEEr</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="installation.html" title="next chapter (use the right arrow)">Installation</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="pyKNEEr"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyKNEEr 1.0.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2018, Serena Bonaretti. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-135735296-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>
