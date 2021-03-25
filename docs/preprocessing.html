@@ -1,160 +1,296 @@
 
-
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-  
-  <!-- Licensed under the Apache 2.0 License -->
-  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
-  <!-- Licensed under the SIL Open Font License -->
-  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
-  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  
-  <!-- Licensed under the Apache 2.0 License -->
-  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
-  <!-- Licensed under the SIL Open Font License -->
-  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
-  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-    <title>Preprocessing &#8212; pyKNEEr 1.0.0 documentation</title>
-    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <title>Preprocessing &#8212;  </title>
+    
+  <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Segmentation" href="segmentation.html" />
     <link rel="prev" title="Installation" href="installation.html" />
-  
-  
-  
-   
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
 
 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="segmentation.html" title="Segmentation"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="installation.html" title="Installation"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pyKNEEr 1.0.0 documentation</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="container-wrapper">
 
-      <div id="mobile-toggle">
-        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
-      </div>
-  <div id="left-column">
-    <div class="sphinxsidebar"><!--
-The following code is the original from the template
-It writes a text at the top of the side bar that links to the home page
-
-<a href="
-    index.html" class="text-logo">pyKNEEr</a>
--->
-
-
-<!--
-This line add a figure at the top of the left side bar that links to the home page
-The figure has to be in the folder "build" (not in the subfolder "html")
-(I could not make the relative path to the folders "_figure" in "source" and "_images" in "build" work)
--->
-
-<a href="index.html"><img src="pykneer_logo_for_website.png" style="width:253px;height:78px;"></a>
-<div class="sidebar-block">
-  <div class="sidebar-wrapper">
-    <!--<h2>Table Of Contents</h2> --> <!-- Modified by S.Bonaretti -->
-  </div>
-  <div class="sidebar-toc">
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
     
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
     
-      <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Preprocessing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#input-image-folder-list">Input: Image folder list</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#executing-preprocessing-ipynb">Executing preprocessing.ipynb</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#output-preprocessed-images">Output: Preprocessed images</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#visualization-original-and-preprocessed-images">Visualization: Original and preprocessed images</a></li>
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="index.html">
+  
+  <img src="_static/pykneer_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title"> </h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="index.html">
+   pyKNEEr
+  </a>
+ </li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Segmentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="morphology.html">Morphology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="relaxometry.html">Relaxometry</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="introduction.html">
+   Introduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Preprocessing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="segmentation.html">
+   Segmentation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="morphology.html">
+   Morphology
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="relaxometry.html">
+   Relaxometry
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="development.html">
+   Development
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="faq.html">
+   FAQ
+  </a>
+ </li>
 </ul>
 
-    
-  </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
 </div>
-      
-    </div>
-  </div>
-        <div id="right-column">
-          <!-- # Commented out by S.Bonaretti - to avoid docs >> index etc.
-          <div role="navigation" aria-label="breadcrumbs navigation">
-            <ol class="breadcrumb">
-              <li><a href="index.html">Docs</a></li>
-              
-              <li>Preprocessing</li>
-            </ol>
-          </div>
-          -->
-          <div class="document clearer body">
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
             
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/preprocessing.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/preprocessing.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#input-image-folder-list">
+   Input: Image folder list
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#executing-preprocessing-ipynb">
+   Executing
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     preprocessing.ipynb
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualization-original-and-preprocessed-images">
+   Visualization: Original and preprocessed images
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
   <div class="section" id="preprocessing">
-<span id="id1"></span><h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h1>
+<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h1>
 <p>Preprocessing is fundamental to provide standardized high quality images to the segmentation algorithm, and thus obtain successful segmentation.</p>
 <p>In <em>pyKNEEr</em> preprocessing acts on:</p>
 <ul class="simple">
 <li><p><strong>Spatial image characteristics</strong>: Images are transformed to the same orientation (RAI, i.e. right, anterior, posterior), knee laterality (left), and origin (0,0,0)</p></li>
-<li><p><strong>Image intensities</strong>: In all images, the homogeneous magnetic field is corrected, intensities are rescaled to the fix range [0,100], and cartilage contours are enhanced [1]</p></li>
+<li><p><strong>Image intensities</strong>: In all images, the homogeneous magnetic field is corrected, intensities are rescaled to the fix range [0,100], and cartilage contours are enhanced [<a class="reference internal" href="#shan"><span class="std std-ref">1</span></a>]</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Standardization of <strong>spatial characteristics</strong> is recommended for <strong>all</strong> images</p>
-<p>Standardization of <strong>image intensities</strong> is recommended only for <strong>images that are going to be segmented</strong></p>
+<ul class="simple">
+<li><p>Standardization of <strong>spatial characteristics</strong> is recommended for <strong>all</strong> images</p></li>
+<li><p>Standardization of <strong>image intensities</strong> is recommended only for <strong>images that are going to be segmented</strong></p></li>
+</ul>
 </div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
+<hr class="docutils" />
 <div class="section" id="input-image-folder-list">
 <h2>Input: Image folder list<a class="headerlink" href="#input-image-folder-list" title="Permalink to this headline">¶</a></h2>
 <p>For the demo images, the input file is <code class="docutils literal notranslate"><span class="pre">image_list_preprocessing.txt</span></code>, which contains:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">./</span><span class="n">original</span><span class="o">/</span>
- <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="mo">01</span><span class="o">/</span><span class="n">DESS</span><span class="o">/</span><span class="mo">01</span>
- <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="n">right</span>
- <span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="mo">01</span><span class="o">/</span><span class="n">DESS</span><span class="o">/</span><span class="mo">02</span>
- <span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="n">right</span>
- <span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="mo">01</span><span class="o">/</span><span class="n">cubeQuant</span><span class="o">/</span><span class="mo">01</span>
- <span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="n">right</span>
- <span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="mo">01</span><span class="o">/</span><span class="n">cubeQuant</span><span class="o">/</span><span class="mo">02</span>
- <span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="n">right</span>
-<span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="mo">01</span><span class="o">/</span><span class="n">cubeQuant</span><span class="o">/</span><span class="mo">03</span>
-<span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="n">right</span>
-<span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="mo">01</span><span class="o">/</span><span class="n">cubeQuant</span><span class="o">/</span><span class="mo">04</span>
-<span class="p">[</span><span class="mi">13</span><span class="p">]</span> <span class="n">right</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[1] ./original/
+[2] 01/DESS/01
+[3] right
+[4] 01/DESS/02
+[5] right
+[6] 01/cubeQuant/01
+[7] right
+[8] 01/cubeQuant/02
+[9] right
+[10] 01/cubeQuant/03
+[11] right
+[12] 01/cubeQuant/04
+[13] right
 </pre></div>
 </div>
 <p>where:</p>
@@ -163,19 +299,18 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 <li><p>Even lines from 2 to 12: Folder names of the dicom stacks to preprocess</p></li>
 <li><p>Odd lines from 3 to 13: Knee laterality</p></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>When using <strong>your own data</strong>:</p>
-<ul class="simple">
-<li><p>Create a folder <code class="docutils literal notranslate"><span class="pre">original</span></code> and add your dicom folders</p></li>
-<li><p>Customize <code class="docutils literal notranslate"><span class="pre">image_list_preprocessing.txt</span></code> with the paths of your own dicom folders</p></li>
-<li><p>Specify knee laterality using <em>pyKNEEr</em> <a class="reference internal" href="faq.html#faqlaterality"><span class="std std-ref">coordinate system</span></a></p></li>
-<li><p>Tip: For images that are not directly involved in intersubject segmentation, you can run a separate notebook where you can set <code class="docutils literal notranslate"><span class="pre">intensity_standardization</span> <span class="pre">=</span> <span class="pre">0</span></code> to save computational time</p></li>
-</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>When using <strong>your own data</strong>:<br />
+- Create a folder <code class="docutils literal notranslate"><span class="pre">original</span></code> and add your dicom folders<br />
+- Customize <code class="docutils literal notranslate"><span class="pre">image_list_preprocessing.txt</span></code> with the paths of your own dicom folders<br />
+- Specify knee laterality using <em>pyKNEEr</em> <a class="reference internal" href="faq.html#faqlaterality"><span class="std std-ref">coordinate system</span></a><br />
+- Tip: For images that are not directly involved in intersubject segmentation, you can run a separate notebook where you can set <code class="docutils literal notranslate"><span class="pre">intensity_standardization</span> <span class="pre">=</span> <span class="pre">0</span></code> to save computational time</p>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="executing-preprocessing-ipynb">
-<h2>Executing preprocessing.ipynb<a class="headerlink" href="#executing-preprocessing-ipynb" title="Permalink to this headline">¶</a></h2>
+<h2>Executing <code class="docutils literal notranslate"><span class="pre">preprocessing.ipynb</span></code><a class="headerlink" href="#executing-preprocessing-ipynb" title="Permalink to this headline">¶</a></h2>
 <p>To preprocess data:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="faq.html#launch-jup"><span class="std std-ref">Launch</span></a> Jupyter notebook</p></li>
@@ -192,9 +327,8 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 </li>
 <li><p><a class="reference internal" href="faq.html#save-jup"><span class="std std-ref">Save</span></a> your notebook at the end of the process</p></li>
 </ul>
-</div>
-<div class="section" id="output-preprocessed-images">
-<h2>Output: Preprocessed images<a class="headerlink" href="#output-preprocessed-images" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<p>Output: Preprocessed images</p>
 <p>The preprocessed images are in the folder <code class="docutils literal notranslate"><span class="pre">./preprocessed</span></code>. For each dicom folder in the <code class="docutils literal notranslate"><span class="pre">original</span></code> folder, the outputs are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">*_orig.mha</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">01_DESS_01_orig.mha</span></code>): Images with the same intensities as the volume in the original dicom folder, but different orientation, knee laterality (if right), and image origin. These images can be used to compute relaxation maps</p></li>
@@ -206,78 +340,83 @@ The figure has to be in the folder "build" (not in the subfolder "html")
 <p>Both <code class="docutils literal notranslate"><span class="pre">*_orig.mha</span></code> and <code class="docutils literal notranslate"><span class="pre">*_prep.mha</span></code> are <strong>anonymized</strong> images, while <code class="docutils literal notranslate"><span class="pre">*_orig.txt</span></code> contains all the information of the dicom header (including subject name, etc.) if the dicom was not anonymized</p>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="visualization-original-and-preprocessed-images">
 <h2>Visualization: Original and preprocessed images<a class="headerlink" href="#visualization-original-and-preprocessed-images" title="Permalink to this headline">¶</a></h2>
 <p>For a qualitative check, for each subject you can see a <strong>2D</strong> slice of <code class="docutils literal notranslate"><span class="pre">*_orig.mha</span></code> and <code class="docutils literal notranslate"><span class="pre">*_prep.mha</span></code>, similarly to this one:</p>
-<div class="figure align-center">
-<a class="reference internal image-reference" href="_images/preprocessing.png"><img alt="_images/preprocessing.png" src="_images/preprocessing.png" style="width: 666.0px; height: 332.0px;" /></a>
-</div>
+<p><img alt="" src="_images/preprocessing.png" /></p>
 <p>For images that were only spatially standardized, you will see only one 2D slice of <code class="docutils literal notranslate"><span class="pre">*_orig.mha</span></code>.</p>
 <p>For <strong>3D</strong> visualization, consider using a medical image software such as <a class="reference internal" href="faq.html#itksnap"><span class="std std-ref">ITK-SNAP</span></a>, which allows <a class="reference internal" href="faq.html#itksnapcompare"><span class="std std-ref">comparing images</span></a> in the same coordinate system</p>
-<div class="line-block">
-<div class="line"><br /></div>
 </div>
 <hr class="docutils" />
 <div class="section" id="references">
-<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
-[1] Shan L., Zach C., Charles C., Niethammer M.
-<a href="https://www.ncbi.nlm.nih.gov/pubmed/25128683" target="_blank">
-<i>Automatic Atlas-Based Three-Label Cartilage Segmentation from MR Knee Images.</i></a>
-Med Image Anal. Oct;18(7):1233-46. 2014.</div>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p id="shan">[1] Shan L., Zach C., Charles C., Niethammer M. <a href="https://www.ncbi.nlm.nih.gov/pubmed/25128683" target="_blank"><i>Automatic Atlas-Based Three-Label Cartilage Segmentation from MR Knee Images.</i></a> Med Image Anal. Oct;18(7):1233-46. 2014.</p>
 </div>
 </div>
 
-
-          </div>
-            
-  <div class="footer-relations">
-    
-      <div class="pull-left">
-        <a class="btn btn-default" href="installation.html" title="previous chapter (use the left arrow)">Installation</a>
-      </div>
-    
-      <div class="pull-right">
-        <a class="btn btn-default" href="segmentation.html" title="next chapter (use the right arrow)">Segmentation</a>
-      </div>
-    </div>
-    <div class="clearer"></div>
-  
-        </div>
-        <div class="clearfix"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="segmentation.html" title="Segmentation"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="installation.html" title="Installation"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pyKNEEr 1.0.0 documentation</a> &#187;</li> 
-      </ul>
-    </div>
-<script type="text/javascript">
-  $("#mobile-toggle a").click(function () {
-    $("#left-column").toggle();
-  });
-</script>
-<script type="text/javascript" src="_static/js/bootstrap.js"></script>
-  <div class="footer">
-    &copy; Copyright 2018, Serena Bonaretti. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
-  </div>
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-135735296-1']);
-      _gaq.push(['_trackPageview']);
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
     </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="installation.html" title="previous page">Installation</a>
+    <a class='right-next' id="next-link" href="segmentation.html" title="next page">Segmentation</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Serena Bonaretti<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+    <!-- Google Analytics -->
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-135735296-1', 'auto');
+      ga('set', 'anonymizeIp', true);
+      ga('send', 'pageview');
+    </script>
+    <script async src='https://www.google-analytics.com/analytics.js'></script>
+    <!-- End Google Analytics -->
+    
   </body>
 </html>
