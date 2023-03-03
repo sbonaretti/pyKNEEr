@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     # package info
     name="pykneer",
-    version="0.0.5",
+    version="0.0.6.3",
     author="Serena Bonaretti",
     author_email="serena.bonaretti.research@gmail.edu",
     description="pyKNEEr: An image analysis workflow for open and reproducible research on femoral knee cartilage",

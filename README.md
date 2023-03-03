@@ -16,8 +16,7 @@
 - Documentation at [sbonaretti.github.io/pykneer/](https://sbonaretti.github.io/pyKNEEr/)  
 - Paper: *S. Bonaretti ,G.E. Gold, G.S. Beaupre [pyKNEEr: An image analysis workflow for open and reproducible research on femoral knee cartilage](https://journals.plos.org/plosone/article/metrics?id=10.1371/journal.pone.0226501) Plos one 15.1 (2020): e0226501.*
 
-- Release on Zenodo (with DOI for citation): [![DOI](https://zenodo.org/badge/155445441.svg)](https://zenodo.org/badge/latestdoi/155445441)
-
+- Release on Zenodo (with DOI for citation): [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3607322.svg)](https://doi.org/10.5281/zenodo.3607322)
 ---
 
 ### Contributors
@@ -26,17 +25,23 @@ Project and new code:
 - [Serena Bonaretti](https://sbonaretti.github.io/)  
 
 Open source code included in pyKNEEr:  
-- [intensity preprocessing](https://bitbucket.org/marcniethammer/ksrt/src) by Liang Shan and [Marc Niethammer](http://wwwx.cs.unc.edu/~mn/?q=content/overview) 
+- [Intensity preprocessing](https://bitbucket.org/marcniethammer/ksrt/src) by Liang Shan and [Marc Niethammer](http://wwwx.cs.unc.edu/~mn/?q=content/overview) 
 - [Elastix](https://github.com/SuperElastix/elastix) for registration in atlas-based segmentation by [Stefan Klein](http://bigr.nl/people/StefanKlein/)
 - Cylinder fitting for cartilage flattening by https://github.com/xingjiepan/cylinder_fitting
 
 User feedbacks and suggestions for improvements:
 - Tijmen Van Zadelhoff  
 - Piyush Kumar Prajapati  
-  
+- Tadiwa Waungana
+
 ---  
 
 ### Changelog 
+
+*v 0.0.6.3*:
+(Complicated version number due to issues while uploading to Pypi)
+- Substituted the filter `sitk.BinaryDilate()` with the filter `sitk.BinaryDilateImageFilter()` in the function `dilate_mask()` of the module `sitk_functions` (-> Closure of issues 13 and 15)
+- Added `raise FileNotFoundError` in the `elastix_transformix` module to provide feedback during the registration process
 
 *v 0.0.5*:  
 - Solved ITK bug about the Orient function in preprocessing - different way to set direction in ITK4.13  

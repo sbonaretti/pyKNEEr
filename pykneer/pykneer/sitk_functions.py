@@ -351,8 +351,13 @@ def edge_preserving_smoothing(img):
 def dilate_mask(mask,  radius):
 
     # dilate reference binary mask
-    mask     = sitk.Cast(mask,sitk.sitkInt16) # make sure that input of BinaryDilate is int
-    mask_dil = sitk.BinaryDilate(mask,radius)
+    mask     = sitk.Cast(mask,sitk.sitkUInt16) # make sure that input of BinaryDilate is int
+    print (mask.GetPixelIDTypeAsString())
+    # mask_dil = sitk.BinaryDilate(mask,radius) # this does not work anymore, not sure why - changed to BinaryDilateImageFilter in version 0.6
+    # mask_dil = sitk.BinaryDilate(mask,3)
+    dilate_filter = sitk.BinaryDilateImageFilter()
+    dilate_filter.SetKernelRadius(radius)
+    mask_dil = dilate_filter.Execute(mask)
 
     return mask_dil
 

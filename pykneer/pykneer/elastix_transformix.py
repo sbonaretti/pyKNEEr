@@ -123,16 +123,16 @@ class registration(ABC):
             input_file_name  = image_data["i_registered_sub_folder"] + image_data[anatomy + "i_spline_transf_name"]
             output_file_name = image_data["i_registered_sub_folder"] + image_data[anatomy + "m_spline_transf_name"]
         else:
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: This transformation is not supported. Use 'rigid', 'similarity', or 'spline'")
-            print("----------------------------------------------------------------------------------------")
+            print("----------------------------------------------------------------------------------------", flush = True)  # flush = True needed to print in multiprocessing.Pool()
+            print("ERROR: This transformation is not supported. Use 'rigid', 'similarity', or 'spline'", flush = True)
+            print("----------------------------------------------------------------------------------------", flush = True)
             return
 
         # check if transformation file exists
         if not os.path.exists(input_file_name):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: The file  %s does not exist" % (input_file_name) )
-            print("----------------------------------------------------------------------------------------")
+            print("----------------------------------------------------------------------------------------", flush = True)
+            print("ERROR: The file  %s does not exist" % (input_file_name), flush = True )
+            print("----------------------------------------------------------------------------------------", flush = True)
             return
 
         # read the file and modify the needed lines
@@ -159,7 +159,7 @@ class registration(ABC):
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
-# BONE INSTANCE -------------------------------------------------------------------------------------------------------------
+# BONE ----------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
 class bone (registration):
@@ -182,7 +182,7 @@ class bone (registration):
         complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
-        # print ("     Rigid registration")
+        # print ("     Rigid registration", flush = True)
         # os.path.abspath because working directory is where elastix is in pykneer, so images need whole path, not only relative
         cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
                                       "-fMask", os.path.abspath(complete_reference_mask_dil_name),
@@ -195,35 +195,33 @@ class bone (registration):
         # check if the registration worked
         # if the registration did not work
         if not os.path.exists(image_data["registered_sub_folder"] + "result.0.mha"):
-            print("-------------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.rigid()")
-            print("-------------------------------------------------------------------------------------------")
-            
+             
             # print out possible errors
             # elastix not in system
             output = test_elastix()
             if output == 0:
-                print ("-> elastix correctly installed")
-                print ("complete_elastix_path           : " + complete_elastix_path)
-                print ("complete_reference_name         : " + complete_reference_name)
-                print ("complete_reference_mask_dil_name: " + complete_reference_mask_dil_name)
-                print ("complete_moving_name            : " + complete_moving_name)
-                print ("params                          : " + params)
-                print ("output_folder                   : " + output_folder)
+                print ("-> elastix correctly installed", flush = True)
+                print ("complete_elastix_path           : " + complete_elastix_path, flush = True)
+                print ("complete_reference_name         : " + complete_reference_name, flush = True)
+                print ("complete_reference_mask_dil_name: " + complete_reference_mask_dil_name, flush = True)
+                print ("complete_moving_name            : " + complete_moving_name, flush = True)
+                print ("params                          : " + params, flush = True)
+                print ("output_folder                   : " + output_folder, flush = True)
             else: 
-                print ("-> elastix not installed. Error message is: " + output)
-                print ("   You might need to set Elastix environmental variables separately. To do so, go to pyKNEEr documentation here: https://sbonaretti.github.io/pyKNEEr/faq.html#elastix")
+                print ("-> elastix not installed. Error message is: " + output, flush = True)
+                print ("   You might need to set Elastix environmental variables separately. To do so, go to pyKNEEr documentation here: https://sbonaretti.github.io/pyKNEEr/faq.html#elastix", flush = True)
             
-            
-            
-            
-            return
+            raise FileNotFoundError ("No output created in bone.rigid()")
+        
         # change output names
         else:
             os.rename(image_data["registered_sub_folder"] + "result.0.mha",
                       image_data["registered_sub_folder"] + image_data[anatomy + "rigid_name"])
             os.rename(image_data["registered_sub_folder"] + "TransformParameters.0.txt",
                       image_data["registered_sub_folder"] + image_data[anatomy + "rigid_transf_name"])
+        # make sure the image was written
+        if not os.path.exists(image_data["registered_sub_folder"] + image_data[anatomy + "rigid_name"]):
+            raise FileNotFoundError (image_data["registered_sub_folder"] + image_data[anatomy + "rigid_name"] + " not written in bone.rigid()")
 
 
     def similarity(self, image_data):
@@ -243,7 +241,7 @@ class bone (registration):
         complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
-        #print ("     Similarity registration")
+        #print ("     Similarity registration", flush = True)
         cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
                                       "-fMask", os.path.abspath(complete_reference_mask_dil_name),
                                       "-m",     os.path.abspath(complete_moving_name),
@@ -253,15 +251,16 @@ class bone (registration):
 
         # change output names
         if not os.path.exists(image_data["registered_sub_folder"] + "result.0.mha"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.similarity()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.similarity()")
         else:
             os.rename(image_data["registered_sub_folder"] + "result.0.mha",
                       image_data["registered_sub_folder"] + image_data[anatomy + "similarity_name"])
             os.rename(image_data["registered_sub_folder"] + "TransformParameters.0.txt",
                       image_data["registered_sub_folder"] + image_data[anatomy + "similarity_transf_name"])
+        # make sure the image was written
+        if not os.path.exists(image_data["registered_sub_folder"] + image_data[anatomy + "similarity_name"]):
+            raise FileNotFoundError (image_data["registered_sub_folder"] + image_data[anatomy + "similarity_name"] + " not written in bone.similarity()")
+
 
 
     def spline(self, image_data):
@@ -294,15 +293,15 @@ class bone (registration):
 
         # change output names
         if not os.path.exists(image_data["registered_sub_folder"] + "result.0.mha"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.spline()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.spline()")
         else:
             os.rename(image_data["registered_sub_folder"] + "result.0.mha",
                       image_data["registered_sub_folder"] + image_data[anatomy + "spline_name"])
             os.rename(image_data["registered_sub_folder"] + "TransformParameters.0.txt",
                       image_data["registered_sub_folder"] + image_data[anatomy + "spline_transf_name"])
+        # make sure the image was written
+        if not os.path.exists(image_data["registered_sub_folder"] + image_data[anatomy + "spline_name"]):
+            raise FileNotFoundError (image_data["registered_sub_folder"] + image_data[anatomy + "spline_name"] + " not written in bone.spline()")
 
 
     def i_rigid(self, image_data):
@@ -323,7 +322,7 @@ class bone (registration):
         complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
-        #print ("     Inverting rigid transformation")
+        #print ("     Inverting rigid transformation", flush = True)
         cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
                                       "-fMask", os.path.abspath(complete_reference_mask_dil_name),
                                       "-m",     os.path.abspath(complete_reference_name),
@@ -334,13 +333,11 @@ class bone (registration):
 
         # change output names
         if not os.path.exists(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.i_rigid()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.i_rigid()")
         else:
             os.rename(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt",
                       image_data["i_registered_sub_folder"] + image_data[anatomy + "i_rigid_transf_name"])
+        
 
 
     def i_similarity(self, image_data):
@@ -361,7 +358,7 @@ class bone (registration):
         complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
-        #print ("     Inverting similarity transformation")
+        #print ("     Inverting similarity transformation", flush = True)
         cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
                                       "-fMask", os.path.abspath(complete_reference_mask_dil_name),
                                       "-m",     os.path.abspath(complete_reference_name),
@@ -372,10 +369,7 @@ class bone (registration):
 
         # change output names
         if not os.path.exists(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.i_similarity()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.i_similarity()")
         else:
             os.rename(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt",
                       image_data["i_registered_sub_folder"] + image_data[anatomy + "i_similarity_transf_name"])
@@ -399,7 +393,7 @@ class bone (registration):
         complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
-        #print ("     Inverting spline transformation")
+        #print ("     Inverting spline transformation", flush = True)
         cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
                                       "-fMask", os.path.abspath(complete_reference_mask_dil_name),
                                       "-m",     os.path.abspath(complete_reference_name),
@@ -410,10 +404,7 @@ class bone (registration):
 
         # change output names
         if not os.path.exists(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.i_spline()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.i_spline()")
         else:
             os.rename(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt",
                       image_data["i_registered_sub_folder"] + image_data[anatomy + "i_spline_transf_name"])
@@ -439,7 +430,7 @@ class bone (registration):
         complete_transformix_path = image_data["complete_transformix_path"]
 
         # execute transformation
-        #print ("     Rigid warping")
+        #print ("     Rigid warping", flush = True)
         cmd = [complete_transformix_path, "-in",  os.path.abspath(mask_to_warp),
                                           "-tp",  os.path.abspath(transformation),
                                           "-out", os.path.abspath(output_folder)]
@@ -448,13 +439,13 @@ class bone (registration):
 
         # change output names
         if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.t_rigid()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.t_rigid()")
         else:
             os.rename(image_data["i_registered_sub_folder"] + "result.mha",
                       image_data["i_registered_sub_folder"] + image_data[anatomy + "m_rigid_name"])
+        # make sure the image was written
+        if not os.path.exists(image_data["i_registered_sub_folder"] + image_data[anatomy + "m_rigid_name"]):
+            raise FileNotFoundError (image_data["i_registered_sub_folder"] + image_data[anatomy + "m_rigid_name"] + " not written in bone.t_rigid()")
 
 
     def t_similarity(self, image_data):
@@ -480,13 +471,13 @@ class bone (registration):
 
         # change output names
         if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.t_similarity()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.t_similarity()")
         else:
             os.rename(image_data["i_registered_sub_folder"] + "result.mha",
                       image_data["i_registered_sub_folder"] + image_data[anatomy+"m_similarity_name"])
+        # make sure the image was written
+        if not os.path.exists(image_data["i_registered_sub_folder"] + image_data[anatomy + "m_similarity_name"]):
+            raise FileNotFoundError (image_data["i_registered_sub_folder"] + image_data[anatomy + "m_similarity_name"] + " not written in bone.t_similarity()")
 
 
     def t_spline(self, image_data):
@@ -504,7 +495,7 @@ class bone (registration):
         complete_transformix_path = image_data["complete_transformix_path"]
 
         # execute transformation
-        #print ("     Spline warping")
+        #print ("     Spline warping", flush = True)
         cmd = [complete_transformix_path, "-in",  os.path.abspath(mask_to_warp),
                                           "-tp",  os.path.abspath(transformation),
                                           "-out", os.path.abspath(output_folder)]
@@ -512,13 +503,14 @@ class bone (registration):
 
         # change output name
         if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.t_spline()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.t_spline()")
         else:
             os.rename(image_data["i_registered_sub_folder"] + "result.mha",
                       image_data["i_registered_sub_folder"] + image_data[anatomy+"m_spline_name"])
+        # make sure the image was written
+        if not os.path.exists(image_data["i_registered_sub_folder"] + image_data[anatomy + "m_spline_name"]):
+            raise FileNotFoundError (image_data["i_registered_sub_folder"] + image_data[anatomy + "m_spline_name"] + " not written in bone.t_spline()")
+
 
 
     def vf_spline(self, image_data):
@@ -541,10 +533,7 @@ class bone (registration):
 
         # change output name
         if not os.path.exists(image_data["registered_sub_folder"] + "deformationField.mha"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in bone.vf_spline()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.vf_spline()")
         else:
             os.rename(image_data["registered_sub_folder"] + "deformationField.mha",
                       image_data["registered_folder"]    + image_data["vector_field_name"])
@@ -553,7 +542,7 @@ class bone (registration):
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
-# CARTILAGE INSTANCE --------------------------------------------------------------------------------------------------------
+# CARTILAGE -----------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------
 
 class cartilage (registration):
@@ -585,7 +574,7 @@ class cartilage (registration):
         complete_elastix_path          = image_data["complete_elastix_path"]
 
         # execute registration
-        #print ("     Spline registration")
+        #print ("     Spline registration", flush = True)
         cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
                                       "-fMask", os.path.abspath(complete_reference_mask_dil_name),
                                       "-m",     os.path.abspath(complete_moving_name),
@@ -595,17 +584,17 @@ class cartilage (registration):
 
         # change output names
         if not os.path.exists(image_data["registered_sub_folder"] + "result.0.mha"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in cartilage.spline()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.spline()")
         else:
             os.rename(image_data["registered_sub_folder"] + "result.0.mha",
                       image_data["registered_sub_folder"] + image_data[anatomy + "spline_name"])
             os.rename(image_data["registered_sub_folder"] + "TransformParameters.0.txt",
                       image_data["registered_sub_folder"] + image_data[anatomy + "spline_transf_name"])
-
-
+        # make sure the image was written
+        print (image_data["registered_sub_folder"] + image_data[anatomy + "spline_name"])
+        if not os.path.exists(image_data["registered_sub_folder"] + image_data[anatomy + "spline_name"]):
+            raise FileNotFoundError (image_data["registered_sub_folder"] + image_data[anatomy + "spline_name"] + " not written in cartilage.spline()")
+ 
     def i_rigid(self, image_data):
         pass
 
@@ -630,7 +619,7 @@ class cartilage (registration):
         complete_elastix_path            = image_data["complete_elastix_path"]
 
         # execute registration
-        #print ("     Inverting spline transformation")
+        #print ("     Inverting spline transformation", flush = True)
         cmd = [complete_elastix_path, "-f",     os.path.abspath(complete_reference_name),
                                       "-fMask", os.path.abspath(complete_reference_mask_dil_name),
                                       "-m",     os.path.abspath(complete_reference_name),
@@ -641,10 +630,7 @@ class cartilage (registration):
 
         # change output names
         if not os.path.exists(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in cartilage.i_spline()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.i_spline()")
         else:
             os.rename(image_data["i_registered_sub_folder"] + "TransformParameters.0.txt",
                       image_data["i_registered_sub_folder"] + image_data[anatomy + "i_spline_transf_name"])
@@ -679,13 +665,15 @@ class cartilage (registration):
 
         # change output names
         if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in cartilage.t_rigid()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.t_rigid()")
         else:
             os.rename(image_data["i_registered_sub_folder"] + "result.mha",
                       image_data["i_registered_sub_folder"] + image_data[anatomy + "m_rigid_name"])
+        # make sure the image was written
+        print ("in cartilage.t_rigid", flush = True)
+        if not os.path.exists(image_data["i_registered_sub_folder"] + image_data[anatomy + "m_rigid_name"]):
+            raise FileNotFoundError (image_data["i_registered_sub_folder"] + image_data[anatomy + "m_rigid_name"] + " not written in cartilage.t_rigid()")
+ 
 
 
     def t_similarity(self, image_data):
@@ -704,7 +692,7 @@ class cartilage (registration):
         complete_transformix_path = image_data["complete_transformix_path"]
 
         # execute transformation
-        #print ("     Similarity warping")
+        #print ("     Similarity warping", flush = True)
         cmd = [complete_transformix_path, "-in",  os.path.abspath(mask_to_warp),
                                           "-tp",  os.path.abspath(transformation),
                                           "-out", os.path.abspath(output_folder)]
@@ -712,14 +700,15 @@ class cartilage (registration):
 
         # change output names
         if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in cartilage.t_similarity()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.t_similarity()")
         else:
             os.rename(image_data["i_registered_sub_folder"] + "result.mha",
                       image_data["i_registered_sub_folder"] + image_data[anatomy+"m_similarity_name"])
-
+        # make sure the image was written
+        print ("in cartilage.t_similarity", flush = True)
+        if not os.path.exists(image_data["i_registered_sub_folder"] + image_data[anatomy + "m_similarity_name"]):
+            raise FileNotFoundError (image_data["i_registered_sub_folder"] + image_data[anatomy + "m_similarity_name"] + " not written in cartilage.t_similarity()")
+ 
 
     def t_spline(self, image_data):
 
@@ -736,7 +725,7 @@ class cartilage (registration):
         complete_transformix_path = image_data["complete_transformix_path"]
 
         # execute transformation
-        #print ("     Spline warping")
+        #print ("     Spline warping", flush = True)
         cmd = [complete_transformix_path, "-in",  os.path.abspath(mask_to_warp),
                                           "-tp",  os.path.abspath(transformation),
                                           "-out", os.path.abspath(output_folder)]
@@ -744,13 +733,14 @@ class cartilage (registration):
 
         # change output names
         if not os.path.exists(image_data["i_registered_sub_folder"] + "result.mha"):
-            print("----------------------------------------------------------------------------------------")
-            print("ERROR: No output created in cartilage.t_spline()")
-            print("----------------------------------------------------------------------------------------")
-            return
+            raise FileNotFoundError ("No output created in bone.t_spline()")
         else:
             os.rename(image_data["i_registered_sub_folder"] + "result.mha",
                       image_data["i_registered_sub_folder"] + image_data[anatomy+"m_spline_name"])
+        # make sure the image was written
+        print ("------------------------------>in cartilage.t_spline", flush = True)
+        if not os.path.exists(image_data["i_registered_sub_folder"] + image_data[anatomy + "m_spline_name"]):
+            raise FileNotFoundError (image_data["i_registered_sub_folder"] + image_data[anatomy + "m_spline_name"] + " not written in cartilage.t_spline()")
 
 
     def vf_spline(self):
