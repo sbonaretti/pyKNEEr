@@ -4,7 +4,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-from . import find_reference_functions as frf
+
+# pyKNEER imports 
+# ugly way to use relative vs. absolute imports when developing vs. when using package - cannot find a better way
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+    import find_reference_functions as frf
+
+else:
+    # uses current package visibility
+    from . import find_reference_functions as frf
+
+
+
 
 
 def find_reference(all_image_data, n_of_processes):

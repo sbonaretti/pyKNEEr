@@ -7,9 +7,17 @@ import platform
 import shutil
 import SimpleITK as sitk
 
-from . import elastix_transformix
 
-#import sitk_functions  as sitkf
+# pyKNEER imports 
+# ugly way to use relative vs. absolute imports when developing vs. when using package - cannot find a better way
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+    import elastix_transformix
+
+else:
+    # uses current package visibility
+    from . import elastix_transformix
+
 
 
 def folder_divider():
@@ -26,184 +34,189 @@ def folder_divider():
     return folderDiv
 
 
-def prepare_reference(allImageData, reference_names, iterationNo):
+def prepare_reference(all_image_data, reference_names, iteration_no):
 
-#    anatomy = allImageData[0]["currentAnatomy"] # it is "f" for femur (assigned in loadImageDataFindReference)
-#    refID   = iterationNo
-#    # get new reference ID in allImageData
-#    reference_name = reference_names[iterationNo]
-#    for i in range (0, len(allImageData)):
-#        if allImageData[i]["movingName"] == reference_name:
+#    anatomy = all_image_data[0]["currentAnatomy"] # it is "f" for femur (assigned in loadimage_dataFindReference)
+#    refID   = iteration_no
+#    # get new reference ID in all_image_data
+#    reference_name = reference_names[iteration_no]
+#    for i in range (0, len(all_image_data)):
+#        if all_image_data[i]["moving_name"] == reference_name:
 #            refID = i
 #            break
 
     # variables
-    standardreference_name          = "reference.mha"
-    standardreference_root          = "reference"
-    standardMaskName               = "reference_f.mha"
-    standardFdilMaskFileName       = "reference_f_15.mha"
-    standardFlevelSetsMaskFileName = "reference_f_levelSet.mha"
-    standardReferenceSuffix        = "prep.mha"
-    standardMaskSuffix             = "f.mha"
+    standard_reference_name            = "reference.mha"
+    standardreference_root             = "reference"
+    standard_mask_name                 = "reference_f.mha"
+    standard_f_dil_mask_filename       = "reference_f_15.mha"
+    standard_f_levelsets_mask_filename = "reference_f_levelSet.mha"
+    standard_reference_suffix          = "prep.mha"
+    standard_mask_suffix               = "f.mha"
 
     # get the system for folderDiv
     folderDiv = folder_divider()
 
     # 0. create parent output folder (first iteration only)
-    if iterationNo == 1:
+    if iteration_no == 1:
         # create global output folder for this reference
-        #if not os.path.isdir(allImageData[0]["registeredSubFolder"]):
-        #    os.makedirs(allImageData[0]["registeredSubFolder"])
-        output_folder = allImageData[0]["parent_folder"] + allImageData[0]["reference_root"] + folderDiv
-        if not os.path.isdir (output_folder): # automatically created by addNamesToImageData in pyKNEErIO
+        #if not os.path.isdir(all_image_data[0]["registered_sub_folder"]):
+        #    os.makedirs(all_image_data[0]["registered_sub_folder"])
+        output_folder = all_image_data[0]["parent_folder"] + all_image_data[0]["reference_root"] + folderDiv
+
+        if not os.path.isdir (output_folder): # automatically created by addNamesToimage_data in pyKNEErIO
             os.makedirs(output_folder)
 
-        # assign output folder to all cells of allImageData (adapting to requests of elastixTransformix class)
-        for i in range(0,len(allImageData)):
-            allImageData[i]["output_folder"]           = output_folder
-            allImageData[i]["reference_name"]          = standardreference_name
-            allImageData[i]["reference_root"]          = standardreference_root
-            allImageData[i]["fmaskFileName"]          = standardMaskName
-            allImageData[i]["fdilMaskFileName"]       = standardFdilMaskFileName
-            allImageData[i]["flevelSetsMaskFileName"] = standardFlevelSetsMaskFileName
-            allImageData[i]["registrationType"]       = "newsubject"
+        # assign output folder to all cells of all_image_data (adapting to requests of elastixTransformix class)
+        for i in range(0,len(all_image_data)):
+            all_image_data[i]["output_folder"]             = output_folder
+            all_image_data[i]["reference_name"]            = standard_reference_name
+            all_image_data[i]["reference_root"]            = standardreference_root
+            all_image_data[i]["fmask_file_name"]           = standard_mask_name # this has to be fmask_file_name (not f_mask_file_name)
+            all_image_data[i]["f_dil_mask_filename"]       = standard_f_dil_mask_filename
+            all_image_data[i]["f_levelsets_mask_filename"] = standard_f_levelsets_mask_filename
+            all_image_data[i]["registration_type"]         = "newsubject"
 
 
-    # 1. create new reference image folder and it to every image in the dictionary
-    currentreference_root, referenceExt = os.path.splitext(reference_names[iterationNo])
-    newReferenceFolder = allImageData[0]["output_folder"] + str(iterationNo) + "_" + currentreference_root + folderDiv
-    if not os.path.isdir(newReferenceFolder):
-        os.makedirs(newReferenceFolder)
-    for i in range(0,len(allImageData)):
-        allImageData[i]["referenceFolder"] = newReferenceFolder
+    # 1. create new reference image folder and add it to every image in the dictionary
+    currentreference_root, referenceExt = os.path.splitext(reference_names[iteration_no])
+    new_reference_folder = all_image_data[0]["output_folder"] + str(iteration_no) + "_" + currentreference_root + folderDiv
+    if not os.path.isdir(new_reference_folder):
+        os.makedirs(new_reference_folder)
+    for i in range(0,len(all_image_data)):
+        all_image_data[i]["reference_folder"] = new_reference_folder
 
-    # 2. create new file names for reference image and mask (using dictionary of image 0 of allImageData)
+    # 2. create new file names for reference image and mask (using dictionary of image 0 of all_image_data)
     # image
-    oldRefImageName = allImageData[0]["parent_folder"]  + reference_names[iterationNo]
-    newRefImageName = newReferenceFolder               + reference_names[iterationNo]
+    old_ref_image_name = all_image_data[0]["parent_folder"] + reference_names[iteration_no]
+    new_ref_image_name = new_reference_folder               + reference_names[iteration_no]
     # mask
-    maskName        = reference_names[iterationNo].replace(standardReferenceSuffix, standardMaskSuffix) # this is hardcoded and determines the way file names are
-    oldRefMaskName  = allImageData[0]["parent_folder"]  + maskName
-    newRefMaskName  = newReferenceFolder               + maskName
+    mask_name        = reference_names[iteration_no].replace(standard_reference_suffix, standard_mask_suffix) # this is hardcoded and determines the way file names are
+    old_ref_mask_name  = all_image_data[0]["parent_folder"] + mask_name
+    new_ref_mask_name  = new_reference_folder               + mask_name
 
     # 3. move reference image and mask to the new folder and change names
-    shutil.copy(oldRefImageName, newRefImageName)
-    shutil.copy(oldRefMaskName , newRefMaskName)
-    os.rename(newRefImageName, newReferenceFolder + standardreference_name)
-    os.rename(newRefMaskName , newReferenceFolder + standardMaskName)
+    shutil.copy(old_ref_image_name, new_ref_image_name)
+    shutil.copy(old_ref_mask_name , new_ref_mask_name)
+    os.rename(new_ref_image_name, new_reference_folder + standard_reference_name)
+    os.rename(new_ref_mask_name , new_reference_folder + standard_mask_name)
 
-    # 4. dilate mask and convert to level set (use folder and image names of first cell in allImageData)
+    # 4. dilate mask and convert to level set (use folder and image names of first cell in all_image_data)
     bone = elastix_transformix.bone()
-    bone.prepare_reference (allImageData[0])
 
-    return allImageData
+    print ("here")
+    print (all_image_data[0]["fmask_file_name"])
+    print ("here")
+    bone.prepare_reference (all_image_data[0])
+
+    return all_image_data
 
 
 
-def calculate_vector_fields_s(imageData):
+def calculate_vector_fields_s(image_data):
 
     # get the system for folderDiv
     folderDiv = folder_divider()
 
     # create output folders that do not exist
-    imageData["registeredFolder"]           = imageData["referenceFolder"]
-    imageData["registeredSubFolder"]        = imageData["registeredFolder"] + imageData["movingRoot"] + folderDiv
-    if not os.path.isdir(imageData["registeredSubFolder"]):
-        os.makedirs(imageData["registeredSubFolder"])
+    image_data["registered_folder"]      = image_data["reference_folder"]
+    image_data["registered_sub_folder"]  = image_data["registered_folder"] + image_data["moving_root"] + folderDiv
+    if not os.path.isdir(image_data["registered_sub_folder"]):
+        os.makedirs(image_data["registered_sub_folder"])
 
     # register the femur
     bone = elastix_transformix.bone()
-    bone.rigid     (imageData)
-    bone.similarity(imageData)
-    bone.spline    (imageData)
-    bone.vfspline  (imageData)
+    bone.rigid     (image_data)
+    bone.similarity(image_data)
+    bone.spline    (image_data)
+    bone.vf_spline (image_data)
 
-def calculate_vector_fields(allImageData, nOfProcesses):
+def calculate_vector_fields(all_image_data, nOfProcesses):
 
     pool = multiprocessing.Pool(processes=nOfProcesses)
-    pool.map(calculate_vector_fields_s, allImageData)
+    pool.map(calculate_vector_fields_s, all_image_data)
     print ("-> Vector fields calculated")
 
 
 
-def find_reference_as_minimum_distance_to_average(allImageData, reference_names, minDistance, iterationNo):
+def find_reference_as_minimum_distance_to_average(all_image_data, reference_names, min_distance, iteration_no):
 
-    fieldFolder = allImageData[0]["referenceFolder"]
+    fieldFolder = all_image_data[0]["reference_folder"]
 
     # allocate an empty field (with first field characteristisc) and convert to numpy matrix
-    imageData = allImageData[0]
-    firstField       = sitk.ReadImage(fieldFolder + imageData["vectorFieldName"])
-    averageField     = sitk.Image(firstField.GetSize(),sitk.sitkVectorFloat32)
-    averageField_py  = sitk.GetArrayFromImage(averageField)
+    image_data        = all_image_data[0]
+    firstField        = sitk.ReadImage(fieldFolder + image_data["vector_field_name"])
+    average_field     = sitk.Image(firstField.GetSize(),sitk.sitkVectorFloat32)
+    average_field_py  = sitk.GetArrayFromImage(average_field)
 
     # calculate average field
-    for i in range(0,len(allImageData)):
+    for i in range(0,len(all_image_data)):
 
         # get current field
-        imageData        = allImageData[i]
-        fieldFileName    = fieldFolder + imageData["vectorFieldName"]
-#        print ("    " + imageData["vectorFieldName"] )
-        field            = sitk.ReadImage(fieldFileName)
+        image_data     = all_image_data[i]
+        fieldFileName  = fieldFolder + image_data["vector_field_name"]
+#        print ("    " + image_data["vector_field_name"] )
+        field          = sitk.ReadImage(fieldFileName)
         # transform to numpy matrix
         field_py = sitk.GetArrayFromImage(field)
         # sum up the field to the average field
-        averageField_py = averageField_py + field_py
+        average_field_py = average_field_py + field_py
 
     # divide by the number of fields
-    averageField_py = averageField_py / len(allImageData)
+    average_field_py = average_field_py / len(all_image_data)
 
     # back to sitk
-    averageField = sitk.GetImageFromArray(averageField_py)
-    averageField.SetSpacing  (firstField.GetSpacing  ())
-    averageField.SetOrigin   (firstField.GetOrigin   ())
-    averageField.SetDirection(firstField.GetDirection())
+    average_field = sitk.GetImageFromArray(average_field_py)
+    average_field.SetSpacing  (firstField.GetSpacing  ())
+    average_field.SetOrigin   (firstField.GetOrigin   ())
+    average_field.SetDirection(firstField.GetDirection())
 
     # write the average field
-#    averageFieldFileName = firstImage["registeredFolder"] + "averageField_" + str(iterationNo) + ".mha"
-#    sitk.WriteImage(averageField, averageFieldFileName)
+#    average_fieldFileName = firstImage["registered_folder"] + "average_field_" + str(iteration_no) + ".mha"
+#    sitk.WriteImage(average_field, average_fieldFileName)
 
     # calculate norms between average field and each moving field
-    norms = np.zeros(len(allImageData))
+    norms = np.zeros(len(all_image_data))
 
-    for i in range(0,len(allImageData)):
+    for i in range(0,len(all_image_data)):
 
         # re-load the field
-        imageData       = allImageData[i]
-        fieldFileName   = fieldFolder + imageData["vectorFieldName"]
-        field           = sitk.ReadImage(fieldFileName)
+        image_data       = all_image_data[i]
+        fieldFileName    = fieldFolder + image_data["vector_field_name"]
+        field            = sitk.ReadImage(fieldFileName)
         # transform to python array
-        averageField_py = sitk.GetArrayFromImage(averageField)
-        field_py        = sitk.GetArrayFromImage(field)
+        average_field_py = sitk.GetArrayFromImage(average_field)
+        field_py         = sitk.GetArrayFromImage(field)
         # extract values under dilated mask
-        maskDil               = sitk.ReadImage(allImageData[0]["referenceFolder"] + allImageData[0]["fdilMaskFileName"])
-        maskDil_py            = sitk.GetArrayFromImage(maskDil)
-        averageField_pyMasked = np.extract(maskDil_py == 1, averageField_py)
-        field_pyMasked        = np.extract(maskDil_py == 1, field_py)
-        nOfMaskedVoxels       = len(averageField_pyMasked)
+        mask_dil                = sitk.ReadImage(all_image_data[0]["reference_folder"] + all_image_data[0]["f_dil_mask_filename"])
+        mask_dil_py             = sitk.GetArrayFromImage(mask_dil)
+        average_field_py_masked = np.extract(mask_dil_py == 1, average_field_py)
+        field_py_masked         = np.extract(mask_dil_py == 1, field_py)
+        n_of_masked_voxels      = len(average_field_py_masked)
         # calculate norm of distances
-        norm            = np.linalg.norm(averageField_pyMasked-field_pyMasked)
-        print ("    " + imageData["vectorFieldName"] )
+        norm = np.linalg.norm(average_field_py_masked-field_py_masked)
+        print ("    " + image_data["vector_field_name"] )
         print ("      norm before normalization: " + str(norm))
-        norm = norm / nOfMaskedVoxels
+        norm = norm / n_of_masked_voxels
         print ("      norm after normalization: " + str(norm))
-        print ("      number of image voxels: "  + str(averageField.GetSize()[0]*averageField.GetSize()[1]*averageField.GetSize()[2]))
-        print ("      snumber of masked voxels: " + str(nOfMaskedVoxels))
+        print ("      number of image voxels: "   + str(average_field.GetSize()[0]*average_field.GetSize()[1]*average_field.GetSize()[2]))
+        print ("      snumber of masked voxels: " + str(n_of_masked_voxels))
         # assign to vector of norms
-        norms[i]        = norm
+        norms[i] = norm
 
     # get minimum norm
-    minNorm   = min(norms)
-    minNormID = np.where(norms == norms.min())
-    minNormID = int(minNormID[0][0]) # previous function provides a tuple
+    min_norm    = min(norms)
+    min_norm_id = np.where(norms == norms.min())
+    min_norm_id = int(min_norm_id[0][0]) # previous function provides a tuple
     print ("   -> Distances to average field are: " + np.array2string(norms, precision=8) )
-    print ("   -> Minimum distance is %.8f" % minNorm)
+    print ("   -> Minimum distance is %.8f" % min_norm)
 
     # pick corresponding image as new reference
-    newreference_name = allImageData[minNormID]["movingName"]
-    print ("   -> Reference of next iteration is " + allImageData[minNormID]["movingName"])
+    newreference_name = all_image_data[min_norm_id]["moving_name"]
+    print ("   -> Reference of next iteration is " + all_image_data[min_norm_id]["moving_name"])
 
-    # add values to allImageData
-    reference_names[iterationNo+1] = newreference_name
-    minDistance   [iterationNo]   = minNorm
+    # add values to all_image_data
+    reference_names[iteration_no+1] = newreference_name
+    min_distance   [iteration_no]   = min_norm
 
-    return reference_names, minDistance #refID?
+    return reference_names, min_distance #refID?

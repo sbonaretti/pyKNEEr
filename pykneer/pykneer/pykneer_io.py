@@ -265,7 +265,7 @@ def load_image_data_find_reference(input_file_name):
                 # added to uniform with requirements in ElastixTransformix classes
                 reference_root, image_ext       = os.path.splitext(reference_name)
                 moving_root, image_ext          = os.path.splitext(moving_name)
-                image_data["reference_root"]    = reference_root
+                image_data["reference_root"]    = "reference" #reference_root
                 image_data["moving_root"]       = moving_root
                 image_data["moving_folder"]     = parent_folder
                 image_data["cartilage"]         = "fc"
@@ -487,10 +487,10 @@ def add_names_to_image_data(image_data,folderFlag):
     image_data["dilate_radius"]                        = 15
     image_data[bone + "mask_file_name"]                = image_data["reference_root"] + "_" + bone + ".mha"
     image_data[bone + "dil_mask_file_name"]            = image_data["reference_root"] + "_" + bone + "_" + str(image_data["dilate_radius"]) + ".mha"
-    image_data[bone + "levelset_mask_file_name"]      = image_data["reference_root"] + "_" + bone + "_levelSet.mha"
+    image_data[bone + "levelset_mask_file_name"]       = image_data["reference_root"] + "_" + bone + "_levelSet.mha"
     image_data[cartilage + "mask_file_name"]           = image_data["reference_root"] + "_" + cartilage + ".mha"
     image_data[cartilage + "dil_mask_file_name"]       = image_data["reference_root"] + "_" + cartilage + "_" + str(image_data["dilate_radius"]) + ".mha"
-    image_data[cartilage + "levelset_mask_file_name"] = image_data["reference_root"] + "_" + cartilage + "_levelSet.mha"
+    image_data[cartilage + "levelset_mask_file_name"]  = image_data["reference_root"] + "_" + cartilage + "_levelSet.mha"
 
     # output image file names
     image_data[bone + "rigid_name"]            = bone + "_rigid.mha"
