@@ -281,6 +281,7 @@ def load_image_data_find_reference(input_file_name):
                 # send to the data list
                 all_image_data.append(image_data)
 
+
     print ("-> image information loaded")
 
     # return the image info
