@@ -2,6 +2,16 @@
 
 ### An image analysis workflow for **open** and **reproducible** research on **femoral knee cartilage**
 
+<br>
+
+---
+
+📣 **pyKNEEr IS UNDER REFACTORING AND EXTENSION! STAY TUNED!** 
+
+---
+<br>
+<br>
+
 - See the video on [Youtube](https://www.youtube.com/embed/7WPf5KFtYi8) for presentation, installation, and demo:   
 
 [![Video](https://img.youtube.com/vi/7WPf5KFtYi8/0.jpg)](https://www.youtube.com/embed/7WPf5KFtYi8)
